@@ -6,6 +6,20 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-08-26 — Content format: analogy-first, with mandatory break-point
+
+Owner learns best through analogies and examples (stated preference). Two
+changes: (1) the content schema requires an `anchor` block per new concept —
+an analogy or a contrast to something the learner already knows (the M2
+SQL anchors generalize to all modules); (2) `learner_profiles.preferences`
+gains `explanation_style`, read by Tier-1 prompts so LLM explanations and
+hints lead with an analogy.
+
+Guardrail: analogies create fluency illusions, and the graduation bar is
+precise understanding ("not vague concepts" — owner's own words). So the
+format is a mandatory triple: **analogy + where it breaks + the precise
+term**. The analogy is the on-ramp, never the destination.
+
 ## 2026-08-26 — Project renamed: CodeLingua → **forthree**
 
 举一反三 — "shown one corner, return with three." The name states the actual
