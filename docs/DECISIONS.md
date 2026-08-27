@@ -31,7 +31,29 @@ exercise banks with test cases, glossaries) happens before Phase 1 content
 work. License compatibility is the gate: the repo is MIT; content borrowed
 under CC-BY/CC-BY-SA keeps its own license in clearly marked directories;
 NC-licensed material (CS50, MIT OCW) can be *linked/embedded* but not copied
-in. See scout results in this log once recorded.
+in.
+
+**Scout results (2026-08-26):**
+
+| Source | License | Use |
+|---|---|---|
+| [Exercism python track](https://github.com/exercism/python) | MIT | **Copy/adapt.** Large exercise bank *with test suites* — maps directly onto `answer_spec` assertion tests for Pyodide. Primary exercise source; attribute in a NOTICE file. |
+| [futurecoder](https://github.com/alexmojaki/futurecoder) | MIT | **Adapt content + borrow implementation patterns.** Complete interactive beginner Python course already running on Pyodide; its birdseye/debugger integration is battle-tested prior art. No Chinese translation exists. |
+| Python official docs & tutorial | PSF (permissive) | **Copy/adapt** for glossary and reference material. |
+| CS50P / CS50x | CC BY-NC-SA | **Link/embed only** (sequencing logic + timestamped video micro-clips, per DESIGN.md §3). |
+| [mooc.fi Python MOOC](https://programming-26.mooc.fi/) | CC BY-NC-SA | **Reference only** — excellent 14-part sequencing benchmark; NC clause would constrain future multi-user options, so don't copy in. |
+| py4e (Severance) | mixed CC-BY / CC BY-NC-SA | **Reference; check per-file.** Data-oriented framing is a good fit for a data-scientist learner. |
+
+Net effect on cost: the expensive parts of content (exercises + test cases)
+are largely coverable from MIT sources; original authoring concentrates on
+(a) all Chinese content — no source has zh, it was always original work —
+(b) SQL-contrast anchors and agent-era framing that make this course
+forthree and not generic Python 101.
+
+Honest prior-art note: futurecoder alone already delivers "free interactive
+browser Python for beginners." forthree's reason to exist is everything it
+lacks: bilingual, the taxonomy stage, agent-transcript literacy, SRS +
+gamification, LLM feedback, and the judge-AI-output graduation bar.
 
 ## 2026-08-26 — Agent portability is a hard requirement
 
