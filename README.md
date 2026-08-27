@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# forthree · 举一反三
 
-## Getting Started
+A personal, LLM-powered, Duolingo-style web app for learning **practical
+CS/engineering literacy** — built by a data scientist who works daily with AI
+coding agents and wants to *judge* their output, not just accept it.
 
-First, run the development server:
+举一反三: shown one corner, return with three. The graduation bar is
+transfer — read unfamiliar code in any mainstream language and know what it
+does; look at a real AI-agent transcript and immediately understand what is
+happening and why.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**Status: Phase 0** (scaffold, auth, security rails). See
+[docs/DESIGN.md](docs/DESIGN.md) for the full design and
+[docs/DECISIONS.md](docs/DECISIONS.md) for every amendment since.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What makes it interesting
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Deterministic-first grading** — instant verdicts from pre-authored specs;
+  LLM explanations stream in after, never blocking. Bounded cost by design.
+- **Three-tier adaptation harness** — static content spine, cheap in-session
+  micro-adaptation, checkpoint replanning with schema-constrained plan diffs.
+- **Provider-agnostic LLM adapter** — Anthropic/OpenAI switchable via one env
+  var; both first-class.
+- **Bilingual (中文/English)** everywhere, toggleable; technical terms keep
+  their English originals.
+- **Built by AI agents, maintained by a non-engineer** — the repo itself is
+  Module 11's teaching material, and every decision is committed to
+  [docs/DECISIONS.md](docs/DECISIONS.md).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Stack
 
-## Learn More
+Next.js (App Router, TS) · Vercel · Supabase (magic-link auth + Postgres +
+RLS) · Pyodide (in-browser Python) · Tailwind. No servers to maintain.
 
-To learn more about Next.js, take a look at the following resources:
+## Self-hosting
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Clone; run `scripts/setup.sh` (installs the gitleaks pre-commit hook,
+   creates `.env.local`).
+2. Create a free Supabase project — follow [supabase/README.md](supabase/README.md).
+3. Fill `.env.local` (see `.env.example`), `npm install && npm run dev`.
+4. Deploy: import the repo in Vercel, set the same env vars.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Security model: public code, private data — see [SECURITY.md](SECURITY.md).
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT — see [LICENSE](LICENSE). Borrowed content, where any, keeps its own
+license in clearly marked directories.
