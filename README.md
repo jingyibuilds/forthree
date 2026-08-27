@@ -13,6 +13,15 @@ bar is transfer: read unfamiliar code in any mainstream language and know
 what it does; look at a real AI-agent transcript and immediately understand
 what is happening and why.
 
+## Why
+
+**AI sets your floor. Understanding sets your ceiling.** Anyone can now do
+more than they understand; how far you can direct, judge, and build stops at
+the depth you actually possess. For Three exists to climb the ladder that AI
+can't climb for you: understanding → judgment → creation.
+
+Read the whole argument: [Why For Three — words by Jingyi](docs/WHY.md).
+
 **Status: Phase 0** (scaffold, auth, security rails). See
 [docs/DESIGN.md](docs/DESIGN.md) for the full design and
 [docs/DECISIONS.md](docs/DECISIONS.md) for every amendment since.

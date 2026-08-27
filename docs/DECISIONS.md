@@ -6,6 +6,17 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-08-26 — Philosophy distilled: docs/WHY.md; tagline retracted again
+
+Owner voice memo (ladder self-diagnosis, vacation story, Duolingo verdict,
+tiering) distilled into [WHY.md](./WHY.md) — first-person, "words by
+Jingyi," linked from README. Core formulations: the 理解→判断→创造 ladder;
+"AI sets your floor, understanding sets your ceiling"; 宽进严出 tiering at
+scale (retention layer funds the mission, capability layer defines it).
+"Actually understand what your AI is doing" retracted as too small — it
+described the first course, not the project. New tagline candidates live in
+WHY.md; UI/app metadata keep the old line until the owner picks.
+
 ## 2026-08-26 — Content format: analogy-first, with mandatory break-point
 
 Owner learns best through analogies and examples (stated preference). Two
