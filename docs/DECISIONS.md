@@ -6,6 +6,43 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-08-27 — First-user playtest feedback round (owner played L1 live)
+
+Four decisions from live feedback:
+
+1. **English-in-Chinese-course policy.** A zh-mode fill-in demanding an
+   English word felt like leakage. Resolution: it *is* deliberate
+   (graduation ability #3 — agent transcripts are English), so make the
+   intent visible: `term_drill: true` exercises get a badge (术语题 ·
+   用英文回答). Non-term fill-ins must accept zh variants. Rejected: adding
+   zh words to term-drill accept lists — it would defeat the drill's point.
+2. **Back navigation added.** Its absence was MVP omission, not design;
+   learners must be able to look back at a concept while answering.
+   Answered exercises stay done when revisited.
+3. **In-lesson language toggle** added to the player header.
+4. **The 哑巴语 rule** (content/schema.md): every term exercised in both
+   directions — produce *and* recognize in the wild. Named for Duolingo's
+   ask-directions-but-can't-parse-the-answer failure, which the owner
+   experienced directly.
+
+Also from this round: big-picture context on the path page (course title +
+promise + 卷一–卷四 stage map with per-stage "what you can do after"
+milestones, from content/stages.json), per-lesson `why` rationale footnote,
+and (future) lesson provenance footnotes (`source_refs`).
+
+## 2026-08-27 — Visual identity: 「朱批」 design system
+
+Owner rejected the black/white placeholder UI as depressing. Direction
+chosen from the subject's own world — Chinese pedagogy — rather than
+generic edtech: 月白 cool paper ground (deliberately not the AI-default
+warm cream), 墨 ink text, 靛青 indigo as the interactive color (indigo-dye
+cloth × terminal blue), 朱砂 vermilion reserved for exactly two things —
+the 反三 seal (印章 brand mark) and the analogy-anchor cards, styled as a
+teacher's vermilion margin notes (朱批), which is what anchors *are*.
+松绿 for correct verdicts. Display type: Noto Serif SC; body stays Geist.
+Tokens live in globals.css (light + dark). Signature element: the seal +
+朱批 anchor card; boldness spent there, everything else quiet.
+
 ## 2026-08-27 — Onboarding questionnaire specced (docs/ONBOARDING.md)
 
 Owner design input, distilled into a full spec (expands DESIGN.md §4's one

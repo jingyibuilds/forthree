@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { dict, getLocale } from "@/lib/i18n";
 import { getLesson } from "@/lib/content";
+import { LocaleToggle } from "@/components/locale-toggle";
 import { LessonPlayer } from "./lesson-player";
 
 export default async function LessonPage({
@@ -34,6 +35,7 @@ export default async function LessonPage({
       locale={locale}
       t={dict[locale]}
       alreadyCorrect={alreadyCorrect}
+      toggle={<LocaleToggle locale={locale} inline />}
     />
   );
 }

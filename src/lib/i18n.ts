@@ -40,6 +40,9 @@ export const dict = {
     lessonDone: "Lesson complete",
     backToPath: "Back to your path",
     xpNotSaved: "(XP not saved — database migration 0002 pending)",
+    termBadge: "Term drill · answer in English",
+    back: "Back",
+    anchorLabel: "Anchor",
   },
   zh: {
     name: "反三",
@@ -70,6 +73,9 @@ export const dict = {
     lessonDone: "本课完成",
     backToPath: "回到学习路径",
     xpNotSaved: "(XP 暂未入库——数据库迁移 0002 待执行)",
+    termBadge: "术语题 · 用英文回答——这个词在 agent 的世界里只有英文",
+    back: "返回",
+    anchorLabel: "锚点",
   },
 } as const;
 

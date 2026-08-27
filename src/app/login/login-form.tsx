@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { sendMagicLink, type LoginState } from "./actions";
 import { type Dict } from "@/lib/i18n";
+import { Seal } from "@/components/seal";
 
 const initialState: LoginState = { status: "idle", message: "" };
 
@@ -20,19 +21,24 @@ export function LoginForm({
 
   return (
     <div className="w-full max-w-sm space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">{t.name}</h1>
-        <p className="mt-1 text-sm text-neutral-500">{t.tagline}</p>
+      <div className="flex items-center gap-3">
+        <Seal size={44} />
+        <div>
+          <h1 className="font-serif text-2xl font-semibold tracking-wide">
+            {t.name}
+          </h1>
+          <p className="mt-0.5 text-sm text-muted">{t.tagline}</p>
+        </div>
       </div>
 
       {linkError && state.status === "idle" && (
-        <p className="rounded-md bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-950 dark:text-amber-200">
+        <p className="rounded-lg bg-warn-soft p-3 text-sm text-warn">
           {t.linkInvalid}
         </p>
       )}
 
       {state.status === "sent" ? (
-        <p className="rounded-md bg-green-50 p-3 text-sm text-green-800 dark:bg-green-950 dark:text-green-200">
+        <p className="rounded-lg bg-success-soft p-3 text-sm text-success">
           {state.message}
         </p>
       ) : (
@@ -47,14 +53,14 @@ export function LoginForm({
               type="email"
               required
               autoComplete="email"
-              className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-900"
+              className="mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
               placeholder="you@example.com"
             />
           </div>
           <div>
             <label htmlFor="invite" className="block text-sm font-medium">
               {t.inviteCode}
-              <span className="ml-1 font-normal text-neutral-400">
+              <span className="ml-1 font-normal text-muted">
                 {t.inviteHint}
               </span>
             </label>
@@ -63,18 +69,16 @@ export function LoginForm({
               name="invite"
               type="text"
               autoComplete="off"
-              className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-900"
+              className="mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
             />
           </div>
           {state.status === "error" && (
-            <p className="text-sm text-red-600 dark:text-red-400">
-              {state.message}
-            </p>
+            <p className="text-sm text-accent">{state.message}</p>
           )}
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50 dark:bg-white dark:text-neutral-900"
+            className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-on-primary transition-colors hover:bg-primary-hover disabled:opacity-50"
           >
             {pending ? t.sending : t.send}
           </button>

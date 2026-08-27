@@ -4,6 +4,7 @@
 import m01 from "../../content/stage-1/module-01/module.json";
 import m01l01 from "../../content/stage-1/module-01/lesson-01.json";
 import m01l02 from "../../content/stage-1/module-01/lesson-02.json";
+import stagesData from "../../content/stages.json";
 
 export type ReadingBlock = { type: "reading"; body_en: string; body_zh: string };
 export type ConceptBlock = {
@@ -36,6 +37,10 @@ export type FillInExercise = {
   type: "fill_in";
   prompt_en: string;
   prompt_zh: string;
+  // Term drills deliberately require the English term (graduation ability #3:
+  // agent transcripts are English); the player badges them so the requirement
+  // reads as design, not as a gap in the Chinese course.
+  term_drill?: boolean;
   answer_spec: { accept?: string[]; regex?: string; ignore_case?: boolean };
   explain_en: string;
   explain_zh: string;
@@ -53,9 +58,32 @@ export type Lesson = {
   est_minutes: number;
   title_en: string;
   title_zh: string;
+  // Optional design rationale, shown at lesson start: why this lesson, why now.
+  why_en?: string;
+  why_zh?: string;
   blocks: Block[];
   exercises: Exercise[];
 };
+
+export type Stage = {
+  stage: number;
+  label_zh: string;
+  label_en: string;
+  title_en: string;
+  title_zh: string;
+  milestone_en: string;
+  milestone_zh: string;
+};
+
+export type CourseMap = {
+  course_title_en: string;
+  course_title_zh: string;
+  course_promise_en: string;
+  course_promise_zh: string;
+  stages: Stage[];
+};
+
+export const courseMap: CourseMap = stagesData as CourseMap;
 
 export type Module = {
   id: string;

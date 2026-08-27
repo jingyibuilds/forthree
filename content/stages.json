@@ -1,0 +1,44 @@
+{
+  "course_title_en": "Practical CS Literacy",
+  "course_title_zh": "实用 CS 素养",
+  "course_promise_en": "Four parts, ~14 modules, 2–5 hrs/week for a semester. Graduate able to read code, judge AI output, and ship a small tool of your own.",
+  "course_promise_zh": "四卷,约 14 个模块,每周 2–5 小时,一学期读完。毕业时:读得懂代码,判得了 AI 的输出,交付得出一个自己的小工具。",
+  "stages": [
+    {
+      "stage": 1,
+      "label_zh": "卷一",
+      "label_en": "Part 1",
+      "title_en": "Computational thinking & Python foundations",
+      "title_zh": "计算思维与 Python 基础",
+      "milestone_en": "You can read and trace basic Python.",
+      "milestone_zh": "你能读懂并跟得上基础的 Python 代码。"
+    },
+    {
+      "stage": 2,
+      "label_zh": "卷二",
+      "label_en": "Part 2",
+      "title_en": "Writing real small programs",
+      "title_zh": "写出真正能用的小程序",
+      "milestone_en": "You can independently write a working 50–100 line script.",
+      "milestone_zh": "你能独立写出 50–100 行、真的能跑的脚本。"
+    },
+    {
+      "stage": 3,
+      "label_zh": "卷三",
+      "label_en": "Part 3",
+      "title_en": "How software systems work",
+      "title_zh": "软件系统如何运转",
+      "milestone_en": "You can follow engineering conversations and judge what an AI agent tells you.",
+      "milestone_zh": "你能跟上工程对话,判断 AI agent 告诉你的东西对不对。"
+    },
+    {
+      "stage": 4,
+      "label_zh": "卷四",
+      "label_en": "Part 4",
+      "title_en": "Reading instinct across languages + capstone",
+      "title_zh": "跨语言阅读直觉与毕业项目",
+      "milestone_en": "You can guess what unfamiliar code does — and you've shipped a tool of your own.",
+      "milestone_zh": "你能猜出陌生语言的代码在干什么——并且交付了一个自己的工具。"
+    }
+  ]
+}

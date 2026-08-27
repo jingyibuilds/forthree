@@ -62,7 +62,10 @@ Common fields: `id` (`<lesson>-e\d\d`), `type`, `prompt_en/zh`,
 - `mcq`: `options_en: []`, `options_zh: []` (same length/order), `answer`
   (index).
 - `fill_in`: `answer_spec: {"accept": ["…"], "regex": "…"?, "ignore_case":
-  true?}` — deterministic match, instant verdict.
+  true?}` — deterministic match, instant verdict. `accept` must include
+  reasonable synonym variants; in zh mode, accept Chinese answers too —
+  **unless** `"term_drill": true`, which deliberately requires the English
+  term (agent transcripts are English) and is badged as such in the player.
 - `drag_order` (later): `items_en/zh: []`, `answer: [indices]`. Tap-to-order
   on touch.
 - `code` (later): `answer_spec: {"tests": […]}` run in Pyodide.
@@ -73,6 +76,22 @@ Every learner-facing field exists as `_en` and `_zh`. Chinese text keeps
 technical terms in English where that is how practitioners speak (决定
 2026-08-26: that is not "mixing"). Neither side is a translation of the
 other — write each to be natural.
+
+## Lesson-level optional fields
+
+- `why_en` / `why_zh` — one-sentence design rationale shown at lesson start
+  ("why this lesson, why now"). Both languages or neither.
+- (future) `source_refs` — provenance footnote when a lesson's design
+  clearly derives from a public course (e.g. a CS50 week).
+
+## The 哑巴语 rule (bidirectional knowledge)
+
+Named for the Duolingo failure the owner described: you learn to *ask* for
+directions but can't *understand* the answer. Every term and concept must
+eventually be exercised in **both directions** — produce it (fill-in, write)
+*and* recognize it in the wild (spot it in a real transcript, traceback, or
+doc). One-directional knowledge doesn't count as learned; module checkpoint
+quizzes should mix directions deliberately.
 
 ## XP
 

@@ -44,8 +44,18 @@ for (const file of jsonFiles(ROOT)) {
     moduleIds.add(data.id);
     bilingual(data, "title", rel, data.id);
     bilingual(data, "description", rel, data.id);
-  } else {
+  } else if (rel === "stages.json") {
+    bilingual(data, "course_title", rel, "course");
+    bilingual(data, "course_promise", rel, "course");
+    for (const s of data.stages ?? []) {
+      bilingual(s, "title", rel, `stage ${s.stage}`);
+      bilingual(s, "milestone", rel, `stage ${s.stage}`);
+      bilingual(s, "label", rel, `stage ${s.stage}`);
+    }
+  } else if (/lesson-\d\d\.json$/.test(rel)) {
     lessons.push([rel, data]);
+  } else {
+    err(rel, "unrecognized content file (expected module.json, lesson-NN.json, or stages.json)");
   }
 }
 
@@ -58,6 +68,8 @@ for (const [rel, l] of lessons) {
   if (!Number.isInteger(l.est_minutes) || l.est_minutes < 1) err(rel, "bad est_minutes");
   if (l.est_minutes > 30) err(rel, `est_minutes ${l.est_minutes} exceeds the 30-minute session budget`);
   bilingual(l, "title", rel, l.id);
+  if ((l.why_en || l.why_zh) && !(isStr(l.why_en) && isStr(l.why_zh)))
+    err(rel, `${l.id}: why must exist in both languages or neither`);
 
   const localExercises = new Map();
   for (const e of l.exercises ?? []) {

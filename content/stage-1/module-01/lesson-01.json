@@ -102,13 +102,19 @@
       "prompt_en": "Complete the sentence with one word: writing code creates a file; nothing happens until you ______ it.",
       "prompt_zh": "用一个英文词补全:写代码只是得到一个文件;直到你 ______ 它,才会真的发生事情。",
       "answer_spec": {
-        "accept": ["run", "execute"],
+        "accept": [
+          "run",
+          "execute"
+        ],
         "ignore_case": true
       },
       "explain_en": "Run / execute — the moment instructions actually happen. Keep this word pair; you'll see both constantly in agent transcripts.",
       "explain_zh": "run / execute——指令真正发生的那一刻。记住这一对词,agent 的会话记录里两个都高频出现。",
       "difficulty": 1,
-      "xp_value": 15
+      "xp_value": 15,
+      "term_drill": true
     }
-  ]
+  ],
+  "why_en": "Why this first: every judgment you'll ever make about AI output stands on one distinction — code is text; nothing happens until it runs.",
+  "why_zh": "为什么先学这个:你之后对 AI 输出的一切判断,都站在一个区分上——代码只是文字,运行了才会发生事情。"
 }

@@ -102,13 +102,20 @@
       "prompt_en": "An error that happens while the program is running (as opposed to at compile time) is called a ______ error.",
       "prompt_zh": "程序运行过程中(而非编译时)发生的错误,英文叫 ______ error。",
       "answer_spec": {
-        "accept": ["runtime", "run-time", "run time"],
+        "accept": [
+          "runtime",
+          "run-time",
+          "run time"
+        ],
         "ignore_case": true
       },
       "explain_en": "Runtime — the word for \"while it's actually running.\" You'll meet 'runtime error' constantly in tracebacks and agent explanations.",
       "explain_zh": "Runtime——「正在运行的时候」。traceback 和 agent 的解释里,runtime error 是高频词。",
       "difficulty": 1,
-      "xp_value": 15
+      "xp_value": 15,
+      "term_drill": true
     }
-  ]
+  ],
+  "why_en": "Why this: when an agent says \"build failed\" vs \"crashed at runtime\", those are different moments with different fixes — this lesson is how you tell them apart.",
+  "why_zh": "为什么学这个:agent 说 \"build failed\" 和 \"crashed at runtime\" 是两个不同时刻的问题,修法不同——这一课让你分得出来。"
 }
