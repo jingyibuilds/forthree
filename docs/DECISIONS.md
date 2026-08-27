@@ -6,6 +6,22 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-08-27 — Onboarding questionnaire specced (docs/ONBOARDING.md)
+
+Owner design input, distilled into a full spec (expands DESIGN.md §4's one
+line). New beyond the original design: (a) career-stage/field questions so
+examples can be tailored to the person, (b) an explicit **anti-goal
+No-list** ("I do NOT need to write complex engineering code") as steering
+signal, (c) explanation-style as a first-class asked preference (analogy
+vs. definition vs. scenario vs. guess-first — the owner's own style is not
+assumed to be everyone's), (d) a trial-vs-committed intent question that
+changes early product behavior, (e) a scheduled **early re-anchor
+checkpoint** at lesson 3 / day 3 collecting "was this useful, and if not
+why" — distinct from threshold-triggered pulse checks. Rules: multi-selects
+≤5 options, MECE. North-star feeling: fit, value, low cost. Implementation
+stays in Phase 3; the spec exists now because it shapes learner_profiles
+and Tier-1 prompts. Owner's own answers stay out of the public repo (PII).
+
 ## 2026-08-26 — Tagline v4 (final, owner's words): "Learning for real."
 
 Owner vetoed the Analects line as front door: opaque to a stranger ("you
