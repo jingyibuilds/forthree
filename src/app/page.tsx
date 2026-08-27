@@ -21,12 +21,12 @@ export default async function Home() {
 
         {user ? (
           <div className="space-y-4">
-            <p className="rounded-md bg-green-50 p-4 text-sm text-green-800 dark:bg-green-950 dark:text-green-200">
-              {t.hello}
-              <br />
-              <span className="font-mono">{user.email}</span>
-            </p>
-            <p className="text-sm text-neutral-500">{t.phaseNote}</p>
+            <Link
+              href="/learn"
+              className="inline-block rounded-md bg-neutral-900 px-6 py-3 text-sm font-medium text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900"
+            >
+              {t.continueLearning}
+            </Link>
             <form action="/auth/signout" method="post">
               <button
                 type="submit"

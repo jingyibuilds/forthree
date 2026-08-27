@@ -45,6 +45,9 @@ maintenance crew; the owner is a data scientist, not a software engineer.
 
 ## Current status
 
-**Phase 0 code complete; awaiting owner acceptance** (Supabase project +
-keys, Vercel import, live login on phone + laptop). Content scouting done —
-results in DECISIONS.md. Next: Phase 1 (Module 1 vertical slice only).
+**Phase 1 in progress** (Module 1 vertical slice). Done: content schema +
+validator (gates the build), M1 lessons 1–2 (bilingual, analogy-anchored),
+lesson player (MCQ/fill-in, instant grading, XP), /api/progress, /learn path
+page. Pending: owner runs migration 0002; owner content review; M1 lessons
+3–5; Pyodide code exercises; LLM gateway (/api/llm — needs ANTHROPIC_API_KEY
+from owner); Phase 0 phone-login acceptance (email rate limit, retest).
