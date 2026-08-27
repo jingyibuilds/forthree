@@ -38,8 +38,9 @@ three" — the name states the actual graduation bar: transfer, not coverage.
 
 **UI language is all-or-nothing:** every surface renders fully Chinese or
 fully English per the language setting — never mixed bilingual labels
-("邮箱 / Email" is banned). Phase 0 screens default to Chinese (the owner's
-primary); English arrives with the i18n toggle in Phase 1. Technical terms
+("邮箱 / Email" is banned). Phase 0 screens default to English (owner
+decision, revised same day from Chinese-first); Chinese arrives with the
+i18n toggle in Phase 1. Technical terms
 keeping their English originals inside Chinese content is per DESIGN.md and
 is not "mixing."
 

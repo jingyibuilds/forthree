@@ -10,25 +10,27 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
       <div className="w-full max-w-md space-y-6 text-center">
-        <h1 className="text-3xl font-semibold">反三</h1>
-        <p className="text-sm text-neutral-500">举一反三</p>
+        <h1 className="text-3xl font-semibold">For Three</h1>
+        <p className="text-sm text-neutral-500">
+          Actually understand what your AI is doing.
+        </p>
 
         {user ? (
           <div className="space-y-4">
             <p className="rounded-md bg-green-50 p-4 text-sm text-green-800 dark:bg-green-950 dark:text-green-200">
-              你好,已登录的世界 👋
+              Hello, authenticated world. 👋
               <br />
               <span className="font-mono">{user.email}</span>
             </p>
             <p className="text-sm text-neutral-500">
-              Phase 0 完成,学习功能从 Phase 1 开始。
+              Phase 0 complete. Learning arrives in Phase 1.
             </p>
             <form action="/auth/signout" method="post">
               <button
                 type="submit"
                 className="rounded-md border border-neutral-300 px-4 py-2 text-sm hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
               >
-                退出登录
+                Sign out
               </button>
             </form>
           </div>
@@ -37,7 +39,7 @@ export default async function Home() {
             href="/login"
             className="inline-block rounded-md bg-neutral-900 px-6 py-3 text-sm font-medium text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900"
           >
-            登录
+            Sign in
           </Link>
         )}
       </div>

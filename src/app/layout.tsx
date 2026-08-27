@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "反三",
-  description: "真正会用 AI 所需要的工程常识。",
+  title: "For Three",
+  description: "Actually understand what your AI is doing.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

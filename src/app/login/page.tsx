@@ -19,15 +19,18 @@ function LoginForm() {
     <main className="flex min-h-screen items-center justify-center p-6">
       <div className="w-full max-w-sm space-y-6">
         <div>
-          <h1 className="text-2xl font-semibold">反三</h1>
-          <p className="mt-1 text-sm text-neutral-500">举一反三</p>
+          <h1 className="text-2xl font-semibold">For Three</h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            Actually understand what your AI is doing.
+          </p>
         </div>
 
         {linkError && state.status === "idle" && (
           <p className="rounded-md bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-950 dark:text-amber-200">
-            登录链接无效或已失效。请重新发送一个,并注意:邮件里的链接要在
-            <strong>发起登录的同一个浏览器</strong>里打开(如果邮箱在别的浏览器,
-            可以右键复制链接地址,粘贴到这边的地址栏)。
+            That link was invalid or expired. Request a new one — and open it
+            in <strong>the same browser</strong> you request it from (if your
+            email lives in another browser, copy the link address and paste it
+            into this one).
           </p>
         )}
 
@@ -39,7 +42,7 @@ function LoginForm() {
           <form action={formAction} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium">
-                邮箱
+                Email
               </label>
               <input
                 id="email"
@@ -53,9 +56,9 @@ function LoginForm() {
             </div>
             <div>
               <label htmlFor="invite" className="block text-sm font-medium">
-                邀请码
+                Invite code
                 <span className="ml-1 font-normal text-neutral-400">
-                  (仅首次注册需要)
+                  (first signup only)
                 </span>
               </label>
               <input
@@ -76,7 +79,7 @@ function LoginForm() {
               disabled={pending}
               className="w-full rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50 dark:bg-white dark:text-neutral-900"
             >
-              {pending ? "发送中…" : "发送登录链接"}
+              {pending ? "Sending…" : "Send magic link"}
             </button>
           </form>
         )}
