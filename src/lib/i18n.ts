@@ -13,7 +13,7 @@ export async function getLocale(): Promise<Locale> {
 export const dict = {
   en: {
     name: "For Three",
-    tagline: "Actually understand what your AI is doing.",
+    tagline: "Shown one corner, return with three.",
     signIn: "Sign in",
     signOut: "Sign out",
     hello: "Hello, authenticated world. 👋",

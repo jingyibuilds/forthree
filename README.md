@@ -1,6 +1,6 @@
 # For Three · 反三
 
-*Actually understand what your AI is doing.*
+*Shown one corner, return with three.*
 
 A personal, LLM-powered, Duolingo-style web app for learning **practical
 CS/engineering literacy** — built by a data scientist who works daily with AI
@@ -15,10 +15,11 @@ what is happening and why.
 
 ## Why
 
-**AI sets your floor. Understanding sets your ceiling.** Anyone can now do
-more than they understand; how far you can direct, judge, and build stops at
-the depth you actually possess. For Three exists to climb the ladder that AI
-can't climb for you: understanding → judgment → creation.
+AI will happily create for you — even let you skip judgment entirely. What
+it never builds is **taste**: the ability to say why something works, why it
+doesn't, and what to do about it. Taste can't be borrowed or generated; it
+is learned. For Three trains it the way the Analects prescribed: shown one
+corner, you return with three.
 
 Read the whole argument: [Why For Three — words by Jingyi](docs/WHY.md).
 

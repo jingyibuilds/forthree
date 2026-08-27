@@ -6,6 +6,18 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-08-26 — Taste correction; tagline settled on the name itself
+
+Owner reflection: the ladder overstated AI's limits — AI does allow
+creation, even skipping judgment entirely. What it never builds is
+**taste**: you can feel something is off but cannot say why or how, and
+over time you slide into blindly delegating decisions you cannot parse.
+WHY.md's ladder reframed from *access* to *ownership*. Tagline directive:
+natural, humble, true, anchored on learning — not on AI. Settled on the
+name itself: **"Shown one corner, return with three." / 举一反三** —
+applied to UI, README, app metadata, and repo description. "AI sets your
+floor…" demoted to essay prose.
+
 ## 2026-08-26 — Philosophy distilled: docs/WHY.md; tagline retracted again
 
 Owner voice memo (ladder self-diagnosis, vacation story, Duolingo verdict,

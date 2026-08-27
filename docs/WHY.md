@@ -24,10 +24,25 @@ Here's the sentence I keep coming back to:
 
 Anyone can now do more than they understand — that's the floor rising, and
 it's genuinely new. But how far you can direct, judge, and build stops
-exactly at the depth you actually possess. Ability in the AI era climbs a
-three-step ladder: **understanding → judgment → creation**. AI parks
-everyone comfortably on step one. The scarce step — the one you can't
-outsource, can't prompt your way into — is judgment.
+exactly at the depth you actually possess.
+
+An earlier draft of this essay drew a tidy ladder — understanding →
+judgment → creation — and claimed AI parks you on the first rung. Too neat,
+and not quite true. AI lets you skip straight to creation; I do it weekly.
+You can ship things you couldn't have judged, built on understanding you
+don't have.
+
+What skipping never builds is **taste**. You get good enough to feel that
+something isn't working — but you can't say why, or how to fix it. And the
+absence of taste compounds: over time you hand more and more decisions to
+AI precisely where you understand least, trusting blindly, engaged less and
+less in work that carries your name. Creation without taste quietly turns
+into delegation.
+
+So the ladder isn't about access — AI grants access to every rung. It's
+about **ownership**: understanding → judgment → creation, climbed so that
+what you make is actually yours. Taste can't be borrowed, and it can't be
+generated. It's learned.
 
 ## Why not just take a course?
 
@@ -87,6 +102,9 @@ that happens to be true.
 - **Vision:** A school of one, for anyone entering any field — sequenced,
   finite, evidenced, enjoyable. CS literacy is the first department, not
   the product.
+- **Tagline:** "Shown one corner, return with three." / 举一反三 — the name
+  itself. Anchored on learning, not on AI (the rule: natural, humble, true).
+  "AI sets your floor…" lives on as prose above, not as the front door.
 - **First user:** me. The course exists because I need it. If it works on
   me, it earns the right to a second user.
 
