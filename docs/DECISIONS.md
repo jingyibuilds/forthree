@@ -30,11 +30,28 @@ mandatory break-points, because they optimize for completeness and generate
 jargon-laden footnotes that are harder than the concept itself (the
 proposal's own RLS example failed this test).
 
+## 2026-08-26 — Naming, tagline, and the no-mixing UI rule
+
+Display names: **For Three** (English) / **反三** (Chinese); `forthree` stays
+as the slug (repo, package). From 举一反三 — "shown one corner, return with
+three" — the name states the actual graduation bar: transfer, not coverage.
+
+**UI language is all-or-nothing:** every surface renders fully Chinese or
+fully English per the language setting — never mixed bilingual labels
+("邮箱 / Email" is banned). Phase 0 screens default to Chinese (the owner's
+primary); English arrives with the i18n toggle in Phase 1. Technical terms
+keeping their English originals inside Chinese content is per DESIGN.md and
+is not "mixing."
+
+**Tagline:** "Actually understand what your AI is doing." Owner rejected the
+earlier "Learn to judge, not just to use" — the goal is *actually using* AI;
+judgment is the evidence of real use, not the point. Chinese meta line
+(independent, not a translation): 真正会用 AI 所需要的工程常识。
+
 ## 2026-08-26 — Project renamed: CodeLingua → **forthree**
 
-举一反三 — "shown one corner, return with three." The name states the actual
-graduation bar: transfer, not coverage. CodeLingua remains in DESIGN.md as the
-historical working name.
+Superseded in part by the naming entry above (For Three / 反三). CodeLingua
+remains in DESIGN.md as the historical working name.
 
 ## 2026-08-26 — Graduation bar calibration: instant parse of real agent output
 

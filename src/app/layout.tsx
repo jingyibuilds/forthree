@@ -13,9 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "forthree · 举一反三",
-  description:
-    "A personal, LLM-powered app for learning practical CS/engineering literacy — enough to judge what AI coding agents tell you.",
+  title: "反三",
+  description: "真正会用 AI 所需要的工程常识。",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

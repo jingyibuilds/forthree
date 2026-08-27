@@ -1,13 +1,17 @@
-# forthree · 举一反三
+# For Three · 反三
+
+*Actually understand what your AI is doing.*
 
 A personal, LLM-powered, Duolingo-style web app for learning **practical
 CS/engineering literacy** — built by a data scientist who works daily with AI
-coding agents and wants to *judge* their output, not just accept it.
+coding agents and wants to *actually* use them, which means understanding
+enough to judge what they do.
 
-举一反三: shown one corner, return with three. The graduation bar is
-transfer — read unfamiliar code in any mainstream language and know what it
-does; look at a real AI-agent transcript and immediately understand what is
-happening and why.
+The name: **For Three** in English, **反三** in Chinese, `forthree` as the
+slug — from 举一反三, "shown one corner, return with three." The graduation
+bar is transfer: read unfamiliar code in any mainstream language and know
+what it does; look at a real AI-agent transcript and immediately understand
+what is happening and why.
 
 **Status: Phase 0** (scaffold, auth, security rails). See
 [docs/DESIGN.md](docs/DESIGN.md) for the full design and

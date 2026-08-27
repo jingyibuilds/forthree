@@ -15,7 +15,7 @@ export async function sendMagicLink(
   const invite = String(formData.get("invite") ?? "").trim();
 
   if (!email) {
-    return { status: "error", message: "请输入邮箱 / Please enter an email." };
+    return { status: "error", message: "请输入邮箱。" };
   }
 
   // Signup gate: a new account is only created when the invite code matches.
@@ -38,8 +38,7 @@ export async function sendMagicLink(
     if (/signups not allowed/i.test(error.message)) {
       return {
         status: "error",
-        message:
-          "首次注册需要正确的邀请码 / First-time signup requires a valid invite code.",
+        message: "首次注册需要正确的邀请码。",
       };
     }
     return { status: "error", message: error.message };
@@ -47,6 +46,6 @@ export async function sendMagicLink(
 
   return {
     status: "sent",
-    message: `登录链接已发送到 ${email} / Magic link sent. Check your inbox.`,
+    message: `登录链接已发送到 ${email},请查收邮箱。`,
   };
 }

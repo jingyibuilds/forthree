@@ -15,10 +15,8 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center p-6">
       <div className="w-full max-w-sm space-y-6">
         <div>
-          <h1 className="text-2xl font-semibold">forthree</h1>
-          <p className="mt-1 text-sm text-neutral-500">
-            举一反三 · Learn to judge, not just to use.
-          </p>
+          <h1 className="text-2xl font-semibold">反三</h1>
+          <p className="mt-1 text-sm text-neutral-500">举一反三</p>
         </div>
 
         {state.status === "sent" ? (
@@ -29,7 +27,7 @@ export default function LoginPage() {
           <form action={formAction} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium">
-                邮箱 / Email
+                邮箱
               </label>
               <input
                 id="email"
@@ -43,9 +41,9 @@ export default function LoginPage() {
             </div>
             <div>
               <label htmlFor="invite" className="block text-sm font-medium">
-                邀请码 / Invite code
+                邀请码
                 <span className="ml-1 font-normal text-neutral-400">
-                  (仅首次注册需要 / first signup only)
+                  (仅首次注册需要)
                 </span>
               </label>
               <input
@@ -66,7 +64,7 @@ export default function LoginPage() {
               disabled={pending}
               className="w-full rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50 dark:bg-white dark:text-neutral-900"
             >
-              {pending ? "发送中…" : "发送登录链接 / Send magic link"}
+              {pending ? "发送中…" : "发送登录链接"}
             </button>
           </form>
         )}
