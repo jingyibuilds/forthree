@@ -16,9 +16,19 @@ gains `explanation_style`, read by Tier-1 prompts so LLM explanations and
 hints lead with an analogy.
 
 Guardrail: analogies create fluency illusions, and the graduation bar is
-precise understanding ("not vague concepts" — owner's own words). So the
-format is a mandatory triple: **analogy + where it breaks + the precise
-term**. The analogy is the on-ramp, never the destination.
+precise understanding ("not vague concepts" — owner's own words). Mandatory
+pair: **analogy + the precise term**. The analogy is the on-ramp, never the
+destination.
+
+*Refined same day after owner pushback:* the originally proposed third
+element ("where the analogy breaks") is **demoted to conditional**. A
+break-point note is included only when (a) the analogy predictably produces
+a concrete misconception the learner would act on (e.g. "a variable is a
+box" vs. Python references), and (b) the correction can be phrased using
+already-taught concepts or a concrete example — otherwise cut it. Rejected:
+mandatory break-points, because they optimize for completeness and generate
+jargon-laden footnotes that are harder than the concept itself (the
+proposal's own RLS example failed this test).
 
 ## 2026-08-26 — Project renamed: CodeLingua → **forthree**
 
