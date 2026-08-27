@@ -1,0 +1,114 @@
+{
+  "id": "m01-l01",
+  "module_id": "m01",
+  "order": 1,
+  "format": "reading",
+  "tag": "core",
+  "est_minutes": 12,
+  "title_en": "A program is a recipe",
+  "title_zh": "程序是一份菜谱",
+  "blocks": [
+    {
+      "type": "reading",
+      "body_en": "You already run programs all day — apps, dashboards, SQL queries. This lesson is about what a program *is*, because that one mental model unlocks everything after it.",
+      "body_zh": "你其实整天都在运行程序——app、仪表盘、SQL 查询。这一课讲清楚程序**是**什么,因为这一个心智模型能解锁后面的一切。"
+    },
+    {
+      "type": "concept",
+      "term": "source code",
+      "term_zh": "源代码 (source code)",
+      "anchor_en": "A recipe card. It describes every step of a dish precisely, but the card itself is just text — nothing gets cooked until a cook follows it.",
+      "anchor_zh": "一张菜谱。它精确写下每个步骤,但菜谱本身只是文字——没有厨师照着做,就没有菜。",
+      "explain_en": "Source code is the text of a program: instructions written by a human in a programming language, stored in an ordinary file. `hello.py` is source code the same way `recipe.txt` is a recipe — a plain file you can open, read, and edit.",
+      "explain_zh": "源代码就是程序的文字版:人用编程语言写下的指令,存在一个普通文件里。`hello.py` 是源代码,就像 `菜谱.txt` 是菜谱——一个能打开、能读、能改的普通文件。"
+    },
+    {
+      "type": "concept",
+      "term": "run / execute",
+      "term_zh": "运行 / 执行 (run / execute)",
+      "anchor_en": "Cooking the dish. The recipe (code) sits there until something actually performs its steps, one by one, in order.",
+      "anchor_zh": "开火做菜。菜谱(代码)一直只是纸,直到有人真的按步骤一步步做出来。",
+      "explain_en": "To run (execute) a program is to have the computer perform its instructions, top to bottom. Writing code and running code are two separate moments — a file full of perfect code does nothing until it is run. When an AI agent says \"let me run this script,\" this is exactly what it means.",
+      "explain_zh": "运行(执行)程序,就是让电脑把指令从上到下真的做一遍。写代码和跑代码是两个独立的动作——一个写得再完美的文件,不运行就什么都不会发生。AI agent 说 \"let me run this script\" 时,指的就是这件事。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l01-e01"
+    },
+    {
+      "type": "reading",
+      "body_en": "Here's the connection to what you already know: a SQL query is *also* source code. When you hit \"run\" in your SQL editor, the database engine executes your instructions. You've been programming for years — declaratively, one query at a time. Python just makes the two moments (writing, running) more visible.",
+      "body_zh": "接到你已经会的东西上:一条 SQL 查询**也是**源代码。你在 SQL 编辑器里点 run 的那一刻,数据库引擎在执行你的指令。你其实已经编了好几年程了——只是每次一条查询。Python 只是把「写」和「跑」这两个时刻分得更明显。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l01-e02"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l01-e03"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "m01-l01-e01",
+      "type": "mcq",
+      "prompt_en": "A colleague sends you `cleanup.py` in Slack. At this moment, what has the file done to your computer?",
+      "prompt_zh": "同事在 Slack 上发给你一个 `cleanup.py` 文件。此刻,这个文件对你的电脑做了什么?",
+      "options_en": [
+        "Nothing — it's text sitting in a file, like an unopened recipe",
+        "It has started cleaning up files in the background",
+        "It depends on how well the code is written",
+        "It has installed itself"
+      ],
+      "options_zh": [
+        "什么都没做——它只是文件里的文字,像一张没打开的菜谱",
+        "它已经在后台开始清理文件了",
+        "取决于代码写得好不好",
+        "它已经把自己安装好了"
+      ],
+      "answer": 0,
+      "explain_en": "Code does nothing until something runs it. This distinction is also why receiving a file is safe but *running* an untrusted file is not.",
+      "explain_zh": "代码不被运行就什么都不做。这个区分也解释了为什么收到文件是安全的,而**运行**来路不明的文件不是。",
+      "difficulty": 1,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l01-e02",
+      "type": "mcq",
+      "prompt_en": "Which of these is NOT source code?",
+      "prompt_zh": "下面哪个**不是**源代码?",
+      "options_en": [
+        "A SQL query saved in a .sql file",
+        "A Python script an AI agent just wrote",
+        "The number 42 stored in a database table",
+        "A half-finished script that doesn't work yet"
+      ],
+      "options_zh": [
+        "存在 .sql 文件里的一条 SQL 查询",
+        "AI agent 刚写出来的一个 Python 脚本",
+        "数据库表里存的数字 42",
+        "一个还跑不通的半成品脚本"
+      ],
+      "answer": 2,
+      "explain_en": "Source code is instructions. Data (like 42 in a table) is what instructions operate on. Broken or unfinished code is still code — being wrong doesn't make it not-code.",
+      "explain_zh": "源代码是指令;数据(比如表里的 42)是指令操作的对象。写坏了的、没写完的代码也依然是代码——错误不改变它的身份。",
+      "difficulty": 2,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l01-e03",
+      "type": "fill_in",
+      "prompt_en": "Complete the sentence with one word: writing code creates a file; nothing happens until you ______ it.",
+      "prompt_zh": "用一个英文词补全:写代码只是得到一个文件;直到你 ______ 它,才会真的发生事情。",
+      "answer_spec": {
+        "accept": ["run", "execute"],
+        "ignore_case": true
+      },
+      "explain_en": "Run / execute — the moment instructions actually happen. Keep this word pair; you'll see both constantly in agent transcripts.",
+      "explain_zh": "run / execute——指令真正发生的那一刻。记住这一对词,agent 的会话记录里两个都高频出现。",
+      "difficulty": 1,
+      "xp_value": 15
+    }
+  ]
+}

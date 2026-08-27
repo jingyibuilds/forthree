@@ -1,0 +1,114 @@
+{
+  "id": "m01-l02",
+  "module_id": "m01",
+  "order": 2,
+  "format": "reading",
+  "tag": "core",
+  "est_minutes": 14,
+  "title_en": "Two kinds of translators",
+  "title_zh": "翻译官的两种工作方式",
+  "blocks": [
+    {
+      "type": "reading",
+      "body_en": "Your computer's processor doesn't understand Python, SQL, or any language humans write. It only understands its own machine instructions. So between your recipe and the kitchen, there is always a translator. There are two styles of translation, and the difference explains a surprising amount of what you see in practice.",
+      "body_zh": "电脑的处理器不认识 Python、SQL 或任何人类写的语言,它只认识自己的机器指令。所以在菜谱和厨房之间,永远隔着一个翻译官。翻译有两种风格,这个区别能解释你日常见到的很多现象。"
+    },
+    {
+      "type": "concept",
+      "term": "interpreter",
+      "term_zh": "解释器 (interpreter)",
+      "anchor_en": "A simultaneous interpreter at a meeting: translates sentence by sentence, as the speaker goes. Speech starts immediately; if sentence 40 contains an error, you only find out when the interpreter gets there.",
+      "anchor_zh": "会议上的同声传译:说一句译一句,讲话立刻开始;如果第 40 句有错,要到翻译讲到那里才暴露。",
+      "explain_en": "An interpreter reads your source code and executes it line by line, on the spot. Python works this way: `python3 hello.py` starts an interpreter that walks through the file. That's why a Python script can run halfway and then crash on a bug it only just reached.",
+      "explain_zh": "解释器逐行读你的源代码、当场执行。Python 就是这么工作的:`python3 hello.py` 会启动解释器,从头往下走这个文件。这也是为什么一个 Python 脚本可以跑到一半,才在刚碰到的 bug 上崩掉。"
+    },
+    {
+      "type": "concept",
+      "term": "compiler",
+      "term_zh": "编译器 (compiler)",
+      "anchor_en": "A book translator: translates the entire book first, checking everything; readers then read the finished translation at full speed. Slow to start, fast to read, and typos are caught before publication.",
+      "anchor_zh": "图书翻译:先把整本书译完、通读校对,读者拿到的是成品,读起来飞快。启动慢,阅读快,错别字在出版前就被抓住。",
+      "explain_en": "A compiler translates the whole program into machine code *before* anything runs, producing an executable file. C, Go, and Rust work this way. Many errors are caught at compile time, before the program ever starts — and the compiled result runs faster than interpretation.",
+      "explain_zh": "编译器在运行**之前**就把整个程序翻译成机器码,产出一个可执行文件。C、Go、Rust 是这一类。很多错误在编译阶段、程序还没开始跑时就被抓住——而且编译后的成品跑得比逐行解释快。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l02-e01"
+    },
+    {
+      "type": "reading",
+      "body_en": "Where you'll meet this: an agent says \"the build failed\" (a compile-time error — the translation never finished) versus \"it crashed at runtime\" (an interpreter or a running program hit a bug mid-execution). Those are different moments, and they call for different fixes. You'll also hear that Python is \"slow\" — interpretation is a big part of why, and also why it's so pleasant to iterate in.",
+      "body_zh": "你会在哪里遇到它:agent 说 \"the build failed\" 是编译期错误——翻译根本没完成;说 \"it crashed at runtime\" 是运行到一半撞上了 bug。两者是不同时刻的问题,修法也不同。你也会听到「Python 慢」——逐行解释是主因之一,但这也正是它改起来舒服、适合快速迭代的原因。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l02-e02"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l02-e03"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "m01-l02-e01",
+      "type": "mcq",
+      "prompt_en": "Python is an interpreted language. What does that mean for a script with a bug on its last line?",
+      "prompt_zh": "Python 是解释型语言。这对一个「bug 在最后一行」的脚本意味着什么?",
+      "options_en": [
+        "The script won't start at all",
+        "Everything before the last line runs, then it crashes at the end",
+        "The bug is automatically skipped",
+        "The interpreter fixes it silently"
+      ],
+      "options_zh": [
+        "脚本根本启动不了",
+        "最后一行之前的部分都会执行,然后在结尾崩掉",
+        "这个 bug 会被自动跳过",
+        "解释器会悄悄修好它"
+      ],
+      "answer": 1,
+      "explain_en": "Sentence-by-sentence translation: work happens until the bad line is reached. This is why a half-run script may have already changed files or written data — a real operational concern when agents run code for you.",
+      "explain_zh": "说一句译一句:走到坏句子之前,活儿都真的干了。所以跑了一半的脚本可能已经改了文件、写了数据——agent 替你跑代码时,这是个真实的运维问题。",
+      "difficulty": 2,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l02-e02",
+      "type": "mcq",
+      "prompt_en": "An agent working on a Go project says: \"the build failed, fixing and rebuilding.\" Which translator style is at work, and when was the error caught?",
+      "prompt_zh": "agent 在一个 Go 项目里说:\"the build failed, fixing and rebuilding.\" 这是哪种翻译风格?错误在什么时候被抓住?",
+      "options_en": [
+        "Compiler — the error was caught before the program ever ran",
+        "Interpreter — the error was caught mid-execution",
+        "Compiler — the error appeared while the program was running",
+        "Neither — builds have nothing to do with translation"
+      ],
+      "options_zh": [
+        "编译器——错误在程序运行之前就被抓住了",
+        "解释器——错误在执行到一半时被抓住",
+        "编译器——错误是在程序运行中出现的",
+        "都不是——build 和翻译无关"
+      ],
+      "answer": 0,
+      "explain_en": "\"Build\" is the compile step: whole-book translation. A failed build means the executable was never produced — nothing ran, nothing was touched. Often the *safest* kind of failure.",
+      "explain_zh": "\"build\" 就是编译这一步:整本书式翻译。build 失败 = 成品根本没产出——什么都没运行、什么都没被碰过。往往是**最安全**的一种失败。",
+      "difficulty": 2,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l02-e03",
+      "type": "fill_in",
+      "prompt_en": "An error that happens while the program is running (as opposed to at compile time) is called a ______ error.",
+      "prompt_zh": "程序运行过程中(而非编译时)发生的错误,英文叫 ______ error。",
+      "answer_spec": {
+        "accept": ["runtime", "run-time", "run time"],
+        "ignore_case": true
+      },
+      "explain_en": "Runtime — the word for \"while it's actually running.\" You'll meet 'runtime error' constantly in tracebacks and agent explanations.",
+      "explain_zh": "Runtime——「正在运行的时候」。traceback 和 agent 的解释里,runtime error 是高频词。",
+      "difficulty": 1,
+      "xp_value": 15
+    }
+  ]
+}

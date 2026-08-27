@@ -1,0 +1,13 @@
+{
+  "id": "m01",
+  "stage": 1,
+  "order": 1,
+  "title_en": "What is a program?",
+  "title_zh": "程序到底是什么",
+  "description_en": "Source code, execution, interpreters, the terminal, and pseudocode — the mental model everything else stands on.",
+  "description_zh": "源代码、执行、解释器、终端、伪代码——之后一切知识都站在这层地基上。",
+  "refs": [
+    "https://cs50.harvard.edu/python/",
+    "https://cs50.harvard.edu/x/"
+  ]
+}
