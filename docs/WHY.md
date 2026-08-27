@@ -102,11 +102,11 @@ that happens to be true.
 - **Vision:** A school of one, for anyone entering any field — sequenced,
   finite, evidenced, enjoyable. CS literacy is the first department, not
   the product.
-- **Tagline:** "Learning that becomes yours." / 「学到的,才是你的。」
-  Rules that produced it: anchored on learning, not AI; natural, humble,
-  true; must answer "what is this + why do I care" at first glance; the
-  Chinese must not repeat the app's name. The Analects line stays as the
-  name's story in prose — an allusion is not a pitch.
+- **Tagline (owner's own words):** "Learning for real." / 「学点真本事」
+  The rules that got here: anchored on learning, not AI; natural, humble,
+  true; answers "what is this + why do I care" at first glance; the Chinese
+  never repeats the app's name and is not a translation. The Analects line
+  stays as the name's story in prose — an allusion is not a pitch.
 - **First user:** me. The course exists because I need it. If it works on
   me, it earns the right to a second user.
 
