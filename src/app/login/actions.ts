@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { actionMessages, getLocale } from "@/lib/i18n";
 
 export type LoginState = {
   status: "idle" | "sent" | "error";
@@ -13,9 +14,10 @@ export async function sendMagicLink(
 ): Promise<LoginState> {
   const email = String(formData.get("email") ?? "").trim();
   const invite = String(formData.get("invite") ?? "").trim();
+  const m = actionMessages[await getLocale()];
 
   if (!email) {
-    return { status: "error", message: "Please enter an email." };
+    return { status: "error", message: m.enterEmail };
   }
 
   // Signup gate: a new account is only created when the invite code matches.
@@ -36,16 +38,10 @@ export async function sendMagicLink(
     // Supabase returns "Signups not allowed for otp" when the user does not
     // exist and shouldCreateUser is false.
     if (/signups not allowed/i.test(error.message)) {
-      return {
-        status: "error",
-        message: "First-time signup requires a valid invite code.",
-      };
+      return { status: "error", message: m.inviteRequired };
     }
     return { status: "error", message: error.message };
   }
 
-  return {
-    status: "sent",
-    message: `Magic link sent to ${email}. Check your inbox.`,
-  };
+  return { status: "sent", message: m.sent(email) };
 }
