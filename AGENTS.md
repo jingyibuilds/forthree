@@ -45,6 +45,6 @@ maintenance crew; the owner is a data scientist, not a software engineer.
 
 ## Current status
 
-**Phase 0** — scaffold, Supabase schema + RLS, magic-link auth with invite
-gate, gitleaks rails, docs. Next up: content-source scouting results →
-Phase 1 (Module 1 vertical slice only — see DECISIONS.md).
+**Phase 0 code complete; awaiting owner acceptance** (Supabase project +
+keys, Vercel import, live login on phone + laptop). Content scouting done —
+results in DECISIONS.md. Next: Phase 1 (Module 1 vertical slice only).
