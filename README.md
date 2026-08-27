@@ -1,6 +1,6 @@
 # For Three · 反三
 
-*Shown one corner, return with three.*
+*Learning that becomes yours.*
 
 A personal, LLM-powered, Duolingo-style web app for learning **practical
 CS/engineering literacy** — built by a data scientist who works daily with AI

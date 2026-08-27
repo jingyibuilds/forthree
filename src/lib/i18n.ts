@@ -13,7 +13,7 @@ export async function getLocale(): Promise<Locale> {
 export const dict = {
   en: {
     name: "For Three",
-    tagline: "Shown one corner, return with three.",
+    tagline: "Learning that becomes yours.",
     signIn: "Sign in",
     signOut: "Sign out",
     hello: "Hello, authenticated world. 👋",
@@ -29,7 +29,7 @@ export const dict = {
   },
   zh: {
     name: "反三",
-    tagline: "举一反三",
+    tagline: "学到的,才是你的。",
     signIn: "登录",
     signOut: "退出登录",
     hello: "你好,已登录的世界 👋",

@@ -6,6 +6,16 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-08-26 — Tagline v3: "Learning that becomes yours."
+
+Owner vetoed the Analects line as front door: opaque to a stranger ("you
+just said a sentence"), and its Chinese duplicated the app name on the same
+screen. New rule extracted: a tagline must answer "what is this + why do I
+care" at first glance; allusions are the name's story, not the pitch.
+Settled: **"Learning that becomes yours." / 「学到的,才是你的。」** (zh is an
+independent sentence, not a translation). Applied to UI dictionaries, app
+metadata, README, and repo description.
+
 ## 2026-08-26 — Taste correction; tagline settled on the name itself
 
 Owner reflection: the ladder overstated AI's limits — AI does allow

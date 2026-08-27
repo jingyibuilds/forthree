@@ -102,9 +102,11 @@ that happens to be true.
 - **Vision:** A school of one, for anyone entering any field — sequenced,
   finite, evidenced, enjoyable. CS literacy is the first department, not
   the product.
-- **Tagline:** "Shown one corner, return with three." / 举一反三 — the name
-  itself. Anchored on learning, not on AI (the rule: natural, humble, true).
-  "AI sets your floor…" lives on as prose above, not as the front door.
+- **Tagline:** "Learning that becomes yours." / 「学到的,才是你的。」
+  Rules that produced it: anchored on learning, not AI; natural, humble,
+  true; must answer "what is this + why do I care" at first glance; the
+  Chinese must not repeat the app's name. The Analects line stays as the
+  name's story in prose — an allusion is not a pitch.
 - **First user:** me. The course exists because I need it. If it works on
   me, it earns the right to a second user.
 
