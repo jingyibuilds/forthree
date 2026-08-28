@@ -43,11 +43,53 @@ maintenance crew; the owner is a data scientist, not a software engineer.
 - Schema changes: new file in `supabase/migrations/`, applied via dashboard
   SQL editor (see `supabase/README.md`)
 
-## Current status
+## Content standards (read before authoring any lesson)
 
-**Phase 1 in progress** (Module 1 vertical slice). Done: content schema +
-validator (gates the build), M1 lessons 1–2 (bilingual, analogy-anchored),
-lesson player (MCQ/fill-in, instant grading, XP), /api/progress, /learn path
-page. Pending: owner runs migration 0002; owner content review; M1 lessons
-3–5; Pyodide code exercises; LLM gateway (/api/llm — needs ANTHROPIC_API_KEY
-from owner); Phase 0 phone-login acceptance (email rate limit, retest).
+`content/schema.md` is binding. The two rules most often gotten wrong:
+
+- **中文版交付标准** — the Chinese version targets a CET-4/6 reader who does
+  NOT know English technical nouns. Chinese must carry the meaning alone;
+  gloss every English term on first appearance. `content/stage-1/module-01/`
+  L1–L2 are the reference implementation.
+- **Anchor is mandatory** on every `concept` block: an analogy or a contrast
+  to something the learner already knows. Break-point notes are conditional,
+  not required (see DECISIONS.md).
+
+## Current status (2026-08-27)
+
+**Phase 0: accepted and closed.** Live at https://forthree.vercel.app —
+laptop + phone login verified, migration 0001 and 0002 both applied to the
+owner's Supabase project, gitleaks pre-commit + CI green, secret scanning on.
+
+**Phase 1: in progress** (Module 1 vertical slice — M1 only, then owner
+sign-off before batch-authoring M2–M4).
+
+Done: content schema + validator wired into `npm run build`; M1 lessons 1–2
+(bilingual, analogy-anchored, zh revised to the CET-4/6 standard); lesson
+player (MCQ + fill-in, deterministic instant grading, back navigation,
+in-lesson locale toggle, term-drill badges); `/api/progress` (attempts + XP);
+`/learn` path page with course map and stage milestones; 「朱批」 design
+system in `src/app/globals.css`; seal logo (`src/components/seal.tsx`).
+
+### Next tasks, in order
+
+1. **M1 lessons 3–5** — terminal basics, pseudocode, first Python run in
+   Pyodide. Follow `content/schema.md` exactly; register new files in
+   `src/lib/content.ts`; `npm run build` fails if content is invalid.
+2. **Pyodide code exercises** — `answer_spec.tests`, lazy-loaded only on
+   code lessons, skeleton + tip cards during the ~5–10s WASM cold load.
+3. **LLM gateway `/api/llm`** — provider-agnostic adapter (anthropic.ts +
+   openai.ts, symmetric, env-switched via `LLM_PROVIDER`), `llm_usage`
+   logging, env-configured daily/monthly USD caps, graceful degradation to
+   static feedback when capped or unkeyed. **BLOCKED**: the owner has not
+   set up an API key yet. Do not scaffold it as if a key exists; the app
+   must work fully without one.
+
+### Owner working agreements
+
+- Owner is the first learner, not an engineer. Explain in plain language;
+  never hand them a terminal command without saying what it does.
+- Owner iterates aggressively and will overrule earlier decisions — check
+  `docs/DECISIONS.md` (newest first) before treating DESIGN.md as current.
+- Ask before destructive or irreversible actions. Never commit secrets;
+  `.env.local` is gitignored and must stay that way.

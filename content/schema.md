@@ -72,10 +72,36 @@ Common fields: `id` (`<lesson>-e\d\d`), `type`, `prompt_en/zh`,
 
 ## Language rules
 
-Every learner-facing field exists as `_en` and `_zh`. Chinese text keeps
-technical terms in English where that is how practitioners speak (决定
-2026-08-26: that is not "mixing"). Neither side is a translation of the
-other — write each to be natural.
+Every learner-facing field exists as `_en` and `_zh`. Neither side is a
+translation of the other — write each to be natural.
+
+### 中文版交付标准 (hard requirement, 2026-08-27)
+
+**Target reader: a mainland-China learner with CET-4/6 general English who
+does NOT know English technical nouns.** The Chinese version is for them —
+not for a bilingual engineer. Concretely:
+
+1. **Chinese must carry the meaning by itself.** A reader who skips every
+   English word must still understand the sentence completely. English is a
+   *label attached to* an idea the Chinese already delivered, never the
+   carrier of it.
+2. **Gloss on first appearance, in every lesson:** `构建 (build)`,
+   `运行时 (runtime)`, `bug(代码里的错误)`. Chinese first when the concept
+   is new; English first only when the English string is itself the artifact
+   being taught (a command, an error message).
+3. **Quoted agent/tool output stays in English** — it's a real artifact and
+   the learner must recognize it — but every quote is followed immediately
+   by a Chinese gloss: `"the build failed"(构建失败)`.
+4. **`term_drill` exercises still require the English answer** (that's the
+   point), but the Chinese prompt must make the *concept* unambiguous
+   without the English — the learner should know which idea is being asked
+   about, and only be recalling its English name.
+5. **No bare English nouns in Chinese prose.** `traceback` → `traceback
+   (报错追踪信息)`. Exceptions, because they're already everyday Chinese:
+   `app`, `SQL`, `Python`, `AI`, `agent`.
+
+Failing this standard makes the Chinese version a fake — it looks Chinese
+but still requires the English the learner came here to acquire.
 
 ## Lesson-level optional fields
 

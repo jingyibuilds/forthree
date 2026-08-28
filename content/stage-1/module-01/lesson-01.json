@@ -29,7 +29,7 @@
       "anchor_en": "Cooking the dish. The recipe (code) sits there until something actually performs its steps, one by one, in order.",
       "anchor_zh": "开火做菜。菜谱(代码)一直只是纸,直到有人真的按步骤一步步做出来。",
       "explain_en": "To run (execute) a program is to have the computer perform its instructions, top to bottom. Writing code and running code are two separate moments — a file full of perfect code does nothing until it is run. When an AI agent says \"let me run this script,\" this is exactly what it means.",
-      "explain_zh": "运行(执行)程序,就是让电脑把指令从上到下真的做一遍。写代码和跑代码是两个独立的动作——一个写得再完美的文件,不运行就什么都不会发生。AI agent 说 \"let me run this script\" 时,指的就是这件事。"
+      "explain_zh": "运行(执行)程序,就是让电脑把指令从上到下真的做一遍。写代码和跑代码是两个独立的动作——一个写得再完美的文件,不运行就什么都不会发生。AI agent 说 \"let me run this script\"(让我跑一下这个脚本)时,指的就是这件事。"
     },
     {
       "type": "exercise",
@@ -38,7 +38,7 @@
     {
       "type": "reading",
       "body_en": "Here's the connection to what you already know: a SQL query is *also* source code. When you hit \"run\" in your SQL editor, the database engine executes your instructions. You've been programming for years — declaratively, one query at a time. Python just makes the two moments (writing, running) more visible.",
-      "body_zh": "接到你已经会的东西上:一条 SQL 查询**也是**源代码。你在 SQL 编辑器里点 run 的那一刻,数据库引擎在执行你的指令。你其实已经编了好几年程了——只是每次一条查询。Python 只是把「写」和「跑」这两个时刻分得更明显。"
+      "body_zh": "接到你已经会的东西上:一条 SQL 查询**也是**源代码。你在 SQL 编辑器里点「运行」(run)的那一刻,数据库引擎在执行你的指令。你其实已经编了好几年程了——只是每次一条查询。Python 只是把「写」和「跑」这两个时刻分得更明显。"
     },
     {
       "type": "exercise",
@@ -100,7 +100,7 @@
       "id": "m01-l01-e03",
       "type": "fill_in",
       "prompt_en": "Complete the sentence with one word: writing code creates a file; nothing happens until you ______ it.",
-      "prompt_zh": "用一个英文词补全:写代码只是得到一个文件;直到你 ______ 它,才会真的发生事情。",
+      "prompt_zh": "用一个英文词补全(就是这一课讲的那个动作):写代码只是得到一个文件;直到你 ______ 它,才会真的发生事情。",
       "answer_spec": {
         "accept": [
           "run",
@@ -109,7 +109,7 @@
         "ignore_case": true
       },
       "explain_en": "Run / execute — the moment instructions actually happen. Keep this word pair; you'll see both constantly in agent transcripts.",
-      "explain_zh": "run / execute——指令真正发生的那一刻。记住这一对词,agent 的会话记录里两个都高频出现。",
+      "explain_zh": "run / execute(运行 / 执行)——指令真正发生的那一刻。记住这一对词:agent 的会话记录里,这两个词都高频出现。",
       "difficulty": 1,
       "xp_value": 15,
       "term_drill": true

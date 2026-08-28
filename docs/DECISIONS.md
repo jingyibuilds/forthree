@@ -6,6 +6,59 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-08-27 — 中文版交付标准: CET-4/6 reader, no technical English assumed
+
+Owner caught a zh lesson whose Chinese still required English to parse
+("agent 说 build failed 和 crashed at runtime..."). Delivery standard set:
+**the Chinese version targets a mainland-China learner with CET-4/6 general
+English who does not know English technical nouns** — not a bilingual
+engineer. Full rule in `content/schema.md` § 中文版交付标准: Chinese must
+carry the meaning alone; every English term glossed on first appearance;
+quoted agent output stays English but is glossed immediately; term drills
+still want the English answer but their Chinese prompt must make the concept
+unambiguous without it. M1 L1–L2 zh revised to comply — use them as the
+reference implementation.
+
+Rationale: a Chinese version that presumes technical English is a fake — it
+looks translated but still gates on exactly the vocabulary the learner came
+to acquire.
+
+## 2026-08-27 — System design is domain-general; teach it from the learner's own domain
+
+Owner: "system design 的底层逻辑和很多其他事情是共同的,只是因为发生在编程中
+显得很 specific." Agreed, and it changes the teaching direction.
+
+The load-bearing moves in system design are not software-specific:
+**decomposition** (where do you cut the parts), **contracts** (what does each
+part promise the others), **tradeoffs** (nothing is free — what are you
+buying, what are you paying), **failure modes** (what breaks, and what
+happens to everything else when it does), **coupling** (what is forced to
+change together). A data pipeline, a restaurant kitchen at dinner rush, an
+org chart, a supply chain, an inventory flow — all of them run these same
+moves. Software just gives them jargon.
+
+**Consequence for Stage 3 (M9–M12) and the capstone:** do NOT teach system
+design from zero. The first user already exercises it at a serious level
+(a 20→40+ table attribution pipeline with 100+ signals *is* system design);
+what's missing is the vocabulary and the software-specific instances. So the
+sequence inverts:
+
+1. **举一** — surface a design decision the learner already made in their own
+   domain, and have them articulate it (what did you cut apart, what did each
+   piece promise, what did you trade).
+2. **命名** — give that move its engineering name (decomposition, interface,
+   coupling…). The learner discovers they already had the judgment; they were
+   missing the word. This is the fastest possible route from 理解 to 判断.
+3. **反三** — map it onto two unfamiliar instances: a software architecture,
+   and one non-software system. Then judge an agent-proposed design in that
+   shape.
+
+This makes system design the clearest expression of the product's own name,
+and it means Stage 3 exercises must be **generated against the learner's
+stated domain** (onboarding A2), not hardcoded to data pipelines. Content
+files carry a generic default anchor plus a `domain_variants` hook for
+Tier-1 re-anchoring.
+
 ## 2026-08-27 — Curriculum amendment: system design as an explicit thread
 
 Owner: "基础的编程知识是基石,最重要的是之后能够拥有 system design." Correct

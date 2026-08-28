@@ -20,7 +20,7 @@
       "anchor_en": "A simultaneous interpreter at a meeting: translates sentence by sentence, as the speaker goes. Speech starts immediately; if sentence 40 contains an error, you only find out when the interpreter gets there.",
       "anchor_zh": "会议上的同声传译:说一句译一句,讲话立刻开始;如果第 40 句有错,要到翻译讲到那里才暴露。",
       "explain_en": "An interpreter reads your source code and executes it line by line, on the spot. Python works this way: `python3 hello.py` starts an interpreter that walks through the file. That's why a Python script can run halfway and then crash on a bug it only just reached.",
-      "explain_zh": "解释器逐行读你的源代码、当场执行。Python 就是这么工作的:`python3 hello.py` 会启动解释器,从头往下走这个文件。这也是为什么一个 Python 脚本可以跑到一半,才在刚碰到的 bug 上崩掉。"
+      "explain_zh": "解释器逐行读你的源代码、当场执行。Python 就是这么工作的:`python3 hello.py` 会启动解释器,从头往下走这个文件。这也是为什么一个 Python 脚本可以跑到一半,才在刚碰到的 bug(代码里的错误)上崩掉。"
     },
     {
       "type": "concept",
@@ -38,7 +38,7 @@
     {
       "type": "reading",
       "body_en": "Where you'll meet this: an agent says \"the build failed\" (a compile-time error — the translation never finished) versus \"it crashed at runtime\" (an interpreter or a running program hit a bug mid-execution). Those are different moments, and they call for different fixes. You'll also hear that Python is \"slow\" — interpretation is a big part of why, and also why it's so pleasant to iterate in.",
-      "body_zh": "你会在哪里遇到它:agent 说 \"the build failed\" 是编译期错误——翻译根本没完成;说 \"it crashed at runtime\" 是运行到一半撞上了 bug。两者是不同时刻的问题,修法也不同。你也会听到「Python 慢」——逐行解释是主因之一,但这也正是它改起来舒服、适合快速迭代的原因。"
+      "body_zh": "你会在哪里遇到它:agent 说 \"the build failed\"(构建失败)指的是编译期的错误——翻译根本没做完;说 \"it crashed at runtime\"(运行中崩溃)指的是跑到一半撞上了错误。两者是不同时刻的问题,修法也不同。你还会听到「Python 慢」——逐行解释是主要原因之一,但这也正是它改起来舒服、适合快速试错的原因。"
     },
     {
       "type": "exercise",
@@ -54,7 +54,7 @@
       "id": "m01-l02-e01",
       "type": "mcq",
       "prompt_en": "Python is an interpreted language. What does that mean for a script with a bug on its last line?",
-      "prompt_zh": "Python 是解释型语言。这对一个「bug 在最后一行」的脚本意味着什么?",
+      "prompt_zh": "Python 是解释型语言。这对一个「错误出在最后一行」的脚本意味着什么?",
       "options_en": [
         "The script won't start at all",
         "Everything before the last line runs, then it crashes at the end",
@@ -64,12 +64,12 @@
       "options_zh": [
         "脚本根本启动不了",
         "最后一行之前的部分都会执行,然后在结尾崩掉",
-        "这个 bug 会被自动跳过",
+        "这个错误会被自动跳过",
         "解释器会悄悄修好它"
       ],
       "answer": 1,
       "explain_en": "Sentence-by-sentence translation: work happens until the bad line is reached. This is why a half-run script may have already changed files or written data — a real operational concern when agents run code for you.",
-      "explain_zh": "说一句译一句:走到坏句子之前,活儿都真的干了。所以跑了一半的脚本可能已经改了文件、写了数据——agent 替你跑代码时,这是个真实的运维问题。",
+      "explain_zh": "说一句译一句:走到出错的那一句之前,活儿都真的干了。所以跑了一半的脚本可能已经改了文件、写了数据——agent 替你跑代码时,这是个真实的风险。",
       "difficulty": 2,
       "xp_value": 10
     },
@@ -77,7 +77,7 @@
       "id": "m01-l02-e02",
       "type": "mcq",
       "prompt_en": "An agent working on a Go project says: \"the build failed, fixing and rebuilding.\" Which translator style is at work, and when was the error caught?",
-      "prompt_zh": "agent 在一个 Go 项目里说:\"the build failed, fixing and rebuilding.\" 这是哪种翻译风格?错误在什么时候被抓住?",
+      "prompt_zh": "agent 在一个 Go 项目里说:\"the build failed, fixing and rebuilding.\"(构建失败,正在修复并重新构建。)这是哪种翻译风格?错误在什么时候被抓住?",
       "options_en": [
         "Compiler — the error was caught before the program ever ran",
         "Interpreter — the error was caught mid-execution",
@@ -88,11 +88,11 @@
         "编译器——错误在程序运行之前就被抓住了",
         "解释器——错误在执行到一半时被抓住",
         "编译器——错误是在程序运行中出现的",
-        "都不是——build 和翻译无关"
+        "都不是——构建(build)和翻译无关"
       ],
       "answer": 0,
       "explain_en": "\"Build\" is the compile step: whole-book translation. A failed build means the executable was never produced — nothing ran, nothing was touched. Often the *safest* kind of failure.",
-      "explain_zh": "\"build\" 就是编译这一步:整本书式翻译。build 失败 = 成品根本没产出——什么都没运行、什么都没被碰过。往往是**最安全**的一种失败。",
+      "explain_zh": "\"build\"(构建)就是编译这一步:整本书式翻译。构建失败 = 成品根本没产出——什么都没运行、什么都没被碰过。往往是**最安全**的一种失败。",
       "difficulty": 2,
       "xp_value": 10
     },
@@ -110,12 +110,12 @@
         "ignore_case": true
       },
       "explain_en": "Runtime — the word for \"while it's actually running.\" You'll meet 'runtime error' constantly in tracebacks and agent explanations.",
-      "explain_zh": "Runtime——「正在运行的时候」。traceback 和 agent 的解释里,runtime error 是高频词。",
+      "explain_zh": "Runtime(运行时)——「正在运行的那段时间」。在 traceback(报错追踪信息)和 agent 的解释里,runtime error 都是高频词。",
       "difficulty": 1,
       "xp_value": 15,
       "term_drill": true
     }
   ],
   "why_en": "Why this: when an agent says \"build failed\" vs \"crashed at runtime\", those are different moments with different fixes — this lesson is how you tell them apart.",
-  "why_zh": "为什么学这个:agent 说 \"build failed\" 和 \"crashed at runtime\" 是两个不同时刻的问题,修法不同——这一课让你分得出来。"
+  "why_zh": "为什么学这个:agent 报「构建失败」(build failed)和「运行中崩溃」(crashed at runtime),是两个不同时刻的问题,修法也不同——这一课让你分得出来。"
 }
