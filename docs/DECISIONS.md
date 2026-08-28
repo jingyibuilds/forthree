@@ -6,6 +6,24 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-08-27 — Curriculum amendment: system design as an explicit thread
+
+Owner: "基础的编程知识是基石,最重要的是之后能够拥有 system design." Correct
+and era-consistent — once AI writes the code, the human leverage point moves
+up to system design, which is also the layer where agent proposals most need
+judging. Gap confirmed: Stage 3 taught system *literacy* (parts and
+vocabulary), not design *judgment* (composition, tradeoffs).
+
+Amendment (weave, not bloat — no new module): (a) every Stage-3 module
+(M9–M12) ends with a design-judgment exercise — given a scenario, judge an
+agent-proposed architecture directionally; (b) the M14 capstone becomes
+**design-doc-first**: a one-page mini design doc (components, data flow, one
+key tradeoff) written and rubric-reviewed before any code; (c) Stage 3/4
+milestones updated in content/stages.json accordingly. Teaching material:
+forthree's own architecture decisions in this very file (extends the M11
+repo-as-textbook approach). Rejected for now: a dedicated system-design
+module — revisit as an elective if Stage 3 leaves appetite.
+
 ## 2026-08-27 — First-user playtest feedback round (owner played L1 live)
 
 Four decisions from live feedback:

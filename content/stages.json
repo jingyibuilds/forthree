@@ -28,8 +28,8 @@
       "label_en": "Part 3",
       "title_en": "How software systems work",
       "title_zh": "软件系统如何运转",
-      "milestone_en": "You can follow engineering conversations and judge what an AI agent tells you.",
-      "milestone_zh": "你能跟上工程对话,判断 AI agent 告诉你的东西对不对。"
+      "milestone_en": "You can follow engineering conversations — and make directional judgments about a small system's design.",
+      "milestone_zh": "你能跟上工程对话,并对一个小系统的设计做出方向性判断。"
     },
     {
       "stage": 4,
@@ -37,8 +37,8 @@
       "label_en": "Part 4",
       "title_en": "Reading instinct across languages + capstone",
       "title_zh": "跨语言阅读直觉与毕业项目",
-      "milestone_en": "You can guess what unfamiliar code does — and you've shipped a tool of your own.",
-      "milestone_zh": "你能猜出陌生语言的代码在干什么——并且交付了一个自己的工具。"
+      "milestone_en": "You can guess what unfamiliar code does — and you've designed and shipped a tool of your own, design doc first.",
+      "milestone_zh": "你能猜出陌生语言的代码在干什么——并且先写设计、后动手,交付了一个自己的工具。"
     }
   ]
 }
