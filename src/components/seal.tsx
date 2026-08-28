@@ -1,19 +1,21 @@
-// The brand seal (印章): a vermilion chop with the numeral 3 —
-// language-agnostic, one mark for both locales.
+// The brand seal (印章): 一角实,三角虚 — one corner given (solid), three
+// returned by the learner (outlined). The name's mechanism, drawn.
 export function Seal({ size = 36 }: { size?: number }) {
   return (
-    <span
+    <svg
       aria-hidden
-      className="inline-flex select-none items-center justify-center rounded-[5px] bg-accent font-serif font-bold text-white"
-      style={{
-        width: size,
-        height: size,
-        fontSize: size * 0.62,
-        lineHeight: 1,
-        paddingBottom: size * 0.04,
-      }}
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      className="select-none"
     >
-      3
-    </span>
+      <rect width="64" height="64" rx="9" className="fill-accent" />
+      {/* 举一 — the corner shown */}
+      <rect x="13" y="13" width="17" height="17" rx="3.5" fill="#ffffff" />
+      {/* 反三 — the three you return */}
+      <rect x="34" y="13" width="17" height="17" rx="3.5" fill="none" stroke="#ffffff" strokeWidth="2.5" />
+      <rect x="13" y="34" width="17" height="17" rx="3.5" fill="none" stroke="#ffffff" strokeWidth="2.5" />
+      <rect x="34" y="34" width="17" height="17" rx="3.5" fill="none" stroke="#ffffff" strokeWidth="2.5" />
+    </svg>
   );
 }
