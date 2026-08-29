@@ -29,6 +29,16 @@
       "explain_zh": "源代码就是程序的文字版：人用编程语言写下的指令，存在一个普通文件里。`hello.py` 是源代码，就像 `菜谱.txt` 是菜谱——它只是一个能打开、能读、能改的普通文件。"
     },
     {
+      "type": "visual",
+      "kind": "source-code-file",
+      "title_en": "A Python file is still just text",
+      "title_zh": "Python 文件先是一张文字稿",
+      "caption_en": "`hello.py` looks like a small note with numbered lines. You do not need to understand the syntax yet; first notice that it is readable text in a file.",
+      "caption_zh": "`hello.py` 看起来像一张带行号的小纸条。现在不用读懂这两行语法，先看见它只是文件里能读的文字。",
+      "alt_en": "A small code editor window named hello.py, showing two lines of Python source code.",
+      "alt_zh": "一个名为 hello.py 的代码编辑窗口，里面有两行 Python 源代码。"
+    },
+    {
       "type": "concept",
       "term": "run / execute",
       "term_zh": "运行 / 执行（run / execute）",

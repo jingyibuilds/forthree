@@ -85,6 +85,14 @@ function currentBlockContext(lesson: Lesson, blockIndex: number, locale: Locale)
       `Explain: ${locale === "zh" ? block.explain_zh : block.explain_en}`,
     ].join("\n");
   }
+  if (block.type === "visual") {
+    return [
+      `Visual: ${locale === "zh" ? block.title_zh : block.title_en}`,
+      `Kind: ${block.kind}`,
+      `Caption: ${locale === "zh" ? block.caption_zh : block.caption_en}`,
+      `Alt: ${locale === "zh" ? block.alt_zh : block.alt_en}`,
+    ].join("\n");
+  }
   const exercise = lesson.exercises.find((e) => e.id === block.ref);
   return exercise
     ? `Current exercise:\n${exercisePrompt(exercise, locale)}`

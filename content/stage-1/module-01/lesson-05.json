@@ -29,6 +29,16 @@
       "explain_zh": "`print()` 是 Python 里「把文字送到屏幕上」的指令。在最小的入门程序里，它是证明程序真的跑起来的最简单方式。现在不用背括号和引号的规则，先这样读就够了：括号里放的是要显示的文字。"
     },
     {
+      "type": "visual",
+      "kind": "python-output",
+      "title_en": "Code on the left, output on the right",
+      "title_zh": "左边是代码，右边是输出",
+      "caption_en": "The quote marks live in the code. The visible output is only the text inside them: `hello`.",
+      "caption_zh": "引号留在代码里；真正显示到屏幕上的输出，只有引号里面的文字：`hello`。",
+      "alt_en": "Two small windows: a Python file with print(\"hello\") on the left, and an output window showing hello on the right.",
+      "alt_zh": "两块小窗口：左边是写着 print(\"hello\") 的 Python 文件，右边是显示 hello 的输出窗口。"
+    },
+    {
       "type": "exercise",
       "ref": "m01-l05-e01"
     },

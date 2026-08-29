@@ -9,6 +9,7 @@ const errors = [];
 const err = (file, msg) => errors.push(`${file}: ${msg}`);
 
 const isStr = (v) => typeof v === "string" && v.trim().length > 0;
+const visualKinds = new Set(["source-code-file", "terminal-command", "python-output"]);
 const bilingual = (obj, base, file, ctx) => {
   for (const suffix of ["_en", "_zh"]) {
     if (!isStr(obj[base + suffix])) err(file, `${ctx}: missing ${base}${suffix}`);
@@ -107,6 +108,11 @@ for (const [rel, l] of lessons) {
       if (!isStr(b.term) || !isStr(b.term_zh)) err(rel, `${ctx}: concept needs term + term_zh`);
       bilingual(b, "anchor", rel, `${ctx} (anchor is mandatory — decision 2026-08-26)`);
       bilingual(b, "explain", rel, ctx);
+    } else if (b.type === "visual") {
+      if (!visualKinds.has(b.kind)) err(rel, `${ctx}: unknown visual kind "${b.kind}"`);
+      bilingual(b, "title", rel, ctx);
+      bilingual(b, "caption", rel, ctx);
+      bilingual(b, "alt", rel, ctx);
     } else if (b.type === "exercise") {
       if (!localExercises.has(b.ref)) err(rel, `${ctx}: unknown exercise ref ${b.ref}`);
     } else err(rel, `${ctx}: unknown block type "${b.type}"`);

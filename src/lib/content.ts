@@ -13,6 +13,8 @@ import m01l08 from "../../content/stage-1/module-01/lesson-08.json";
 import m01l09 from "../../content/stage-1/module-01/lesson-09.json";
 import stagesData from "../../content/stages.json";
 
+export type VisualKind = "source-code-file" | "terminal-command" | "python-output";
+
 export type ReadingBlock = { type: "reading"; body_en: string; body_zh: string };
 export type ConceptBlock = {
   type: "concept";
@@ -23,8 +25,18 @@ export type ConceptBlock = {
   explain_en: string;
   explain_zh: string;
 };
+export type VisualBlock = {
+  type: "visual";
+  kind: VisualKind;
+  title_en: string;
+  title_zh: string;
+  caption_en: string;
+  caption_zh: string;
+  alt_en: string;
+  alt_zh: string;
+};
 export type ExerciseBlock = { type: "exercise"; ref: string };
-export type Block = ReadingBlock | ConceptBlock | ExerciseBlock;
+export type Block = ReadingBlock | ConceptBlock | VisualBlock | ExerciseBlock;
 
 export type McqExercise = {
   id: string;

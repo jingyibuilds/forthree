@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import type { Dict, Locale } from "@/lib/i18n-shared";
-import type { Block, Exercise, Lesson } from "@/lib/content";
+import type { Block, Exercise, Lesson, VisualKind } from "@/lib/content";
 
-// Minimal inline markdown: **bold** and `code`.
+// Minimal markdown: **bold**, `code`, and fenced code blocks used by lessons.
 function Inline({ text }: { text: string }) {
   const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
   return (
@@ -25,6 +25,41 @@ function Inline({ text }: { text: string }) {
         return <span key={i}>{p}</span>;
       })}
     </>
+  );
+}
+
+function MarkdownText({ text, className = "" }: { text: string; className?: string }) {
+  const segments = text.split(/```(\w+)?\n([\s\S]*?)```/g);
+  return (
+    <div className={className}>
+      {segments.map((segment, index) => {
+        if (index % 3 === 1) return null;
+        if (index % 3 === 2) {
+          const language = segments[index - 1];
+          return (
+            <pre
+              key={index}
+              className="my-5 overflow-x-auto rounded-lg border border-line bg-ink px-4 py-3 text-sm leading-6 text-on-primary shadow-sm"
+            >
+              {language && (
+                <span className="mb-2 block text-xs uppercase tracking-wide text-on-primary/55">
+                  {language}
+                </span>
+              )}
+              <code>{segment.trim()}</code>
+            </pre>
+          );
+        }
+        return segment
+          .split(/\n{2,}/)
+          .filter((paragraph) => paragraph.length > 0)
+          .map((paragraph, paragraphIndex) => (
+            <p key={`${index}-${paragraphIndex}`} className="mb-4 last:mb-0">
+              <Inline text={paragraph.replace(/\n/g, " ")} />
+            </p>
+          ));
+      })}
+    </div>
   );
 }
 
@@ -242,6 +277,10 @@ function AssistantDialog({
         ? locale === "zh"
           ? block.term_zh
           : block.term
+        : block.type === "visual"
+          ? locale === "zh"
+            ? block.title_zh
+            : block.title_en
         : t.assistantReadingContext;
 
   return (
@@ -345,10 +384,14 @@ function BlockView({
 }) {
   if (block.type === "reading") {
     return (
-      <p className="text-lg leading-8">
-        <Inline text={locale === "zh" ? block.body_zh : block.body_en} />
-      </p>
+      <MarkdownText
+        text={locale === "zh" ? block.body_zh : block.body_en}
+        className="text-lg leading-8"
+      />
     );
+  }
+  if (block.type === "visual") {
+    return <VisualBlockView block={block} locale={locale} />;
   }
   return (
     <div className="space-y-4">
@@ -367,6 +410,114 @@ function BlockView({
       <p className="text-lg leading-8 text-ink">
         <Inline text={locale === "zh" ? block.explain_zh : block.explain_en} />
       </p>
+    </div>
+  );
+}
+
+function VisualBlockView({
+  block,
+  locale,
+}: {
+  block: Extract<Block, { type: "visual" }>;
+  locale: Locale;
+}) {
+  const title = locale === "zh" ? block.title_zh : block.title_en;
+  const caption = locale === "zh" ? block.caption_zh : block.caption_en;
+  const alt = locale === "zh" ? block.alt_zh : block.alt_en;
+
+  return (
+    <figure className="space-y-4" aria-label={alt}>
+      <div className="rounded-lg border border-line bg-surface p-4 shadow-sm sm:p-5">
+        <VisualIllustration kind={block.kind} />
+      </div>
+      <figcaption>
+        <p className="font-serif text-2xl font-semibold leading-tight">{title}</p>
+        <p className="mt-2 text-base leading-7 text-muted">
+          <Inline text={caption} />
+        </p>
+      </figcaption>
+    </figure>
+  );
+}
+
+function VisualIllustration({ kind }: { kind: VisualKind }) {
+  if (kind === "source-code-file") return <SourceCodeFileIllustration />;
+  if (kind === "terminal-command") return <TerminalCommandIllustration />;
+  return <PythonOutputIllustration />;
+}
+
+function WindowShell({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden rounded-lg border border-line bg-background">
+      <div className="flex items-center gap-2 border-b border-line bg-line/35 px-4 py-2.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-accent" />
+        <span className="h-2.5 w-2.5 rounded-full bg-warn" />
+        <span className="h-2.5 w-2.5 rounded-full bg-success" />
+        <span className="ml-2 font-mono text-xs text-muted">{title}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function SourceCodeFileIllustration() {
+  return (
+    <WindowShell title="hello.py">
+      <div className="grid gap-0 font-mono text-sm leading-7 text-ink">
+        {[
+          ["1", "print(\"hello\")"],
+          ["2", "print(\"good morning\")"],
+        ].map(([line, code]) => (
+          <div key={line} className="grid grid-cols-[2.5rem_1fr] border-b border-line/60 last:border-0">
+            <span className="bg-line/30 px-3 text-right text-muted">{line}</span>
+            <code className="px-4 py-2">{code}</code>
+          </div>
+        ))}
+      </div>
+    </WindowShell>
+  );
+}
+
+function TerminalCommandIllustration() {
+  return (
+    <WindowShell title="terminal">
+      <div className="space-y-2 bg-ink px-4 py-4 font-mono text-sm leading-7 text-on-primary">
+        <p>
+          <span className="text-success">forthree %</span>{" "}
+          <span>python3 hello.py</span>
+        </p>
+        <p className="text-on-primary/70">hello</p>
+        <p>
+          <span className="text-success">forthree %</span>{" "}
+          <span className="text-on-primary/45">_</span>
+        </p>
+      </div>
+    </WindowShell>
+  );
+}
+
+function PythonOutputIllustration() {
+  return (
+    <div className="grid gap-4 sm:grid-cols-[1fr_1fr]">
+      <WindowShell title="hello.py">
+        <div className="font-mono text-sm leading-7">
+          <div className="grid grid-cols-[2.5rem_1fr]">
+            <span className="bg-line/30 px-3 py-3 text-right text-muted">1</span>
+            <code className="px-4 py-3 text-ink">{"print(\"hello\")"}</code>
+          </div>
+        </div>
+      </WindowShell>
+      <WindowShell title="output">
+        <div className="bg-ink px-4 py-6 font-mono text-lg text-on-primary">
+          hello
+        </div>
+      </WindowShell>
     </div>
   );
 }

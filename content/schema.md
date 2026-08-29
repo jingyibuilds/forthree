@@ -55,6 +55,13 @@ New files must be registered in `src/lib/content.ts` (static imports).
   or a contrast to something the learner already knows. A break-point note
   goes inside `explain` only when the analogy predictably misleads and the
   correction uses already-taught concepts.
+- `{"type": "visual", "kind": "terminal-command", "title_en": …,
+   "title_zh": …, "caption_en": …, "caption_zh": …, "alt_en": …,
+   "alt_zh": …}` — a concept-bearing illustration, not decoration. Current
+  allowed kinds: `source-code-file`, `terminal-command`, `python-output`.
+  Use this when a new learner benefits from seeing the shape of an artifact:
+  a code file, terminal, output, traceback, folder tree, or similar. Captions
+  must state the learning point in the same language standard as prose.
 - `{"type": "exercise", "ref": "m01-l01-e01"}` — plays the exercise inline.
 
 ### Exercises

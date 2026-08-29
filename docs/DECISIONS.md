@@ -6,6 +6,23 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-08-29 — Visual aids are concept-bearing lesson blocks
+
+Owner asked for illustrations inside lessons, especially for Python,
+terminal, and newly introduced concepts. Resolution: add a `visual` block type
+to the content schema. Visuals are part of the course spine, not decorative
+page chrome, so the renderer, validator, and lesson assistant can all know
+which artifact the learner is seeing.
+
+First implementation uses small code-rendered teaching illustrations
+(`source-code-file`, `terminal-command`, `python-output`) instead of generic
+stock imagery. The goal is recognition: a learner should remember what a code
+file, a terminal prompt, and program output look like when later reading an
+AI-agent transcript. Richer bitmap, real screenshots, or public web images can
+be added later when the artifact is specific enough to justify it. When using
+outside images, prefer stable official/public sources, store attribution in
+content, and avoid hotlinking fragile assets.
+
 ## 2026-08-28 — Course authoring uses four-reviewer convergence
 
 Owner clarified that course design should not depend on the owner's manual

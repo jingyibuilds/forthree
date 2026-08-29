@@ -30,6 +30,16 @@
       "explain_zh": "终端是一个用文字和电脑对话的地方。你输入命令，按回车，电脑再用文字回应你。AI agent 说它运行了 `npm run build` 或 `python3 hello.py`，通常就是在类似终端的环境里发出了命令。现在不用懂 `npm` 是什么；这里只需要看出，这两个例子都是命令。"
     },
     {
+      "type": "visual",
+      "kind": "terminal-command",
+      "title_en": "A terminal is a command conversation",
+      "title_zh": "终端是一场命令对话",
+      "caption_en": "The green `forthree %` is not something you type; it is the terminal's ready marker. `python3 hello.py` is the request; `hello` is the text that came back.",
+      "caption_zh": "绿色的 `forthree %` 不是你要输入的内容，而是终端的「我准备好了」标记。`python3 hello.py` 是你发出的请求；`hello` 是电脑回给你的文字。",
+      "alt_en": "A terminal window showing the command python3 hello.py and the output hello.",
+      "alt_zh": "一个终端窗口，显示命令 python3 hello.py，以及返回的输出 hello。"
+    },
+    {
       "type": "concept",
       "term": "command",
       "term_zh": "命令（command）",
