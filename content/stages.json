@@ -1,8 +1,8 @@
 {
   "course_title_en": "Practical CS Literacy",
   "course_title_zh": "实用计算机科学素养",
-  "course_promise_en": "Four parts, ~14 modules, 2–5 hrs/week for a semester. Graduate able to read code, judge AI output, and ship a small tool of your own.",
-  "course_promise_zh": "四卷，大约 14 个模块，每周 2–5 小时，一学期读完。毕业时：读得懂代码，判断得了 AI 的输出，也交付得出一个自己的小工具。",
+  "course_promise_en": "A module-based path from 10-minute foundations to a real capstone: read code, judge AI output, and ship a small tool of your own. The current release starts with Part 1 foundations.",
+  "course_promise_zh": "这是一条按模块推进的长期路线：先用 10 分钟左右的小课打基础，最后走到读懂代码、判断 AI 输出，并交付一个自己的小工具。当前版本先开放卷一的基础部分。",
   "stages": [
     {
       "stage": 1,
