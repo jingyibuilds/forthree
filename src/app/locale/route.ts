@@ -4,10 +4,13 @@ import { NextResponse, type NextRequest } from "next/server";
 // a server action so it keeps working on pages left open across deploys.
 export async function GET(request: NextRequest) {
   const to = request.nextUrl.searchParams.get("to") === "zh" ? "zh" : "en";
+  const requestedBack = request.nextUrl.searchParams.get("back");
 
   const referer = request.headers.get("referer");
   let back = "/";
-  if (referer) {
+  if (requestedBack?.startsWith("/") && !requestedBack.startsWith("//")) {
+    back = requestedBack;
+  } else if (referer) {
     const url = new URL(referer);
     if (url.origin === request.nextUrl.origin) {
       back = url.pathname + url.search;

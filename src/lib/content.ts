@@ -4,6 +4,13 @@
 import m01 from "../../content/stage-1/module-01/module.json";
 import m01l01 from "../../content/stage-1/module-01/lesson-01.json";
 import m01l02 from "../../content/stage-1/module-01/lesson-02.json";
+import m01l03 from "../../content/stage-1/module-01/lesson-03.json";
+import m01l04 from "../../content/stage-1/module-01/lesson-04.json";
+import m01l05 from "../../content/stage-1/module-01/lesson-05.json";
+import m01l06 from "../../content/stage-1/module-01/lesson-06.json";
+import m01l07 from "../../content/stage-1/module-01/lesson-07.json";
+import m01l08 from "../../content/stage-1/module-01/lesson-08.json";
+import m01l09 from "../../content/stage-1/module-01/lesson-09.json";
 import stagesData from "../../content/stages.json";
 
 export type ReadingBlock = { type: "reading"; body_en: string; body_zh: string };
@@ -61,6 +68,10 @@ export type Lesson = {
   // Optional design rationale, shown at lesson start: why this lesson, why now.
   why_en?: string;
   why_zh?: string;
+  // Optional concrete ability earned by the end of the lesson.
+  outcome_en?: string;
+  outcome_zh?: string;
+  review_tags?: string[];
   blocks: Block[];
   exercises: Exercise[];
 };
@@ -93,13 +104,29 @@ export type Module = {
   title_zh: string;
   description_en: string;
   description_zh: string;
+  capability_en?: string;
+  capability_zh?: string;
+  customization_points?: Array<{
+    id: string;
+    applies_to: string[];
+    default_profile: string;
+    rewrite_when: string;
+  }>;
   refs: string[];
 };
 
 export const modules: Module[] = [m01 as Module];
-export const lessons: Lesson[] = [m01l01 as Lesson, m01l02 as Lesson].sort(
-  (a, b) => a.module_id.localeCompare(b.module_id) || a.order - b.order
-);
+export const lessons: Lesson[] = [
+  m01l01 as Lesson,
+  m01l02 as Lesson,
+  m01l03 as Lesson,
+  m01l04 as Lesson,
+  m01l05 as Lesson,
+  m01l06 as Lesson,
+  m01l07 as Lesson,
+  m01l08 as Lesson,
+  m01l09 as Lesson,
+].sort((a, b) => a.module_id.localeCompare(b.module_id) || a.order - b.order);
 
 export function getLesson(id: string): Lesson | undefined {
   return lessons.find((l) => l.id === id);

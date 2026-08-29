@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import type { Dict, Locale } from "@/lib/i18n";
+import type { Dict, Locale } from "@/lib/i18n-shared";
 import type { Block, Exercise, Lesson } from "@/lib/content";
 
 // Minimal inline markdown: **bold** and `code`.
@@ -35,6 +35,12 @@ type ExerciseResult = {
   firstTry: boolean;
 };
 
+type AssistantSeed = {
+  exerciseId?: string;
+  response?: string;
+  question?: string;
+};
+
 function gradeFillIn(
   value: string,
   spec: { accept?: string[]; regex?: string; ignore_case?: boolean }
@@ -53,16 +59,19 @@ function ExerciseCard({
   t,
   completed,
   onDone,
+  onAskAssistant,
 }: {
   exercise: Exercise;
   locale: Locale;
   t: Dict;
   completed: boolean;
   onDone: (r: ExerciseResult) => void;
+  onAskAssistant: (seed?: AssistantSeed) => void;
 }) {
   const [selected, setSelected] = useState<number | null>(null);
   const [text, setText] = useState("");
   const [tries, setTries] = useState(0);
+  const [lastResponse, setLastResponse] = useState("");
   const [verdict, setVerdict] = useState<"correct" | "wrong" | null>(
     completed ? "correct" : null
   );
@@ -86,6 +95,7 @@ function ExerciseCard({
       response = text.trim();
     }
     const nextTries = tries + 1;
+    setLastResponse(response);
     setTries(nextTries);
     setVerdict(correct ? "correct" : "wrong");
     if (correct) {
@@ -105,12 +115,12 @@ function ExerciseCard({
           {t.termBadge}
         </span>
       )}
-      <p className="font-medium">
+      <p className="text-lg font-medium leading-8">
         <Inline text={prompt} />
       </p>
 
       {exercise.type === "mcq" ? (
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           {(locale === "zh" ? exercise.options_zh : exercise.options_en).map(
             (opt, i) => (
               <button
@@ -121,7 +131,7 @@ function ExerciseCard({
                   setSelected(i);
                   if (verdict === "wrong") setVerdict(null);
                 }}
-                className={`block w-full rounded-lg border bg-surface px-4 py-3 text-left text-sm transition-colors ${
+                className={`block w-full rounded-lg border bg-surface px-4 py-3.5 text-left text-base leading-7 shadow-sm transition-colors ${
                   selected === i
                     ? "border-primary bg-primary/5"
                     : "border-line hover:border-muted"
@@ -145,33 +155,181 @@ function ExerciseCard({
             if (e.key === "Enter") check();
           }}
           placeholder={t.typeAnswer}
-          className="w-full rounded-lg border border-line bg-surface px-3 py-2.5 font-mono text-sm outline-none transition-colors focus:border-primary"
+          className="w-full rounded-lg border border-line bg-surface px-4 py-3 font-mono text-base outline-none shadow-sm transition-colors focus:border-primary"
         />
       )}
 
       {verdict === "correct" && (
-        <div className="rounded-lg bg-success-soft p-4 text-sm text-success">
+        <div className="rounded-lg bg-success-soft p-4 text-base text-success">
           <p className="font-medium">{t.correct} ✓</p>
-          <p className="mt-1 leading-relaxed">
+          <p className="mt-2 leading-7">
             <Inline text={explain} />
           </p>
         </div>
       )}
       {verdict === "wrong" && (
-        <p className="rounded-lg bg-warn-soft p-3 text-sm text-warn">
-          {t.incorrect}
-        </p>
+        <div className="space-y-3">
+          <p className="rounded-lg bg-warn-soft p-3 text-sm text-warn">
+            {t.incorrect}
+          </p>
+          <button
+            type="button"
+            onClick={() =>
+              onAskAssistant({
+                exerciseId: exercise.id,
+                response: lastResponse,
+                question: t.assistantWrongQuestion,
+              })
+            }
+            className="rounded-lg border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink shadow-sm transition-colors hover:border-muted disabled:text-muted"
+          >
+            {t.assistantHint}
+          </button>
+        </div>
       )}
 
       {verdict !== "correct" && (
         <button
           type="button"
           onClick={check}
-          className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-on-primary transition-colors hover:bg-primary-hover"
+          className="rounded-lg bg-primary px-6 py-3 text-base font-medium text-on-primary shadow-sm transition-colors hover:bg-primary-hover"
         >
           {t.check}
         </button>
       )}
+    </div>
+  );
+}
+
+type AssistantMessage = {
+  role: "user" | "assistant";
+  text: string;
+};
+
+function AssistantDialog({
+  lesson,
+  block,
+  blockIndex,
+  locale,
+  t,
+  open,
+  loading,
+  messages,
+  draft,
+  onDraft,
+  onClose,
+  onSend,
+}: {
+  lesson: Lesson;
+  block: Block;
+  blockIndex: number;
+  locale: Locale;
+  t: Dict;
+  open: boolean;
+  loading: boolean;
+  messages: AssistantMessage[];
+  draft: string;
+  onDraft: (value: string) => void;
+  onClose: () => void;
+  onSend: (question: string) => void;
+}) {
+  if (!open) return null;
+
+  const blockLabel =
+    block.type === "exercise"
+      ? t.assistantExerciseContext
+      : block.type === "concept"
+        ? locale === "zh"
+          ? block.term_zh
+          : block.term
+        : t.assistantReadingContext;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end bg-ink/20 p-3 backdrop-blur-[2px] sm:items-center sm:justify-center">
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lesson-assistant-title"
+        className="w-full max-w-xl rounded-lg border border-line bg-surface shadow-xl"
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
+          <div>
+            <h2 id="lesson-assistant-title" className="font-serif text-xl font-semibold">
+              {t.assistantLabel}
+            </h2>
+            <p className="mt-1 text-sm text-muted">
+              {locale === "zh" ? lesson.title_zh : lesson.title_en} ·{" "}
+              {blockIndex + 1}/{lesson.blocks.length} · {blockLabel}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md px-2 py-1 text-sm text-muted transition-colors hover:bg-background hover:text-ink"
+            aria-label={t.close}
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="max-h-[52vh] space-y-3 overflow-y-auto px-5 py-4">
+          {messages.length === 0 && (
+            <div className="rounded-lg bg-background p-4 text-base leading-7 text-muted">
+              {t.assistantEmpty}
+            </div>
+          )}
+          {messages.map((message, i) => (
+            <div
+              key={i}
+              className={`rounded-lg p-3.5 text-base leading-7 ${
+                message.role === "user"
+                  ? "ml-8 bg-primary text-on-primary"
+                  : "mr-8 border border-line bg-background text-ink"
+              }`}
+            >
+              <Inline text={message.text} />
+            </div>
+          ))}
+          {loading && (
+            <div className="mr-8 rounded-lg border border-line bg-background p-3 text-base text-muted">
+              {t.assistantLoading}
+            </div>
+          )}
+        </div>
+
+        <form
+          className="border-t border-line p-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            onSend(draft);
+          }}
+        >
+          <textarea
+            value={draft}
+            onChange={(event) => onDraft(event.target.value)}
+            placeholder={t.assistantPlaceholder}
+            rows={3}
+            className="w-full resize-none rounded-lg border border-line bg-background px-3 py-2.5 text-base leading-7 outline-none transition-colors focus:border-primary"
+          />
+          <div className="mt-3 flex justify-between gap-3">
+            <button
+              type="button"
+              onClick={() => onSend(t.assistantExplainCurrent)}
+              disabled={loading}
+              className="rounded-lg border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:border-muted disabled:text-muted"
+            >
+              {t.assistantExplainCurrent}
+            </button>
+            <button
+              type="submit"
+              disabled={loading || !draft.trim()}
+              className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-on-primary transition-colors hover:bg-primary-hover disabled:opacity-60"
+            >
+              {t.assistantSend}
+            </button>
+          </div>
+        </form>
+      </section>
     </div>
   );
 }
@@ -187,26 +345,26 @@ function BlockView({
 }) {
   if (block.type === "reading") {
     return (
-      <p className="leading-relaxed">
+      <p className="text-lg leading-8">
         <Inline text={locale === "zh" ? block.body_zh : block.body_en} />
       </p>
     );
   }
   return (
     <div className="space-y-4">
-      <h2 className="font-serif text-xl font-semibold">
+      <h2 className="font-serif text-3xl font-semibold leading-tight">
         {locale === "zh" ? block.term_zh : block.term}
       </h2>
       {/* 朱批 — the anchor as a teacher's vermilion margin note */}
-      <div className="rounded-lg border-l-4 border-accent bg-accent-soft p-4">
-        <p className="mb-1 text-xs font-medium tracking-wide text-accent">
+      <div className="rounded-lg border-l-4 border-accent bg-accent-soft p-5 shadow-sm">
+        <p className="mb-2 text-sm font-medium text-accent">
           {t.anchorLabel}
         </p>
-        <p className="text-sm leading-relaxed">
+        <p className="text-base leading-7">
           <Inline text={locale === "zh" ? block.anchor_zh : block.anchor_en} />
         </p>
       </div>
-      <p className="text-sm leading-relaxed text-ink">
+      <p className="text-lg leading-8 text-ink">
         <Inline text={locale === "zh" ? block.explain_zh : block.explain_en} />
       </p>
     </div>
@@ -218,19 +376,24 @@ export function LessonPlayer({
   locale,
   t,
   alreadyCorrect,
-  toggle,
+  initialIndex,
 }: {
   lesson: Lesson;
   locale: Locale;
   t: Dict;
   alreadyCorrect: string[];
-  toggle?: React.ReactNode;
+  initialIndex: number;
 }) {
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(initialIndex);
   const [results, setResults] = useState<ExerciseResult[]>([]);
   const [finished, setFinished] = useState(false);
   const [awardedXp, setAwardedXp] = useState<number | null>(null);
   const [xpWarning, setXpWarning] = useState(false);
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [assistantLoading, setAssistantLoading] = useState(false);
+  const [assistantDraft, setAssistantDraft] = useState("");
+  const [assistantMessages, setAssistantMessages] = useState<AssistantMessage[]>([]);
+  const [assistantSeed, setAssistantSeed] = useState<AssistantSeed | null>(null);
 
   const exercisesById = useMemo(
     () => new Map(lesson.exercises.map((e) => [e.id, e])),
@@ -270,6 +433,59 @@ export function LessonPlayer({
     }
   }
 
+  function openAssistant(seed?: AssistantSeed) {
+    setAssistantOpen(true);
+    setAssistantSeed(seed ?? null);
+    setAssistantDraft("");
+    if (seed?.question) {
+      void askAssistant(seed.question, seed);
+    }
+  }
+
+  async function askAssistant(question: string, seed = assistantSeed) {
+    const trimmed = question.trim();
+    if (!trimmed || assistantLoading) return;
+
+    setAssistantLoading(true);
+    setAssistantDraft("");
+    setAssistantMessages((prev) => [...prev, { role: "user", text: trimmed }]);
+    try {
+      const res = await fetch("/api/llm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          feature: "lesson_assistant",
+          lessonId: lesson.id,
+          blockIndex: index,
+          exerciseId: seed?.exerciseId ?? (isExercise ? block.ref : undefined),
+          locale,
+          response: seed?.response,
+          question: trimmed,
+          progress: {
+            blockIndex: index,
+            totalBlocks: lesson.blocks.length,
+            answeredExerciseIds: [
+              ...alreadyCorrect,
+              ...results.map((result) => result.exerciseId),
+            ],
+          },
+        }),
+      });
+      const data = (await res.json()) as { text?: string };
+      setAssistantMessages((prev) => [
+        ...prev,
+        { role: "assistant", text: data.text || t.assistantFallback },
+      ]);
+    } catch {
+      setAssistantMessages((prev) => [
+        ...prev,
+        { role: "assistant", text: t.assistantFallback },
+      ]);
+    } finally {
+      setAssistantLoading(false);
+    }
+  }
+
   if (finished) {
     return (
       <main className="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center p-6 text-center">
@@ -292,34 +508,48 @@ export function LessonPlayer({
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col p-6">
-      <div className="flex items-center gap-4">
+    <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-5 py-5 sm:px-8">
+      <div className="flex flex-wrap items-center gap-3">
         <Link
           href="/learn"
           className="text-sm text-muted transition-colors hover:text-ink"
         >
           ✕
         </Link>
-        <div className="h-2 flex-1 overflow-hidden rounded-full bg-line">
+        <div className="h-2 min-w-24 flex-1 overflow-hidden rounded-full bg-line">
           <div
             className="h-full rounded-full bg-primary transition-all"
             style={{ width: `${((index + 1) / lesson.blocks.length) * 100}%` }}
           />
         </div>
-        <span className="text-xs text-muted">
+        <span className="text-sm text-muted">
           {index + 1} / {lesson.blocks.length}
         </span>
-        {toggle}
+        <a
+          href={`/locale?to=${locale === "zh" ? "en" : "zh"}&back=${encodeURIComponent(
+            `/learn/${lesson.id}?step=${index}`
+          )}`}
+          className="rounded-md border border-line bg-surface px-2.5 py-1.5 text-xs font-medium text-muted shadow-sm transition-colors hover:border-primary hover:text-primary"
+        >
+          {t.toggleLabel}
+        </a>
+        <button
+          type="button"
+          onClick={() => openAssistant()}
+          className="rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink shadow-sm transition-colors hover:border-muted"
+        >
+          {t.assistantButton}
+        </button>
       </div>
 
-      <div className="flex flex-1 flex-col justify-center py-10">
+      <div className="flex flex-1 flex-col justify-center py-10 sm:py-14">
         {index === 0 && (
           <div className="mb-6">
-            <h1 className="font-serif text-2xl font-semibold">
+            <h1 className="font-serif text-4xl font-semibold leading-tight">
               {locale === "zh" ? lesson.title_zh : lesson.title_en}
             </h1>
             {lesson.why_en && lesson.why_zh && (
-              <p className="mt-2 text-xs leading-relaxed text-muted">
+              <p className="mt-4 border-l-4 border-accent pl-4 text-base leading-7 text-muted">
                 {locale === "zh" ? lesson.why_zh : lesson.why_en}
               </p>
             )}
@@ -332,6 +562,7 @@ export function LessonPlayer({
             locale={locale}
             t={t}
             completed={blockDone}
+            onAskAssistant={openAssistant}
             onDone={(r) => {
               setResults((prev) => [
                 ...prev.filter((p) => p.exerciseId !== r.exerciseId),
@@ -349,7 +580,7 @@ export function LessonPlayer({
           <button
             type="button"
             onClick={() => setIndex(index - 1)}
-            className="rounded-lg border border-line bg-surface px-4 py-3 text-sm text-muted transition-colors hover:border-muted hover:text-ink"
+            className="rounded-lg border border-line bg-surface px-5 py-3 text-base text-muted shadow-sm transition-colors hover:border-muted hover:text-ink"
           >
             ← {t.back}
           </button>
@@ -358,12 +589,27 @@ export function LessonPlayer({
           <button
             type="button"
             onClick={advance}
-            className="flex-1 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-on-primary transition-colors hover:bg-primary-hover"
+            className="flex-1 rounded-lg bg-primary px-5 py-3 text-base font-medium text-on-primary shadow-sm transition-colors hover:bg-primary-hover"
           >
             {t.next}
           </button>
         )}
       </div>
+
+      <AssistantDialog
+        lesson={lesson}
+        block={block}
+        blockIndex={index}
+        locale={locale}
+        t={t}
+        open={assistantOpen}
+        loading={assistantLoading}
+        messages={assistantMessages}
+        draft={assistantDraft}
+        onDraft={setAssistantDraft}
+        onClose={() => setAssistantOpen(false)}
+        onSend={(question) => void askAssistant(question)}
+      />
     </main>
   );
 }

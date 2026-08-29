@@ -5,31 +5,37 @@
   "format": "reading",
   "tag": "core",
   "est_minutes": 14,
-  "title_en": "Two kinds of translators",
-  "title_zh": "翻译官的两种工作方式",
+  "title_en": "Who makes the text move?",
+  "title_zh": "谁把文字变成动作",
+  "outcome_en": "You can distinguish an error caught before running from an error that happened during running.",
+  "outcome_zh": "你能分清错误是在运行前被抓住，还是在运行过程中才出现。",
+  "review_tags": [
+    "must_master",
+    "recognize_only:C-Go-Rust"
+  ],
   "blocks": [
     {
       "type": "reading",
-      "body_en": "Your computer's processor doesn't understand Python, SQL, or any language humans write. It only understands its own machine instructions. So between your recipe and the kitchen, there is always a translator. There are two styles of translation, and the difference explains a surprising amount of what you see in practice.",
-      "body_zh": "电脑的处理器不认识 Python、SQL 或任何人类写的语言,它只认识自己的机器指令。所以在菜谱和厨房之间,永远隔着一个翻译官。翻译有两种风格,这个区别能解释你日常见到的很多现象。"
+      "body_en": "Lesson 1 separated two moments: code can sit quietly as text, or it can run and do work. Now comes the obvious follow-up: computers do not naturally understand Python or SQL, so what turns human-readable text into computer action?",
+      "body_zh": "第 1 课先分清了两个时刻：代码可以安静地躺在文件里，也可以被运行起来、真的做事。接下来的问题很自然：电脑并不天然看得懂 Python 或 SQL，那到底是谁把人能读懂的文字，变成电脑能执行的动作？"
     },
     {
       "type": "concept",
       "term": "interpreter",
-      "term_zh": "解释器 (interpreter)",
+      "term_zh": "解释器（interpreter）",
       "anchor_en": "A simultaneous interpreter at a meeting: translates sentence by sentence, as the speaker goes. Speech starts immediately; if sentence 40 contains an error, you only find out when the interpreter gets there.",
-      "anchor_zh": "会议上的同声传译:说一句译一句,讲话立刻开始;如果第 40 句有错,要到翻译讲到那里才暴露。",
+      "anchor_zh": "会议上的同声传译：说一句译一句，会议立刻开始；如果第 40 句有错，要等翻译讲到那里才暴露。",
       "explain_en": "An interpreter reads your source code and executes it line by line, on the spot. Python works this way: `python3 hello.py` starts an interpreter that walks through the file. That's why a Python script can run halfway and then crash on a bug it only just reached.",
-      "explain_zh": "解释器逐行读你的源代码、当场执行。Python 就是这么工作的:`python3 hello.py` 会启动解释器,从头往下走这个文件。这也是为什么一个 Python 脚本可以跑到一半,才在刚碰到的 bug(代码里的错误)上崩掉。"
+      "explain_zh": "解释器逐行读你的源代码，并当场执行。Python 就是这么工作的：`python3 hello.py` 会启动解释器，从头往下走这个文件。这也是为什么一个 Python 脚本可能先跑一半，然后才在刚碰到的 bug（代码里的错误）上崩掉。"
     },
     {
       "type": "concept",
       "term": "compiler",
-      "term_zh": "编译器 (compiler)",
+      "term_zh": "编译器（compiler）",
       "anchor_en": "A book translator: translates the entire book first, checking everything; readers then read the finished translation at full speed. Slow to start, fast to read, and typos are caught before publication.",
-      "anchor_zh": "图书翻译:先把整本书译完、通读校对,读者拿到的是成品,读起来飞快。启动慢,阅读快,错别字在出版前就被抓住。",
-      "explain_en": "A compiler translates the whole program into machine code *before* anything runs, producing an executable file. C, Go, and Rust work this way. Many errors are caught at compile time, before the program ever starts — and the compiled result runs faster than interpretation.",
-      "explain_zh": "编译器在运行**之前**就把整个程序翻译成机器码,产出一个可执行文件。C、Go、Rust 是这一类。很多错误在编译阶段、程序还没开始跑时就被抓住——而且编译后的成品跑得比逐行解释快。"
+      "anchor_zh": "图书翻译：先把整本书译完、通读校对，读者拿到的是成品，读起来很快。开始慢，阅读快，错别字在出版前就被抓住。",
+      "explain_en": "A compiler translates the whole program *before* anything runs, producing a finished executable file. Many errors are caught during this build step, before the program ever starts. Languages such as C, Go, and Rust often work this way; the language names are examples, not the point to memorize.",
+      "explain_zh": "编译器会在运行**之前**，先把整份程序翻成电脑更容易直接执行的成品文件。很多错误会在构建（build）这一步被抓住，程序根本还没开始跑。C、Go、Rust 这类语言常常这么工作；现在不用记这些语言名，它们只是例子。"
     },
     {
       "type": "exercise",
@@ -37,8 +43,8 @@
     },
     {
       "type": "reading",
-      "body_en": "Where you'll meet this: an agent says \"the build failed\" (a compile-time error — the translation never finished) versus \"it crashed at runtime\" (an interpreter or a running program hit a bug mid-execution). Those are different moments, and they call for different fixes. You'll also hear that Python is \"slow\" — interpretation is a big part of why, and also why it's so pleasant to iterate in.",
-      "body_zh": "你会在哪里遇到它:agent 说 \"the build failed\"(构建失败)指的是编译期的错误——翻译根本没做完;说 \"it crashed at runtime\"(运行中崩溃)指的是跑到一半撞上了错误。两者是不同时刻的问题,修法也不同。你还会听到「Python 慢」——逐行解释是主要原因之一,但这也正是它改起来舒服、适合快速试错的原因。"
+      "body_en": "Where you'll meet this: an agent says \"the build failed\" (a compile-time error — the translation never finished) versus \"it crashed at runtime\" (an interpreter or a running program hit a bug mid-execution). Lesson 3 moves one step outward: how do you, or an agent, actually ask the computer to run something?",
+      "body_zh": "你会在哪里遇到它：agent 说 \"the build failed\"（构建失败），指的是编译期的错误——翻译根本没做完；说 \"it crashed at runtime\"（运行中崩溃），指的是程序跑到一半撞上了错误。第 3 课再往外走一步：你或者 agent 到底是在什么地方，向电脑发出「运行它」这个请求？"
     },
     {
       "type": "exercise",
@@ -47,6 +53,11 @@
     {
       "type": "exercise",
       "ref": "m01-l02-e03"
+    },
+    {
+      "type": "reading",
+      "body_en": "Checkpoint: after this lesson, you can tell whether an error was caught before the program ran, or while it was already running. Next, we look at the place where run requests are sent.",
+      "body_zh": "这一课的小结：现在你能分清，一个错误是在程序运行前被抓住，还是在程序已经跑起来之后才出现。下一课，我们看「请求它运行」这句话通常从哪里发出去。"
     }
   ],
   "exercises": [
@@ -54,7 +65,7 @@
       "id": "m01-l02-e01",
       "type": "mcq",
       "prompt_en": "Python is an interpreted language. What does that mean for a script with a bug on its last line?",
-      "prompt_zh": "Python 是解释型语言。这对一个「错误出在最后一行」的脚本意味着什么?",
+      "prompt_zh": "Python 是解释型语言。这对一个「最后一行有错误」的脚本意味着什么？",
       "options_en": [
         "The script won't start at all",
         "Everything before the last line runs, then it crashes at the end",
@@ -63,21 +74,21 @@
       ],
       "options_zh": [
         "脚本根本启动不了",
-        "最后一行之前的部分都会执行,然后在结尾崩掉",
+        "最后一行之前的部分都会执行，然后在结尾崩掉",
         "这个错误会被自动跳过",
         "解释器会悄悄修好它"
       ],
       "answer": 1,
       "explain_en": "Sentence-by-sentence translation: work happens until the bad line is reached. This is why a half-run script may have already changed files or written data — a real operational concern when agents run code for you.",
-      "explain_zh": "说一句译一句:走到出错的那一句之前,活儿都真的干了。所以跑了一半的脚本可能已经改了文件、写了数据——agent 替你跑代码时,这是个真实的风险。",
+      "explain_zh": "说一句译一句：走到出错的那一句之前，活儿都真的干了。所以跑了一半的脚本可能已经改了文件、写了数据——agent 替你运行代码时，这是个真实的风险。",
       "difficulty": 2,
       "xp_value": 10
     },
     {
       "id": "m01-l02-e02",
       "type": "mcq",
-      "prompt_en": "An agent working on a Go project says: \"the build failed, fixing and rebuilding.\" Which translator style is at work, and when was the error caught?",
-      "prompt_zh": "agent 在一个 Go 项目里说:\"the build failed, fixing and rebuilding.\"(构建失败,正在修复并重新构建。)这是哪种翻译风格?错误在什么时候被抓住?",
+      "prompt_en": "An agent working on a program that must be built first says: \"the build failed, fixing and rebuilding.\" Which translator style is at work, and when was the error caught?",
+      "prompt_zh": "agent 在处理一个「必须先构建才能运行」的程序时说：\"the build failed, fixing and rebuilding.\"（构建失败，正在修复并重新构建。）这是哪种翻译方式？错误是在什么时候被抓住的？",
       "options_en": [
         "Compiler — the error was caught before the program ever ran",
         "Interpreter — the error was caught mid-execution",
@@ -88,19 +99,19 @@
         "编译器——错误在程序运行之前就被抓住了",
         "解释器——错误在执行到一半时被抓住",
         "编译器——错误是在程序运行中出现的",
-        "都不是——构建(build)和翻译无关"
+        "都不是——构建（build）和翻译无关"
       ],
       "answer": 0,
-      "explain_en": "\"Build\" is the compile step: whole-book translation. A failed build means the executable was never produced — nothing ran, nothing was touched. Often the *safest* kind of failure.",
-      "explain_zh": "\"build\"(构建)就是编译这一步:整本书式翻译。构建失败 = 成品根本没产出——什么都没运行、什么都没被碰过。往往是**最安全**的一种失败。",
+      "explain_en": "\"Build\" is the compile step: whole-book translation. A failed build usually means the target program never started running. Compared with a mid-run crash, this is often the safer kind of failure.",
+      "explain_zh": "\"build\"（构建）就是编译这一步：整本书式翻译。构建失败通常意味着目标程序还没真正开始运行。和跑到一半才崩溃相比，它往往是更安全的一种失败。",
       "difficulty": 2,
       "xp_value": 10
     },
     {
       "id": "m01-l02-e03",
       "type": "fill_in",
-      "prompt_en": "An error that happens while the program is running (as opposed to at compile time) is called a ______ error.",
-      "prompt_zh": "程序运行过程中(而非编译时)发生的错误,英文叫 ______ error。",
+      "prompt_en": "Recall the English label: an error that happens while the program is running is called a ______ error.",
+      "prompt_zh": "这里不是让你解释整个错误，只是回忆英文标签：程序运行过程中发生的错误，叫 ______ error。",
       "answer_spec": {
         "accept": [
           "runtime",
@@ -110,12 +121,12 @@
         "ignore_case": true
       },
       "explain_en": "Runtime — the word for \"while it's actually running.\" You'll meet 'runtime error' constantly in tracebacks and agent explanations.",
-      "explain_zh": "Runtime(运行时)——「正在运行的那段时间」。在 traceback(报错追踪信息)和 agent 的解释里,runtime error 都是高频词。",
+      "explain_zh": "runtime（运行时）——「正在运行的那段时间」。在 traceback（报错追踪信息）和 agent 的解释里，runtime error（运行时错误）都是高频词。",
       "difficulty": 1,
       "xp_value": 15,
       "term_drill": true
     }
   ],
-  "why_en": "Why this: when an agent says \"build failed\" vs \"crashed at runtime\", those are different moments with different fixes — this lesson is how you tell them apart.",
-  "why_zh": "为什么学这个:agent 报「构建失败」(build failed)和「运行中崩溃」(crashed at runtime),是两个不同时刻的问题,修法也不同——这一课让你分得出来。"
+  "why_en": "Why this second: once code is text, the next question is who translates it, when errors are caught, and why \"build failed\" is not the same as \"it crashed.\"",
+  "why_zh": "为什么第二课学它：既然代码先是文字，下一步就要知道谁来翻译它、错误在哪个时刻被抓住，以及为什么「构建失败」和「运行中崩溃」不是一回事。"
 }

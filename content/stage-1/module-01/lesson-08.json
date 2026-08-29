@@ -1,0 +1,120 @@
+{
+  "id": "m01-l08",
+  "module_id": "m01",
+  "order": 8,
+  "format": "reading",
+  "tag": "core",
+  "est_minutes": 13,
+  "title_en": "When running changes things",
+  "title_zh": "运行之后，可能已经改了东西",
+  "outcome_en": "You can distinguish harmless-looking checks from commands that may create, change, install, or delete things.",
+  "outcome_zh": "你能初步分清哪些命令像是在检查，哪些命令可能创建、修改、安装或删除东西。",
+  "review_tags": [
+    "must_master",
+    "later_formalize:shell-safety",
+    "profile_anchor:ai-agent"
+  ],
+  "blocks": [
+    {
+      "type": "reading",
+      "body_en": "Running code is the moment risk can enter. Not every command is dangerous, and you do not need a full security course yet. But you do need one early habit: ask whether this command only checks something, or may change something.",
+      "body_zh": "运行代码，是风险可能进入的那一刻。不是每条命令都危险，你现在也不需要上一整门安全课。但你需要很早养成一个习惯：这条命令只是检查什么，还是可能改动什么？"
+    },
+    {
+      "type": "concept",
+      "term": "side effect",
+      "term_zh": "副作用 / 额外影响（side effect）",
+      "anchor_en": "Reading a recipe has no side effect; cooking it uses ingredients, makes dishes dirty, and changes the kitchen.",
+      "anchor_zh": "读菜谱没有副作用；真的做菜会用掉食材、弄脏盘子、改变厨房状态。",
+      "explain_en": "A side effect is a change a program makes outside its own calculation: creating a file, editing data, deleting something, installing a package, sending a request. When an agent runs code, ask what side effects are possible.",
+      "explain_zh": "副作用指程序在自己计算之外造成的改变：创建文件、修改数据、删除东西、安装包、向外发送请求。agent 运行代码时，你要问：它可能带来哪些额外影响？"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l08-e01"
+    },
+    {
+      "type": "reading",
+      "body_en": "At this stage, you are not memorizing a list of safe and unsafe commands. You are learning a judgment pattern. Words like `write`, `delete`, `install`, `upload`, and `send` should make you slow down.",
+      "body_zh": "这个阶段不是让你背「哪些命令安全、哪些命令危险」的清单，而是先学一个判断模式。看到 write（写入）、delete（删除）、install（安装）、upload（上传）、send（发送）这类词，你就应该慢一点。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l08-e02"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l08-e03"
+    },
+    {
+      "type": "reading",
+      "body_en": "Checkpoint: after this lesson, you can ask a practical safety question before approving an agent run: if this command succeeds halfway and then crashes, what may already have changed?",
+      "body_zh": "这一课的小结：现在你在同意 agent 运行之前，可以先问一个实际的安全问题：如果这条命令跑到一半又崩了，什么东西可能已经被改过？"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "m01-l08-e01",
+      "type": "mcq",
+      "prompt_en": "Which action is most clearly a side effect?",
+      "prompt_zh": "下面哪个动作最明显属于副作用 / 额外影响？",
+      "options_en": [
+        "Creating a new file",
+        "Reading a line of source code",
+        "Thinking through pseudocode",
+        "Seeing the word Python"
+      ],
+      "options_zh": [
+        "创建一个新文件",
+        "读一行源代码",
+        "在脑中理一遍伪代码",
+        "看到 Python 这个词"
+      ],
+      "answer": 0,
+      "explain_en": "Creating a file changes the outside world of the program. That is a side effect.",
+      "explain_zh": "创建文件会改变程序外部的世界，所以它是副作用。",
+      "difficulty": 1,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l08-e02",
+      "type": "fill_in",
+      "prompt_en": "The term for an external change caused by running code is ______ effect.",
+      "prompt_zh": "运行代码造成的外部改变，英文叫 ______ effect。",
+      "answer_spec": {
+        "accept": [
+          "side"
+        ],
+        "ignore_case": true
+      },
+      "explain_en": "A side effect is any meaningful change beyond returning a result.",
+      "explain_zh": "side effect（副作用 / 额外影响）指程序除了返回结果之外，还对外部造成了改变。",
+      "difficulty": 1,
+      "xp_value": 15,
+      "term_drill": true
+    },
+    {
+      "id": "m01-l08-e03",
+      "type": "mcq",
+      "prompt_en": "An agent says: \"The script crashed after writing 200 rows.\" What should you infer?",
+      "prompt_zh": "agent 说：\"The script crashed after writing 200 rows.\"（脚本写入 200 行之后崩溃了。）你应该怎么理解？",
+      "options_en": [
+        "Even though it crashed, it may already have changed data",
+        "Because it crashed, nothing could have changed",
+        "It was only source code and never ran",
+        "This proves the current directory was wrong"
+      ],
+      "options_zh": [
+        "虽然它崩了，但数据可能已经被改过",
+        "因为它崩了，所以一定什么都没改",
+        "它只是源代码，从来没有运行",
+        "这证明当前目录一定错了"
+      ],
+      "answer": 0,
+      "explain_en": "Interpreted or running programs can do partial work before failing. A crash does not undo every side effect.",
+      "explain_zh": "正在运行的程序可能先做了一部分事，然后才失败。崩溃不代表之前的副作用都会自动撤销。",
+      "difficulty": 2,
+      "xp_value": 10
+    }
+  ]
+}

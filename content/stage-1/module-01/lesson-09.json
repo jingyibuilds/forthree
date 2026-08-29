@@ -1,0 +1,165 @@
+{
+  "id": "m01-l09",
+  "module_id": "m01",
+  "order": 9,
+  "format": "scenario",
+  "tag": "core",
+  "est_minutes": 15,
+  "title_en": "M1 checkpoint: read the agent trail",
+  "title_zh": "M1 小测：读懂 agent 的工作痕迹",
+  "outcome_en": "You can read a short agent transcript and judge what happened, what failed, and what may have changed.",
+  "outcome_zh": "你能读一小段 agent 工作记录，判断发生了什么、哪里失败、什么东西可能已经被改过。",
+  "review_tags": [
+    "must_master",
+    "module_checkpoint",
+    "profile_anchor:ai-agent"
+  ],
+  "blocks": [
+    {
+      "type": "reading",
+      "body_en": "This checkpoint is the reason the earlier small lessons exist. Do not try to memorize definitions. Read the trail like a detective: what was written, what was run, where it ran, what came back, and what may have changed.",
+      "body_zh": "这个小测，就是前面那些小课存在的原因。不要把它当成背定义；把它当成读痕迹：写了什么、运行了什么、在哪里运行、返回了什么、什么东西可能已经被改过。"
+    },
+    {
+      "type": "reading",
+      "body_en": "Transcript:\n\n```text\nAgent: I wrote cleanup.py to remove duplicate rows.\nCommand: python3 cleanup.py\nOutput: FileNotFoundError: customers.csv\nAgent: I was in the wrong folder. Switching directories.\nCommand: cd data-tools\nCommand: python3 cleanup.py\nOutput: wrote 200 rows to customers_clean.csv\nAgent: Done.\n```",
+      "body_zh": "工作记录：\n\n```text\nAgent: I wrote cleanup.py to remove duplicate rows.（我写了 cleanup.py，用来移除重复行。）\nCommand: python3 cleanup.py\nOutput: FileNotFoundError: customers.csv（找不到 customers.csv 文件。）\nAgent: I was in the wrong folder. Switching directories.（我刚才在错误的文件夹里。正在切换目录。）\nCommand: cd data-tools\nCommand: python3 cleanup.py\nOutput: wrote 200 rows to customers_clean.csv（向 customers_clean.csv 写入了 200 行。）\nAgent: Done.（完成。）\n```"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l09-e01"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l09-e02"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l09-e03"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l09-e04"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l09-e05"
+    },
+    {
+      "type": "reading",
+      "body_en": "Module 1 capability: you now have a map for AI-agent work. You can separate text from action, claim from evidence, command from output, folder mistake from code mistake, and harmless reading from possible side effects.",
+      "body_zh": "第 1 模块的能力闭环：你现在有了一张读 AI agent 工作过程的地图。你能分清文字和动作、说法和证据、命令和输出、文件夹错误和代码错误，以及单纯读取和可能产生副作用的运行。"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "m01-l09-e01",
+      "type": "mcq",
+      "prompt_en": "Which line shows source code was written, but does not by itself prove anything ran?",
+      "prompt_zh": "哪一行说明 agent 写了源代码，但单独看还不能证明它运行过？",
+      "options_en": [
+        "`Agent: I wrote cleanup.py to remove duplicate rows.`",
+        "`Command: python3 cleanup.py`",
+        "`Output: wrote 200 rows to customers_clean.csv`",
+        "`Command: cd data-tools`"
+      ],
+      "options_zh": [
+        "`Agent: I wrote cleanup.py to remove duplicate rows.`",
+        "`Command: python3 cleanup.py`",
+        "`Output: wrote 200 rows to customers_clean.csv`",
+        "`Command: cd data-tools`"
+      ],
+      "answer": 0,
+      "explain_en": "That is a claim about writing a file. Running begins when a command asks Python to execute it.",
+      "explain_zh": "这一行只是 agent 声称自己写了一个文件。真正进入运行，是从命令请求 Python 执行它开始。",
+      "difficulty": 2,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l09-e02",
+      "type": "mcq",
+      "prompt_en": "What most likely caused the first failure?",
+      "prompt_zh": "第一次失败最可能是什么原因？",
+      "options_en": [
+        "The command ran from the wrong folder and could not find `customers.csv`",
+        "Python cannot run scripts",
+        "The file `customers_clean.csv` already had 200 rows",
+        "The agent only wrote text and never ran anything"
+      ],
+      "options_zh": [
+        "命令从错误的文件夹运行，所以找不到 `customers.csv`",
+        "Python 不能运行脚本",
+        "`customers_clean.csv` 原本就有 200 行",
+        "agent 只是写了文字，从来没有运行"
+      ],
+      "answer": 0,
+      "explain_en": "`FileNotFoundError` plus the agent's folder comment points to a location problem, not necessarily bad program logic.",
+      "explain_zh": "`FileNotFoundError`（找不到文件）再加上 agent 说自己在错误文件夹里，指向的是位置问题，不一定是程序逻辑错了。",
+      "difficulty": 2,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l09-e03",
+      "type": "mcq",
+      "prompt_en": "Which line is strongest evidence that the script produced output?",
+      "prompt_zh": "哪一行最能证明脚本产生了输出？",
+      "options_en": [
+        "`Output: wrote 200 rows to customers_clean.csv`",
+        "`Agent: Done.`",
+        "`Command: cd data-tools`",
+        "`Agent: I was in the wrong folder.`"
+      ],
+      "options_zh": [
+        "`Output: wrote 200 rows to customers_clean.csv`",
+        "`Agent: Done.`",
+        "`Command: cd data-tools`",
+        "`Agent: I was in the wrong folder.`"
+      ],
+      "answer": 0,
+      "explain_en": "The output line is the visible result returned by the command.",
+      "explain_zh": "Output 这一行是命令返回的可见结果，所以它是最直接的输出证据。",
+      "difficulty": 1,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l09-e04",
+      "type": "mcq",
+      "prompt_en": "Which possible side effect should you notice?",
+      "prompt_zh": "你应该注意到哪一个可能的副作用？",
+      "options_en": [
+        "The script wrote a file named `customers_clean.csv`",
+        "The agent used English",
+        "The transcript contains a file name",
+        "The command used Python"
+      ],
+      "options_zh": [
+        "脚本写出了一个名叫 `customers_clean.csv` 的文件",
+        "agent 使用了英文",
+        "记录里出现了文件名",
+        "命令使用了 Python"
+      ],
+      "answer": 0,
+      "explain_en": "Writing a file changes the outside world. That is the side effect to notice.",
+      "explain_zh": "写出文件会改变外部状态，这就是需要注意的副作用。",
+      "difficulty": 2,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l09-e05",
+      "type": "fill_in",
+      "prompt_en": "In one English word, what do we call visible results such as `wrote 200 rows`? ______",
+      "prompt_zh": "像 `wrote 200 rows`（写入了 200 行）这种可见结果，英文统称为 ______。",
+      "answer_spec": {
+        "accept": [
+          "output"
+        ],
+        "ignore_case": true
+      },
+      "explain_en": "Output is the result a program sends back out. In a transcript, output is often the evidence you inspect first.",
+      "explain_zh": "output（输出）就是程序向外给出的结果。在工作记录里，输出往往是你最先检查的证据。",
+      "difficulty": 1,
+      "xp_value": 15,
+      "term_drill": true
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { sendMagicLink, type LoginState } from "./actions";
-import { type Dict } from "@/lib/i18n";
+import { type Dict } from "@/lib/i18n-shared";
 import { Seal } from "@/components/seal";
 
 const initialState: LoginState = { status: "idle", message: "" };

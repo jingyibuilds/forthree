@@ -1,43 +1,23 @@
 @import "tailwindcss";
 
 /* 「朱批」palette — Chinese-pedagogy material colors.
-   月白 paper (cool, deliberately not cream) · 墨 ink · 靛青 indigo for
-   everything interactive · 朱砂 vermilion reserved for the seal and the
-   teacher's-margin anchor cards · 松绿 for correct. */
+   Bright 月白 paper · 墨 ink · 靛青 indigo for interaction · 朱砂 vermilion
+   for the seal and teacher's-margin anchor cards · 松绿 for correct. */
 :root {
-  --background: #f6f6f1; /* 月白 */
-  --surface: #fdfdfb;
-  --ink: #262a35; /* 墨 */
-  --muted: #6d7280;
-  --line: #e2e3da;
-  --primary: #3a5ba0; /* 靛青 */
-  --primary-hover: #2e4a86;
+  --background: #fbfbf6; /* 明月白 */
+  --surface: #ffffff;
+  --ink: #202737; /* 墨 */
+  --muted: #727a8d;
+  --line: #e8e9df;
+  --primary: #486fc2; /* 亮靛青 */
+  --primary-hover: #375aa5;
   --on-primary: #ffffff;
-  --accent: #b0453a; /* 朱砂 */
-  --accent-soft: #f7edea;
-  --success: #3d7a58; /* 松绿 */
-  --success-soft: #eaf2ec;
-  --warn: #96691f;
-  --warn-soft: #f6efdc;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #15171d; /* 夜墨 */
-    --surface: #1e212a;
-    --ink: #e7e7e1;
-    --muted: #989eab;
-    --line: #2e3140;
-    --primary: #8ea9e0;
-    --primary-hover: #a5bbe9;
-    --on-primary: #121520;
-    --accent: #d47f70;
-    --accent-soft: #322220;
-    --success: #82bd9b;
-    --success-soft: #1f2b24;
-    --warn: #d3ab61;
-    --warn-soft: #2d2517;
-  }
+  --accent: #c65345; /* 亮朱砂 */
+  --accent-soft: #fff0ec;
+  --success: #33865b; /* 松绿 */
+  --success-soft: #e8f6ee;
+  --warn: #a36d10;
+  --warn-soft: #fff4d8;
 }
 
 @theme inline {
@@ -63,6 +43,16 @@
 body {
   background: var(--background);
   color: var(--ink);
+  font-size: 16px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+button,
+a {
+  text-underline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {

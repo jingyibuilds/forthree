@@ -1,0 +1,130 @@
+{
+  "id": "m01-l05",
+  "module_id": "m01",
+  "order": 5,
+  "format": "reading",
+  "tag": "core",
+  "est_minutes": 17,
+  "title_en": "Read your first Python output",
+  "title_zh": "看懂第一段 Python 输出",
+  "outcome_en": "You can connect a tiny Python output back to the code and command that produced it.",
+  "outcome_zh": "你能把一段很小的 Python 输出，倒回去连到产生它的代码和命令。",
+  "review_tags": [
+    "must_master",
+    "later_formalize:Python-syntax"
+  ],
+  "blocks": [
+    {
+      "type": "reading",
+      "body_en": "You now have the whole path in miniature: decide what should happen, write code text, send a command, let Python run it, then read the output. The first visible action is often tiny: the program prints a line of text.",
+      "body_zh": "现在，整条路可以缩成一句话：先想清楚要做什么，写成代码文字，用命令叫 Python 运行，最后看屏幕输出。最早能看见的动作通常很小：程序打印出一行文字。"
+    },
+    {
+      "type": "concept",
+      "term": "print",
+      "term_zh": "打印到屏幕（print）",
+      "anchor_en": "A kitchen calling out an order number: the kitchen already did something inside, but the shout is what lets people outside see the result.",
+      "anchor_zh": "像后厨喊出取餐号：后厨内部已经做了事，但外面的人是通过这声喊话看见结果的。",
+      "explain_en": "`print()` is a Python instruction that sends text to the screen. In tiny beginner programs, it is the easiest way to prove that the program really ran. You do not need to memorize the parentheses and quote-mark rules yet; for now, read it as: show the text inside the parentheses.",
+      "explain_zh": "`print()` 是 Python 里「把文字送到屏幕上」的指令。在最小的入门程序里，它是证明程序真的跑起来的最简单方式。现在不用背括号和引号的规则，先这样读就够了：括号里放的是要显示的文字。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l05-e01"
+    },
+    {
+      "type": "concept",
+      "term": "output",
+      "term_zh": "输出（output）",
+      "anchor_en": "A receipt from a machine. You put in choices and actions happen inside; the receipt is the visible result that comes back out.",
+      "anchor_zh": "像机器吐出来的小票。你输入选择，机器内部做事，最后吐出来的小票就是你看得见的结果。",
+      "explain_en": "Output is what a program sends back out: text on the screen, a file it writes, a row it inserts, a chart it draws. In this first Python case, the output is just one line of screen text.",
+      "explain_zh": "输出就是程序向外给出的结果：屏幕上的文字、写出来的文件、插入的一行数据、画出来的一张图。第一段 Python 里，输出先只是屏幕上的一行文字。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l05-e02"
+    },
+    {
+      "type": "reading",
+      "body_en": "A tiny Python program can now be read as a story:\n\n```python\nprint(\"hello\")\n```\n\nSource code: one line of text in a file. Interpreter: Python reads it. Command: something asks Python to run the file. Output: `hello` appears. This is small, but it contains the whole mental model.",
+      "body_zh": "现在，一段很小的 Python 程序可以被读成一个完整故事：\n\n```python\nprint(\"hello\")\n```\n\n源代码：文件里的一行文字。解释器：Python 读这行文字。命令：有人请求 Python 运行这个文件。输出：屏幕上出现 `hello`。它很小，但里面已经有完整的心智模型。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l05-e03"
+    },
+    {
+      "type": "reading",
+      "body_en": "Checkpoint: after this lesson, you can connect a tiny visible result back to the whole chain: plan, source code, command, interpreter, output. Next, the course can start touching Python details without those details floating in midair.",
+      "body_zh": "这一课的小结：现在你能把一个很小的可见结果，倒回去连到整条链：计划、源代码、命令、解释器、输出。接下来课程才会开始碰 Python 细节；有了这张地图，细节就不会悬在半空。"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "m01-l05-e01",
+      "type": "mcq",
+      "prompt_en": "What appears on the screen after Python runs `print(\"hello\")`?",
+      "prompt_zh": "Python 运行 `print(\"hello\")` 之后，屏幕上会出现什么？",
+      "options_en": [
+        "hello",
+        "\"hello\"",
+        "print",
+        "Nothing, because this is only source code"
+      ],
+      "options_zh": [
+        "hello",
+        "\"hello\"",
+        "print",
+        "什么都不会出现，因为这只是源代码"
+      ],
+      "answer": 0,
+      "explain_en": "The quote marks mark the text inside the code; they are not part of the printed result.",
+      "explain_zh": "引号是在代码里标记文字边界的，不属于最终打印到屏幕上的结果。",
+      "difficulty": 1,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l05-e02",
+      "type": "fill_in",
+      "prompt_en": "What is the general word for what a program sends back out, such as text on the screen? ______",
+      "prompt_zh": "程序向外给出的结果，比如屏幕上的文字，英文统称为 ______。",
+      "answer_spec": {
+        "accept": [
+          "output"
+        ],
+        "ignore_case": true
+      },
+      "explain_en": "Output is the visible result coming out of the program. Later, output can be a file, table row, web-service result, or chart.",
+      "explain_zh": "output（输出）就是程序向外给出的可见结果。以后它可以是文件、表里的一行数据、网页服务返回的一段结果，或一张图。",
+      "difficulty": 1,
+      "xp_value": 15,
+      "term_drill": true
+    },
+    {
+      "id": "m01-l05-e03",
+      "type": "mcq",
+      "prompt_en": "Which story is correct for a tiny Python script?",
+      "prompt_zh": "下面哪一条，正确描述了一个很小的 Python 脚本从文字到结果的过程？",
+      "options_en": [
+        "Source code sits in a file; a command asks Python to run it; Python produces output",
+        "Output appears first; then Python writes the source code",
+        "A terminal automatically understands Python without an interpreter",
+        "Pseudocode is the final thing the computer runs"
+      ],
+      "options_zh": [
+        "源代码先在文件里；命令请求 Python 运行它；Python 产生输出",
+        "先出现输出，然后 Python 再写源代码",
+        "终端不需要解释器，就能自动理解 Python",
+        "伪代码就是电脑最终运行的东西"
+      ],
+      "answer": 0,
+      "explain_en": "This is the whole Module 1 chain so far: text, command, interpreter, action, output.",
+      "explain_zh": "这就是第 1 模块到目前为止的整条链：文字、命令、解释器、动作、输出。",
+      "difficulty": 2,
+      "xp_value": 10
+    }
+  ],
+  "why_en": "Why this fifth: a first Python line is only useful if you can connect the visible output back to code, command, and interpreter.",
+  "why_zh": "为什么第五课学它：第一行 Python 不只是会写 `print()`，而是要能把屏幕上的输出倒回去，连到代码、命令和解释器。"
+}

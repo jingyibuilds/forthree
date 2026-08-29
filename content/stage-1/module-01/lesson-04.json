@@ -1,0 +1,132 @@
+{
+  "id": "m01-l04",
+  "module_id": "m01",
+  "order": 4,
+  "format": "reading",
+  "tag": "core",
+  "est_minutes": 16,
+  "title_en": "Think before syntax",
+  "title_zh": "先想清楚，再写代码",
+  "outcome_en": "You can turn a fuzzy request into a plain-language plan that code can be checked against.",
+  "outcome_zh": "你能把模糊需求改成普通语言的步骤计划，并用它检查代码是不是跑偏。",
+  "review_tags": [
+    "must_master",
+    "profile_anchor:ai-agent"
+  ],
+  "blocks": [
+    {
+      "type": "reading",
+      "body_en": "Now you know what code is, who translates it, and where commands are sent. Before you ask an AI agent or a computer to run anything, you need one more ability: can you tell whether the planned action is actually the action you wanted? That starts before syntax.",
+      "body_zh": "现在你已经知道：代码是什么，谁翻译它，命令从哪里发出去。但在请 AI agent 或电脑运行任何东西之前，你还需要一个能力：判断它准备做的事，是不是你真正想要的事。这个能力要在具体语法之前开始。"
+    },
+    {
+      "type": "concept",
+      "term": "pseudocode",
+      "term_zh": "伪代码（pseudocode）",
+      "anchor_en": "A cooking plan written before the formal recipe: wash vegetables, heat pan, add oil, cook until soft. It is not publishable recipe language, but it makes the logic visible.",
+      "anchor_zh": "像正式菜谱之前的做菜计划：洗菜，热锅，放油，炒到变软。它还不是标准菜谱文字，但已经把做事顺序说清楚了。",
+      "explain_en": "Pseudocode is a plain-language version of code logic. It ignores exact syntax and focuses on steps, order, decisions, and repetition. It is especially useful when working with AI: a clear pseudocode plan gives the agent something concrete to implement and gives you something concrete to judge.",
+      "explain_zh": "伪代码就是用普通语言写出的代码逻辑。它先不管准确语法，只关注步骤、顺序、判断和重复。和 AI 合作时它特别有用：清楚的伪代码给 agent 一个明确实现目标，也给你一个可以检查的标准。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l04-e01"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l04-e02"
+    },
+    {
+      "type": "concept",
+      "term": "algorithm",
+      "term_zh": "算法（algorithm）",
+      "anchor_en": "A reliable procedure, like sorting receipts by date: compare two receipts, put the earlier one first, repeat until the stack is ordered.",
+      "anchor_zh": "像一个可靠的办事流程，比如按日期整理小票：比较两张，把更早的放前面，不断重复，直到整叠排好。",
+      "explain_en": "An algorithm is a step-by-step method for solving a problem. At this stage, do not treat it as a scary math word. A pseudocode plan is often your first draft of an algorithm: what happens first, what happens next, and when the work stops.",
+      "explain_zh": "算法就是解决问题的一套分步方法。现在不要把它当成可怕的数学词。很多时候，伪代码就是算法的第一版草稿：先做什么，后做什么，什么时候停下来。"
+    },
+    {
+      "type": "reading",
+      "body_en": "A useful pseudocode habit: write one step per line, and use small markers like IF, FOR EACH, and STOP. These uppercase words are not Python you need to memorize now. They simply mark decisions, repetition, and endings — the same shapes that later become real code.",
+      "body_zh": "一个好习惯：伪代码一行只写一个步骤，并用 IF（如果）、FOR EACH（对每一个）、STOP（停止）这样的小标记。这些大写英文不是现在要你背的 Python 语法，只是在标出判断、重复和结束——这些形状之后会变成真正的代码。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l04-e03"
+    },
+    {
+      "type": "reading",
+      "body_en": "Checkpoint: after this lesson, you can write a plain plan before asking for code, and use that plan to judge whether the code is trying to do the right thing. Next, we run the smallest visible Python example.",
+      "body_zh": "这一课的小结：现在你能在请 AI 写代码之前，先写出一份普通语言的计划，并用这份计划判断代码是不是在做你真正想要的事。下一课，我们看一个最小、但能看见结果的 Python 例子。"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "m01-l04-e01",
+      "type": "mcq",
+      "prompt_en": "Which version is best pseudocode for \"send a reminder to every person who has not replied\"?",
+      "prompt_zh": "如果任务是「给每个还没回复的人发送提醒」，下面哪一版最像好的伪代码？",
+      "options_en": [
+        "FOR EACH person: IF they have not replied, send reminder",
+        "Use Python professionally",
+        "Find some people and maybe remind them",
+        "Make the computer handle replies"
+      ],
+      "options_zh": [
+        "对每个人：如果这个人还没回复，就发送提醒",
+        "专业地使用 Python",
+        "随便找一些人，也许提醒一下",
+        "让电脑处理回复"
+      ],
+      "answer": 0,
+      "explain_en": "Good pseudocode names the repeated item, the decision, and the action. It is specific enough to implement, but not yet tied to exact Python spelling.",
+      "explain_zh": "好的伪代码会说清楚：重复处理谁、判断条件是什么、满足条件后做什么。它足够具体，可以被实现；但还不急着写成准确的 Python 语法。",
+      "difficulty": 1,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l04-e02",
+      "type": "fill_in",
+      "prompt_en": "A plain-language draft of code logic, before exact syntax, is called ______.",
+      "prompt_zh": "在写准确语法之前，先用普通语言写出的代码逻辑草稿，英文叫 ______。",
+      "answer_spec": {
+        "accept": [
+          "pseudocode",
+          "pseudo code",
+          "pseudo-code"
+        ],
+        "ignore_case": true
+      },
+      "explain_en": "Pseudocode lets you reason about the plan before fighting the spelling rules of a programming language.",
+      "explain_zh": "pseudocode（伪代码）让你先检查计划本身，再去处理编程语言的拼写规则。",
+      "difficulty": 1,
+      "xp_value": 15,
+      "term_drill": true
+    },
+    {
+      "id": "m01-l04-e03",
+      "type": "mcq",
+      "prompt_en": "Why is pseudocode useful when asking an AI agent to write code?",
+      "prompt_zh": "请 AI agent 写代码前，先写伪代码有什么用？",
+      "options_en": [
+        "It makes your intended steps visible, so both you and the agent can check the plan",
+        "It guarantees the final code has no bugs",
+        "It replaces running the code",
+        "It hides the problem from the agent"
+      ],
+      "options_zh": [
+        "它把你想要的步骤显性写出来，方便你和 agent 一起检查计划",
+        "它能保证最后的代码绝对没有 bug（代码里的错误）",
+        "它可以代替运行代码",
+        "它会把问题藏起来，不让 agent 看懂"
+      ],
+      "answer": 0,
+      "explain_en": "Pseudocode does not prove code is correct. Its value is clarity: it gives the later code a visible contract to match.",
+      "explain_zh": "伪代码不能证明代码一定正确。它的价值是清楚：后面真正写出的代码，至少有一个看得见的计划可以对照。",
+      "difficulty": 2,
+      "xp_value": 10
+    }
+  ],
+  "why_en": "Why this fourth: before you read or ask for code, you need a way to state the plan without getting trapped by syntax.",
+  "why_zh": "为什么第四课学它：在读代码、请 AI 写代码之前，你需要一种不被语法困住、但能把计划讲清楚的方法。"
+}

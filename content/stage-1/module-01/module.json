@@ -2,10 +2,32 @@
   "id": "m01",
   "stage": 1,
   "order": 1,
-  "title_en": "What is a program?",
-  "title_zh": "程序到底是什么",
-  "description_en": "Source code, execution, interpreters, the terminal, and pseudocode — the mental model everything else stands on.",
-  "description_zh": "源代码、执行、解释器、终端、伪代码——之后一切知识都站在这层地基上。",
+  "title_en": "How code turns into action",
+  "title_zh": "代码怎么变成真实动作",
+  "description_en": "This module is not trying to make you write code immediately. It first trains you to read what an AI coding agent is doing: what is still text, what actually ran, where it ran, what the output proves, and where risk may have entered.",
+  "description_zh": "这个模块不是一上来就让你写代码，而是先训练你看懂 AI coding agent 到底做到了哪一步：哪些还只是文字，哪些真的运行过，在哪里运行，输出证明了什么，风险可能从哪里进入。",
+  "capability_en": "You can read a short AI coding-agent transcript and judge what was written, what ran, where it ran, what failed, what the output proves, and whether files or data may already have been affected.",
+  "capability_zh": "你能读一小段 AI coding agent 的工作记录，并判断：它写了什么、运行了什么、在哪里运行、哪里失败、输出证明了什么，以及文件或数据是否可能已经被影响。",
+  "customization_points": [
+    {
+      "id": "m01-agent-transcripts",
+      "applies_to": [
+        "lesson examples",
+        "checkpoint prompts"
+      ],
+      "default_profile": "Learner uses AI coding agents and has data-work context.",
+      "rewrite_when": "For a learner without AI-agent exposure, replace with spreadsheet automation, no-code tooling, or app-support examples while preserving the text -> command -> output -> risk chain."
+    },
+    {
+      "id": "m01-data-background",
+      "applies_to": [
+        "SQL references",
+        "table/file examples"
+      ],
+      "default_profile": "Learner has strong SQL/data background.",
+      "rewrite_when": "For a learner without data background, swap SQL/table anchors for documents, photos, forms, or inbox workflows."
+    }
+  ],
   "refs": [
     "https://cs50.harvard.edu/python/",
     "https://cs50.harvard.edu/x/"

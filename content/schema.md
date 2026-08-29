@@ -22,6 +22,8 @@ New files must be registered in `src/lib/content.ts` (static imports).
   "order": 1,
   "title_en": "…", "title_zh": "…",
   "description_en": "…", "description_zh": "…",
+  "capability_en": "…", "capability_zh": "…", // optional: what the learner can now do, not what they have heard about
+  "customization_points": [], // optional: anchors/examples/terms safe to rewrite for a different learner profile
   "refs": []               // external links (CS50 etc.), optional
 }
 ```
@@ -37,6 +39,8 @@ New files must be registered in `src/lib/content.ts` (static imports).
   "tag": "core",           // core | elective  (core is never auto-removed)
   "est_minutes": 12,       // whole lesson; validator enforces ≤ 30
   "title_en": "…", "title_zh": "…",
+  "outcome_en": "…", "outcome_zh": "…", // optional: concrete ability after this lesson
+  "review_tags": [],       // optional: e.g. ["must_master", "recognize_only", "profile_anchor:data"]
   "blocks": [ … ],         // rendered in order
   "exercises": [ … ]       // referenced from blocks by id
 }
@@ -103,10 +107,39 @@ not for a bilingual engineer. Concretely:
 Failing this standard makes the Chinese version a fake — it looks Chinese
 but still requires the English the learner came here to acquire.
 
+## Personalization without rewriting the course
+
+The first course version is personal, but it must not become unscalable. Use a
+stable core plus marked variation points:
+
+- `must_master` — a concept the learner must be able to use or judge later.
+- `recognize_only` — a term that may appear because of the learner's work
+  context, but does not need full mastery yet. The copy should say so.
+- `later_formalize` — a word or idea introduced lightly now and taught
+  formally in a later module.
+- `profile_anchor:<domain>` — an example chosen because the current learner
+  has that background, such as data work or AI-agent workflows. For another
+  learner, rewrite the example, not the whole lesson.
+
+When scaling to new users, preserve the lesson's concept spine, exercise
+intent, and module capability. Rewrite only marked anchors, examples, and
+glosses that depend on a learner profile.
+
+## Learned terms stop being treated as brand-new forever
+
+Beginner-friendliness is stage-aware. A term needs a full Chinese explanation
+the first time it appears in a lesson, and it may need a reminder for the next
+few lessons. After the learner has practiced it in both directions and passed a
+checkpoint using it, future lessons may use the term normally, with tooltip or
+AI-assistant help available on demand. Do not keep re-explaining foundational
+words forever; that makes the course feel like it does not trust the learner.
+
 ## Lesson-level optional fields
 
 - `why_en` / `why_zh` — one-sentence design rationale shown at lesson start
   ("why this lesson, why now"). Both languages or neither.
+- `outcome_en` / `outcome_zh` — one sentence stating the concrete ability the
+  learner should have after the lesson.
 - (future) `source_refs` — provenance footnote when a lesson's design
   clearly derives from a public course (e.g. a CS50 week).
 

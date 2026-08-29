@@ -6,6 +6,155 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-08-28 — Course authoring uses four-reviewer convergence
+
+Owner clarified that course design should not depend on the owner's manual
+review after every slice. Resolution: substantial learner-facing curriculum
+work runs through four perspectives before handoff:
+
+1. Education / learning science: sequence, durable skill, retrieval,
+   transfer, and checkpoint design.
+2. AI-era senior engineer: what judgment matters when working with coding
+   agents, and which traditional coding details can stay light.
+3. UI/UX designer: how the product makes path, progress, curiosity,
+   interaction, and next action visible.
+4. Strong zero-code learner: a smart learner from another field who has good
+   reasoning but no programming background.
+
+The loop is review -> revise -> re-review until comments converge to minor
+wording/future polish, or until token/time budget is near the limit. If budget
+forces a stop, the remaining risk must be named explicitly.
+
+## 2026-08-28 — Micro-lessons are allowed, but modules need capability weight
+
+Owner noted that L1/L2 felt closer to 5-10 minutes than 15-30. Short lessons
+are acceptable and often desirable, but "short + too few nodes" makes the
+course feel like a fun-to-know outline rather than skill acquisition.
+
+Resolution: do not pad lessons just to hit a time number. Instead, allow
+micro-lessons with honest estimates, increase module node count when needed,
+and require each module to end in a checkpoint that proves a concrete
+capability. For M1, that capability is: read a short AI coding-agent transcript
+or terminal log and judge what the agent wrote, what it actually ran, where it
+ran it, what the output proves, where the failure happened, and whether files
+or data may already have been affected.
+
+## 2026-08-28 — Personalization happens at marked variation points
+
+Owner wants the first version to feel personal without becoming a fully custom
+course that cannot scale. Resolution: keep a stable concept spine and mark the
+places that depend on the learner profile: examples, analogies, domain
+references, and terms that are safe because this learner has some data/AI-agent
+work context. Future users should get rewritten anchors/examples at those
+marked points, not a rewritten course from scratch.
+
+Also: the course is stage-aware. A term is explained when it is new, lightly
+reminded while fragile, and then used normally after the learner has practiced
+and passed checkpoint tasks with it. Beginner support should fade as the
+learner earns the vocabulary.
+
+## 2026-08-28 — M1 lessons need a narrative question chain, not a concept list
+
+Owner noted that "What is a program?" did not create curiosity, and L1/L2 felt
+adjacent rather than connected. Resolution: Module 1 is framed as one practical
+question chain a learner meets when using AI coding agents:
+
+1. Did the AI-written code do anything yet, or is it still just text?
+2. If code is text, who translates it into action?
+3. Where does the human or agent ask the computer to run something?
+4. Before exact syntax, how do we state the plan clearly?
+5. When the first Python line runs, how do we read the visible output?
+
+Lesson titles, opening blocks, closing bridges, and module description should
+serve that chain. Avoid starting a lesson with a bare taxonomy question unless
+the learner already has a lived reason to ask it.
+
+## 2026-08-28 — Desktop and mobile learning UI should diverge intentionally
+
+Owner noted that the desktop learning page still does not use the wider
+viewport well. Future UI passes should treat desktop and mobile as different
+learning contexts, not one stretched layout. On desktop, prefer a more
+workbench-like layout: a collapsible left column for course position, module
+outline, and progress, with the current lesson or module content using the
+main reading area. On mobile, keep the experience more linear and focused,
+with navigation collapsed behind lightweight controls.
+
+This is deferred from the current OpenRouter/copy-edit slice. Do not rush a
+sidebar into the product until the course map, lesson player, and progress
+model agree on what the side column should show.
+
+## 2026-08-28 — Every deliverable gets a zero-code learner blind-spot pass
+
+Owner noted that once a concept has been learned, both the owner and the agent
+can miss beginner confusion on a second read. Resolution: every completed
+lesson, page, or learner-facing interaction now gets a final blind-spot pass
+from the imagined perspective of a learner with no coding background.
+
+The pass checks whether a first-time learner can tell what is information vs.
+action, what the current step is, how this screen relates to the course path,
+which technical terms need a Chinese explanation before their English label,
+and what to do next. Any confusing point should be fixed before handoff, or
+explicitly named as residual risk if it is intentionally deferred.
+
+## 2026-08-28 — Course map separates overview from active module
+
+Owner caught a product-design ambiguity on `/learn`: the four Part summaries
+looked like clickable cards, while the real lesson list below felt visually
+detached from that overview. Resolution: the Part area is now a non-clickable
+course arc, styled as a route overview rather than an action grid. The lesson
+area is explicitly presented as the current module within that arc, with the
+stage label repeated above the module title and only lesson rows behaving like
+navigation.
+
+Rejected for now: making the Part summaries filter or switch the lower list.
+That would imply functionality the product does not have yet, and would make
+the current Phase 1 vertical slice feel broader than it is.
+
+## 2026-08-28 — Lesson language toggle preserves current card; UI text scale raised
+
+Owner caught that switching language inside a lesson restarted the lesson from
+the first card. Resolution: lesson pages accept `?step=<blockIndex>`, and the
+in-lesson language toggle sends `/locale` a safe relative `back` URL containing
+the current step. This preserves the learner's current card across a full
+language-cookie refresh without writing transient state to the database.
+
+Owner also noted the UI still felt too small and not polished enough. For this
+pass, keep the 「朱批」 identity and avoid adding a design system dependency, but
+raise the text scale for lesson reading and exercises, give the course map more
+structure, and make surfaces/buttons feel more deliberate with brighter paper,
+clearer hierarchy, and restrained shadows. Bigger visual redesign remains open
+after more live playtesting.
+
+## 2026-08-28 — Phase 1 lesson assistant starts with OpenRouter
+
+Owner asked to do the OpenRouter lesson assistant first. This amends the
+2026-08-26 runtime-provider decision for the current vertical slice: the first
+implemented `/api/llm` path uses OpenRouter directly, with the provider still
+hidden behind `src/lib/llm` so future provider changes stay localized.
+
+Scope for the first slice: every lesson has a small in-lesson assistant dialog.
+It sends the current lesson, current block, relevant exercise (if any), current
+response (if any), and local progress into `/api/llm` for a short explanation
+or hint. The model never grades; deterministic grading stays the first, trusted
+verdict. If `OPENROUTER_API_KEY` is missing, daily/monthly caps are reached, or
+OpenRouter errors, the route returns static fallback text and the lesson remains
+fully usable. Usage is logged to `llm_usage` when a live call succeeds.
+
+Rejected for now: installing OpenRouter's SDK or building the full planner
+adapter. The direct fetch call is enough for this Phase 1 slice, avoids a new
+dependency, and follows OpenRouter's documented `/api/v1/chat/completions`
+contract plus app attribution headers (`HTTP-Referer`, `X-OpenRouter-Title`).
+
+## 2026-08-28 — UI brightness correction: force the learning app light
+
+Owner said the web app still felt too black/dark. The likely culprit was the
+CSS `prefers-color-scheme: dark` branch, which made the whole app switch to a
+near-black palette on dark-mode devices. Resolution for now: remove the dark
+override and keep the product in a bright 月白 paper palette regardless of
+system setting. Keep 「朱批」 as the identity, but make the base brighter:
+white surfaces, lighter lines, brighter indigo, and softer success/warning
+backgrounds.
+
 ## 2026-08-27 — 中文版交付标准: CET-4/6 reader, no technical English assumed
 
 Owner caught a zh lesson whose Chinese still required English to parse

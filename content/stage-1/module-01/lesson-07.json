@@ -1,0 +1,119 @@
+{
+  "id": "m01-l07",
+  "module_id": "m01",
+  "order": 7,
+  "format": "reading",
+  "tag": "core",
+  "est_minutes": 13,
+  "title_en": "The folder changes the meaning",
+  "title_zh": "站在哪个文件夹，很重要",
+  "outcome_en": "You can spot when a command likely failed because it ran from the wrong folder.",
+  "outcome_zh": "你能看出一条命令是不是可能因为站错文件夹而失败。",
+  "review_tags": [
+    "must_master",
+    "profile_anchor:ai-agent"
+  ],
+  "blocks": [
+    {
+      "type": "reading",
+      "body_en": "Lesson 3 introduced the current directory. This point deserves its own practice because it explains many real agent failures. The code may be fine; the command may be fine; the terminal may simply be standing in the wrong folder.",
+      "body_zh": "第 3 课提到过当前目录。它值得单独练一次，因为很多真实的 agent 失败都卡在这里：代码可能没错，命令也可能没错，只是终端站错了文件夹。"
+    },
+    {
+      "type": "concept",
+      "term": "path",
+      "term_zh": "路径（path）",
+      "anchor_en": "An address inside your computer: not just \"the file,\" but which folder, inside which folder, inside which folder.",
+      "anchor_zh": "像电脑里的地址：不是只说「那个文件」，而是说它在哪个文件夹、那个文件夹又在哪个文件夹里。",
+      "explain_en": "A path tells the computer where a file or folder is. `Desktop/hello.py` is more specific than `hello.py`. When a command only names a file, the current directory decides where the computer looks first.",
+      "explain_zh": "路径告诉电脑，一个文件或文件夹在哪里。`Desktop/hello.py` 比只写 `hello.py` 更具体。命令里如果只写文件名，电脑会先从当前目录开始找。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l07-e01"
+    },
+    {
+      "type": "reading",
+      "body_en": "A useful question when reading logs: where was the command run from? If you see `cd project` before a command, that means the terminal changed directory into a folder named `project`.",
+      "body_zh": "读日志时有一个很好用的问题：这条命令是从哪里运行的？如果你看到 `cd project` 出现在命令前面，意思是终端先切换到了名叫 `project` 的文件夹。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l07-e02"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l07-e03"
+    },
+    {
+      "type": "reading",
+      "body_en": "Checkpoint: after this lesson, you can read a file-not-found failure without panicking. One of your first hypotheses can be: maybe the command ran from the wrong folder.",
+      "body_zh": "这一课的小结：现在你看到「找不到文件」时，不必立刻慌。你的第一个猜测可以是：也许命令是从错误的文件夹运行的。"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "m01-l07-e01",
+      "type": "mcq",
+      "prompt_en": "A command says it cannot find `report.py`. Which question is most useful first?",
+      "prompt_zh": "一条命令说找不到 `report.py`。你最该先问哪个问题？",
+      "options_en": [
+        "Which folder was the terminal in when the command ran?",
+        "Is Python always broken?",
+        "Should I memorize C and Rust first?",
+        "Did the output become source code?"
+      ],
+      "options_zh": [
+        "这条命令运行时，终端站在哪个文件夹里？",
+        "是不是 Python 总是坏的？",
+        "我要不要先背 C 和 Rust？",
+        "输出是不是变成了源代码？"
+      ],
+      "answer": 0,
+      "explain_en": "File-not-found often means a location mismatch. Check the current directory before assuming the program logic is wrong.",
+      "explain_zh": "找不到文件常常是位置不匹配。先看当前目录，再判断程序逻辑是不是错了。",
+      "difficulty": 1,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l07-e02",
+      "type": "fill_in",
+      "prompt_en": "The word for a file's address inside folders is ______.",
+      "prompt_zh": "表示一个文件在各层文件夹里具体地址的英文词是 ______。",
+      "answer_spec": {
+        "accept": [
+          "path"
+        ],
+        "ignore_case": true
+      },
+      "explain_en": "A path is the computer-address of a file or folder.",
+      "explain_zh": "path（路径）就是文件或文件夹在电脑里的地址。",
+      "difficulty": 1,
+      "xp_value": 15,
+      "term_drill": true
+    },
+    {
+      "id": "m01-l07-e03",
+      "type": "mcq",
+      "prompt_en": "Transcript:\n\n`cd project`\n`python3 hello.py`\n`hello`\n\nWhat did `cd project` most likely do?",
+      "prompt_zh": "工作记录：\n\n`cd project`\n`python3 hello.py`\n`hello`\n\n`cd project` 最可能做了什么？",
+      "options_en": [
+        "It moved the terminal into the `project` folder before running the file",
+        "It printed `hello`",
+        "It wrote Python source code",
+        "It proved the code has no risk"
+      ],
+      "options_zh": [
+        "它先把终端切换到 `project` 文件夹，再运行文件",
+        "它打印出了 `hello`",
+        "它写出了 Python 源代码",
+        "它证明这段代码没有任何风险"
+      ],
+      "answer": 0,
+      "explain_en": "`cd` changes the current directory. For now, recognize its role: it changes where later commands run from.",
+      "explain_zh": "`cd` 会改变当前目录。现在只要认出它的作用：它会改变后续命令从哪里运行。",
+      "difficulty": 2,
+      "xp_value": 10
+    }
+  ]
+}

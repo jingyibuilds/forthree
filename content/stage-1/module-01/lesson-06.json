@@ -1,0 +1,128 @@
+{
+  "id": "m01-l06",
+  "module_id": "m01",
+  "order": 6,
+  "format": "reading",
+  "tag": "core",
+  "est_minutes": 12,
+  "title_en": "Claims, commands, output",
+  "title_zh": "他说了什么，证据是什么",
+  "outcome_en": "You can separate an agent's claim from the command and output that support it.",
+  "outcome_zh": "你能分清 agent 的说法、它运行的命令，以及命令返回的证据。",
+  "review_tags": [
+    "must_master",
+    "profile_anchor:ai-agent"
+  ],
+  "blocks": [
+    {
+      "type": "reading",
+      "body_en": "An AI agent often writes in confident sentences: \"I fixed it,\" \"tests pass,\" \"the script ran.\" Confidence is not evidence. In engineering work, you look for the trail underneath the sentence: claim, command, output.",
+      "body_zh": "AI agent 常常会很有信心地说：「我修好了」「测试通过了」「脚本跑完了」。语气自信不等于证据。在工程工作里，你要看这句话下面有没有一条痕迹：说法、命令、输出。"
+    },
+    {
+      "type": "concept",
+      "term": "claim",
+      "term_zh": "说法 / 声称（claim）",
+      "anchor_en": "A restaurant saying \"your order is ready.\" That sentence may be true, but you still look for the tray or the receipt number.",
+      "anchor_zh": "像餐厅说「你的餐好了」。这句话可能是真的，但你还是会看有没有餐盘、有没有取餐号。",
+      "explain_en": "A claim is what the agent says happened. It is useful, but it is not the same as proof. A good transcript lets you compare the claim against the command that ran and the output that came back.",
+      "explain_zh": "说法，就是 agent 说发生了什么。它有用，但不等于证明。好的工作记录应该能让你把 agent 的说法，和它实际运行的命令、返回的输出对上。"
+    },
+    {
+      "type": "concept",
+      "term": "evidence",
+      "term_zh": "证据（evidence）",
+      "anchor_en": "A package tracking page. \"Delivered\" is the claim; the timestamp, address, and photo are evidence you can inspect.",
+      "anchor_zh": "像快递页面。「已送达」是说法；时间、地址、照片，才是你能检查的证据。",
+      "explain_en": "Evidence in a coding-agent transcript usually includes commands, terminal output, test results, file names, or diffs. At this stage, you do not need to verify everything perfectly. You only need the habit: ask what sentence is being supported by what evidence.",
+      "explain_zh": "在 AI coding agent 的工作记录里，证据通常包括命令、终端输出、测试结果、文件名，或者代码改动。现在不需要你完美核查一切，只要先养成习惯：它说的哪句话，是由哪条证据支撑的？"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l06-e01"
+    },
+    {
+      "type": "reading",
+      "body_en": "A tiny transcript might look like this:\n\n```text\nAgent: I ran the script.\nCommand: python3 hello.py\nOutput: hello\n```\n\nThe claim is the first line. The command is the request. The output is what came back.",
+      "body_zh": "一段很小的工作记录可能长这样：\n\n```text\nAgent: I ran the script.（我运行了这个脚本。）\nCommand: python3 hello.py\nOutput: hello\n```\n\n第一行是说法；第二行是命令，也就是发出的请求；第三行是输出，也就是电脑返回的结果。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l06-e02"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l06-e03"
+    },
+    {
+      "type": "reading",
+      "body_en": "Checkpoint: after this lesson, you can stop treating an agent transcript as one blob of text. You can ask: what did it claim, what command did it run, and what output supports the claim?",
+      "body_zh": "这一课的小结：现在你不必把 agent 的工作记录当成一整团文字。你可以拆开问：它声称了什么？运行了什么命令？哪段输出支撑这个说法？"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "m01-l06-e01",
+      "type": "mcq",
+      "prompt_en": "In `Agent: tests pass`, what kind of line is this?",
+      "prompt_zh": "`Agent: tests pass`（测试通过了）这一行属于什么？",
+      "options_en": [
+        "A claim from the agent",
+        "A terminal command",
+        "The full proof that everything is correct",
+        "Python source code"
+      ],
+      "options_zh": [
+        "agent 的一个说法",
+        "一条终端命令",
+        "证明一切都正确的完整证据",
+        "Python 源代码"
+      ],
+      "answer": 0,
+      "explain_en": "It may be true, but by itself it is still a claim. You would look for the command and output next.",
+      "explain_zh": "它可能是真的，但单独看仍然只是一个说法。下一步要看它运行了什么命令，以及输出是什么。",
+      "difficulty": 1,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l06-e02",
+      "type": "mcq",
+      "prompt_en": "Which line is the command in this transcript?\n\n`Agent: I checked it`\n`npm run build`\n`Compiled successfully`",
+      "prompt_zh": "下面这段记录里，哪一行是命令？\n\n`Agent: I checked it`（我检查过了）\n`npm run build`\n`Compiled successfully`（编译成功）",
+      "options_en": [
+        "`Agent: I checked it`",
+        "`npm run build`",
+        "`Compiled successfully`",
+        "All three are commands"
+      ],
+      "options_zh": [
+        "`Agent: I checked it`",
+        "`npm run build`",
+        "`Compiled successfully`",
+        "三行全都是命令"
+      ],
+      "answer": 1,
+      "explain_en": "`npm run build` is the typed request. You do not need to know npm yet; the shape matters here.",
+      "explain_zh": "`npm run build` 是打出来、交给电脑执行的请求。你现在不用懂 npm，只需要认出它是一条命令。",
+      "difficulty": 1,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l06-e03",
+      "type": "fill_in",
+      "prompt_en": "The general word for support you can inspect, such as command output or test results, is ______.",
+      "prompt_zh": "像命令输出、测试结果这种你可以检查的支撑材料，英文统称为 ______。",
+      "answer_spec": {
+        "accept": [
+          "evidence"
+        ],
+        "ignore_case": true
+      },
+      "explain_en": "Evidence is what lets you judge a claim instead of only trusting the agent's confidence.",
+      "explain_zh": "evidence（证据）让你能判断一个说法，而不是只相信 agent 的语气。",
+      "difficulty": 1,
+      "xp_value": 15,
+      "term_drill": true
+    }
+  ]
+}

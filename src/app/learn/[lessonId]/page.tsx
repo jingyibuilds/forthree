@@ -2,17 +2,24 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { dict, getLocale } from "@/lib/i18n";
 import { getLesson } from "@/lib/content";
-import { LocaleToggle } from "@/components/locale-toggle";
 import { LessonPlayer } from "./lesson-player";
 
 export default async function LessonPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ lessonId: string }>;
+  searchParams: Promise<{ step?: string }>;
 }) {
   const { lessonId } = await params;
+  const { step } = await searchParams;
   const lesson = getLesson(lessonId);
   if (!lesson) notFound();
+  const parsedStep = Number(step);
+  const initialIndex =
+    Number.isInteger(parsedStep) && parsedStep >= 0 && parsedStep < lesson.blocks.length
+      ? parsedStep
+      : 0;
 
   const locale = await getLocale();
   const supabase = await createClient();
@@ -35,7 +42,7 @@ export default async function LessonPage({
       locale={locale}
       t={dict[locale]}
       alreadyCorrect={alreadyCorrect}
-      toggle={<LocaleToggle locale={locale} inline />}
+      initialIndex={initialIndex}
     />
   );
 }

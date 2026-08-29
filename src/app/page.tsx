@@ -14,16 +14,16 @@ export default async function Home() {
   } = await supabase.auth.getUser();
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center p-6">
+    <main className="relative flex min-h-screen items-center justify-center px-6 py-12">
       <LocaleToggle locale={locale} />
-      <div className="w-full max-w-md space-y-8 text-center">
-        <div className="flex flex-col items-center gap-4">
+      <div className="w-full max-w-md space-y-10 text-center">
+        <div className="flex flex-col items-center gap-5">
           <Seal size={56} />
           <div>
-            <h1 className="font-serif text-4xl font-semibold tracking-wide">
+            <h1 className="font-serif text-5xl font-semibold tracking-wide text-ink">
               {t.name}
             </h1>
-            <p className="mt-2 text-sm text-muted">{t.tagline}</p>
+            <p className="mt-3 text-base text-muted">{t.tagline}</p>
           </div>
         </div>
 
@@ -31,7 +31,7 @@ export default async function Home() {
           <div className="space-y-4">
             <Link
               href="/learn"
-              className="inline-block rounded-lg bg-primary px-8 py-3 text-sm font-medium text-on-primary transition-colors hover:bg-primary-hover"
+              className="inline-block rounded-lg bg-primary px-9 py-3.5 text-base font-medium text-on-primary shadow-sm transition-colors hover:bg-primary-hover"
             >
               {t.continueLearning}
             </Link>
@@ -47,7 +47,7 @@ export default async function Home() {
         ) : (
           <Link
             href="/login"
-            className="inline-block rounded-lg bg-primary px-8 py-3 text-sm font-medium text-on-primary transition-colors hover:bg-primary-hover"
+            className="inline-block rounded-lg bg-primary px-9 py-3.5 text-base font-medium text-on-primary shadow-sm transition-colors hover:bg-primary-hover"
           >
             {t.signIn}
           </Link>

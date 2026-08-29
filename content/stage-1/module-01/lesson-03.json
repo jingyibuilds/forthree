@@ -1,0 +1,140 @@
+{
+  "id": "m01-l03",
+  "module_id": "m01",
+  "order": 3,
+  "format": "reading",
+  "tag": "core",
+  "est_minutes": 15,
+  "title_en": "Where commands are spoken",
+  "title_zh": "在哪里向电脑发命令",
+  "outcome_en": "You can read a terminal command as a concrete request sent from a folder.",
+  "outcome_zh": "你能把一条终端命令读成一个从某个文件夹发出的具体请求。",
+  "review_tags": [
+    "must_master",
+    "recognize_only:npm",
+    "profile_anchor:ai-agent"
+  ],
+  "blocks": [
+    {
+      "type": "reading",
+      "body_en": "Lesson 2 explained who translates code. But an interpreter does not magically wake up by itself. Someone has to ask the computer to start it, usually by typing a command. The place where that conversation happens is the terminal.",
+      "body_zh": "第 2 课讲了谁来翻译代码。但解释器不会自己突然醒过来，总得有人对电脑说一句「现在运行这个」。这句话通常叫命令（command），而发出命令的地方，就是终端（terminal）。"
+    },
+    {
+      "type": "concept",
+      "term": "terminal",
+      "term_zh": "终端（terminal）",
+      "anchor_en": "A service counter. You do not walk into the kitchen yourself; you stand at the counter and say what you need. The counter passes that request to the right worker.",
+      "anchor_zh": "像服务窗口。你不是自己冲进后厨做事，而是站在窗口说「我要办这个」。窗口再把请求交给对应的人处理。",
+      "explain_en": "The terminal is a text-based place to talk to your computer. You type commands, press Enter, and the computer responds with text. When an AI agent says it ran `npm run build` or `python3 hello.py`, it usually means it sent a command through a terminal-like environment. You do not need to understand `npm` yet; here, just notice that both examples are commands.",
+      "explain_zh": "终端是一个用文字和电脑对话的地方。你输入命令，按回车，电脑再用文字回应你。AI agent 说它运行了 `npm run build` 或 `python3 hello.py`，通常就是在类似终端的环境里发出了命令。现在不用懂 `npm` 是什么；这里只需要看出，这两个例子都是命令。"
+    },
+    {
+      "type": "concept",
+      "term": "command",
+      "term_zh": "命令（command）",
+      "anchor_en": "A short instruction at the service counter: \"print this form,\" \"open that account,\" \"check this package.\" A command is not a conversation; it is one specific request.",
+      "anchor_zh": "像你在服务窗口说的一句具体要求：「打印这张表」「打开这个账户」「查一下这个包裹」。命令不是闲聊，而是一条明确请求。",
+      "explain_en": "A command is a typed instruction sent to the operating system or a tool. The operating system is the computer's basic management software: it manages files, programs, and resources. `python3 hello.py` means: start Python, then ask Python to run the file named `hello.py`. Commands are why terminal logs matter: they tell you what was requested, not just what failed.",
+      "explain_zh": "命令是一条打出来、交给操作系统或某个工具执行的指令。操作系统就是电脑里负责管理文件、程序和资源的底层软件。`python3 hello.py` 的意思是：启动 Python，然后让 Python 运行名叫 `hello.py` 的文件。终端记录之所以重要，就是因为它不只告诉你哪里失败，还告诉你当时到底请求了什么。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l03-e01"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l03-e02"
+    },
+    {
+      "type": "concept",
+      "term": "current directory",
+      "term_zh": "当前目录（current directory）",
+      "anchor_en": "Your current aisle in a grocery store. If you ask for \"the red box\" while standing in the cereal aisle, the worker looks there first — not in the freezer section.",
+      "anchor_zh": "像你现在站在超市的哪条货架前。你说「拿那个红盒子」时，工作人员会先看你所在的货架，而不是跑去冷冻区找。",
+      "explain_en": "The current directory is the folder the terminal is currently standing in. A command like `python3 hello.py` looks for `hello.py` from that location. Many beginner errors are not Python errors at all — the terminal is simply standing in the wrong folder.",
+      "explain_zh": "当前目录，就是终端此刻所在的文件夹。像 `python3 hello.py` 这样的命令，会从这个位置开始找 `hello.py`。很多新手报错其实不是 Python 写错了，而是终端站错了文件夹。"
+    },
+    {
+      "type": "reading",
+      "body_en": "This is why agents often show you command logs. They are not decoration. They answer three practical questions: what command was sent, where it was sent from, and what text came back.",
+      "body_zh": "这就是为什么 agent 常常把命令记录贴出来。它不是装饰，而是在回答三个很实际的问题：发了什么命令，从哪个文件夹发的，电脑回了什么文字。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l03-e03"
+    },
+    {
+      "type": "reading",
+      "body_en": "Checkpoint: after this lesson, you can read a terminal command as a concrete request: run which tool, on which file, from which folder. Next, we step back and decide what the code should do before anyone runs it.",
+      "body_zh": "这一课的小结：现在你能把一条终端命令读成一个具体请求：运行哪个工具、处理哪个文件、从哪个文件夹发出。下一课，我们先退一步：在运行之前，先判断这段代码到底应该做什么。"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "m01-l03-e01",
+      "type": "mcq",
+      "prompt_en": "An agent says it ran `python3 cleanup.py`. What did it ask the computer to do?",
+      "prompt_zh": "agent 说它运行了 `python3 cleanup.py`。它是在请求电脑做什么？",
+      "options_en": [
+        "Start Python, then ask Python to run the file `cleanup.py`",
+        "Open `cleanup.py` as a plain text note only",
+        "Translate every program on the computer",
+        "Install Python again"
+      ],
+      "options_zh": [
+        "启动 Python，然后让 Python 运行 `cleanup.py` 这个文件",
+        "只把 `cleanup.py` 当成普通文字笔记打开",
+        "翻译电脑里的所有程序",
+        "重新安装 Python"
+      ],
+      "answer": 0,
+      "explain_en": "`python3` starts the Python interpreter; `cleanup.py` is the file handed to it. This is a command, not a magic sentence.",
+      "explain_zh": "`python3` 会启动 Python 解释器；`cleanup.py` 是交给解释器运行的文件。这是一条命令，不是一句魔法咒语。",
+      "difficulty": 1,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l03-e02",
+      "type": "fill_in",
+      "prompt_en": "A typed instruction such as `python3 hello.py` is called a ______.",
+      "prompt_zh": "像 `python3 hello.py` 这种打出来、交给电脑执行的指令，英文叫 ______。",
+      "answer_spec": {
+        "accept": [
+          "command"
+        ],
+        "ignore_case": true
+      },
+      "explain_en": "Command — one specific request sent through the terminal or a terminal-like tool.",
+      "explain_zh": "command（命令）——通过终端或类似终端的工具发出的一条明确请求。",
+      "difficulty": 1,
+      "xp_value": 15,
+      "term_drill": true
+    },
+    {
+      "id": "m01-l03-e03",
+      "type": "mcq",
+      "prompt_en": "Your terminal is standing in `Downloads`, but `hello.py` is on your Desktop. You run `python3 hello.py`. The computer will not search every folder automatically. What is the most likely problem?",
+      "prompt_zh": "终端当前站在 `Downloads` 文件夹里，但 `hello.py` 在桌面。你运行 `python3 hello.py`。电脑不会自动全盘搜索文件。最可能出现什么问题？",
+      "options_en": [
+        "The terminal cannot find `hello.py` from where it is standing",
+        "Python changes folders automatically and finds it",
+        "The file deletes itself",
+        "The command becomes SQL"
+      ],
+      "options_zh": [
+        "终端会从当前位置找不到 `hello.py`",
+        "Python 会自动换到正确文件夹并找到它",
+        "这个文件会自己删除",
+        "这条命令会变成 SQL"
+      ],
+      "answer": 0,
+      "explain_en": "Relative file names depend on the current directory. If the terminal is in the wrong folder, the command can fail even when the code itself is fine.",
+      "explain_zh": "只写文件名时，终端会从当前目录开始找，而不是从整台电脑里到处找。如果终端站错了文件夹，代码本身没问题，命令也可能失败。",
+      "difficulty": 2,
+      "xp_value": 10
+    }
+  ],
+  "why_en": "Why this third: AI agents do real work by sending commands. If you can read the command, you can tell what was actually requested.",
+  "why_zh": "为什么第三课学它：AI agent 真正做事时，常常是在发命令。你能看懂命令，就能判断它到底请求电脑做了什么。"
+}
