@@ -8,6 +8,7 @@ import type { Locale } from "@/lib/i18n-shared";
 
 type LessonAssistantBody = {
   feature?: "lesson_assistant";
+  threadId?: string;
   lessonId?: string;
   blockIndex?: number;
   exerciseId?: string;
@@ -21,6 +22,9 @@ type LessonAssistantBody = {
   };
 };
 
+type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
+type AssistantThreadRow = { id: string };
+
 const fallback = {
   en: "The lesson assistant is offline for now. Use the anchor card above, then compare your answer with the prompt one piece at a time.",
   zh: "助教现在暂时离线。先回看上面的朱批锚点，再把你的答案和题目逐句对照。",
@@ -30,6 +34,17 @@ function parseUsd(value: string | undefined, defaultValue: number) {
   if (!value) return defaultValue;
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : defaultValue;
+}
+
+function parsePositiveInt(value: string | undefined, defaultValue: number) {
+  if (!value) return defaultValue;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : defaultValue;
+}
+
+function retainedUntilIso(now = new Date()) {
+  const days = parsePositiveInt(process.env.LLM_HISTORY_RETENTION_DAYS, 30);
+  return new Date(now.getTime() + days * 24 * 60 * 60 * 1000).toISOString();
 }
 
 function utcStartOfDay(now = new Date()) {
@@ -99,6 +114,180 @@ function currentBlockContext(lesson: Lesson, blockIndex: number, locale: Locale)
     : `Current exercise id: ${block.ref}`;
 }
 
+function blockContextLine(lesson: Lesson, index: number, locale: Locale) {
+  const block = lesson.blocks[index];
+  if (!block) return "";
+  const prefix = `Block ${index + 1}/${lesson.blocks.length}`;
+  if (block.type === "reading") {
+    const text = locale === "zh" ? block.body_zh : block.body_en;
+    return `${prefix} reading: ${text.slice(0, 420)}`;
+  }
+  if (block.type === "concept") {
+    return `${prefix} concept: ${locale === "zh" ? block.term_zh : block.term}`;
+  }
+  if (block.type === "visual") {
+    return [
+      `${prefix} visual: ${locale === "zh" ? block.title_zh : block.title_en}`,
+      `Caption: ${locale === "zh" ? block.caption_zh : block.caption_en}`,
+    ].join("\n");
+  }
+  const exercise = lesson.exercises.find((e) => e.id === block.ref);
+  return exercise ? `${prefix} exercise: ${exercisePrompt(exercise, locale)}` : "";
+}
+
+function nearbyBlockContext(lesson: Lesson, blockIndex: number, locale: Locale) {
+  const start = Math.max(0, blockIndex - 1);
+  const end = Math.min(lesson.blocks.length - 1, blockIndex + 2);
+  const lines = [];
+  for (let i = start; i <= end; i++) {
+    const line = blockContextLine(lesson, i, locale);
+    if (line) lines.push(line);
+  }
+  return lines.join("\n\n");
+}
+
+function contextSnapshot(
+  lesson: Lesson,
+  blockIndex: number,
+  exercise: Exercise | undefined,
+  body: LessonAssistantBody,
+  locale: Locale
+) {
+  return {
+    feature: body.feature,
+    lesson_id: lesson.id,
+    lesson_title: locale === "zh" ? lesson.title_zh : lesson.title_en,
+    block_index: blockIndex,
+    total_blocks: lesson.blocks.length,
+    block_type: lesson.blocks[blockIndex]?.type,
+    exercise_id: exercise?.id ?? null,
+    locale,
+    answered_exercise_ids: body.progress?.answeredExerciseIds ?? [],
+  };
+}
+
+function learningSignal(
+  role: "user" | "assistant",
+  text: string,
+  lesson: Lesson,
+  blockIndex: number,
+  locale: Locale
+) {
+  const normalized = text.toLowerCase();
+  const topicTags = [
+    ["terminal", ["terminal", "终端", "命令行"]],
+    ["command", ["command", "命令"]],
+    ["run-button", ["run button", "run 按钮", "运行按钮"]],
+    ["location-prompt", ["forthree %", "prompt", "提示符", "位置"]],
+    ["output", ["output", "输出"]],
+    ["python", ["python", "python3"]],
+  ]
+    .filter(([, keywords]) => (keywords as string[]).some((keyword) => normalized.includes(keyword)))
+    .map(([tag]) => tag);
+
+  return {
+    role,
+    lesson_id: lesson.id,
+    block_index: blockIndex,
+    locale,
+    topic_tags: topicTags,
+    confusion_type:
+      role === "user" && topicTags.some((tag) => tag === "terminal" || tag === "command")
+        ? "artifact_mapping"
+        : null,
+    summary:
+      text.length > 180 ? `${text.slice(0, 177).trim()}...` : text,
+  };
+}
+
+async function compactExpiredAssistantMessages(supabase: SupabaseServerClient, userId: string) {
+  await supabase
+    .from("lesson_assistant_messages")
+    .update({
+      body: null,
+      context_snapshot: { compacted: true },
+      body_compacted_at: new Date().toISOString(),
+    })
+    .eq("user_id", userId)
+    .lt("body_retained_until", new Date().toISOString())
+    .is("body_compacted_at", null);
+}
+
+async function ensureAssistantThread(
+  supabase: SupabaseServerClient,
+  userId: string,
+  requestedThreadId: string | undefined,
+  lesson: Lesson,
+  blockIndex: number,
+  locale: Locale
+) {
+  if (requestedThreadId) {
+    const { data } = await supabase
+      .from("lesson_assistant_threads")
+      .select("id")
+      .eq("id", requestedThreadId)
+      .eq("user_id", userId)
+      .maybeSingle<AssistantThreadRow>();
+
+    if (data?.id) {
+      await supabase
+        .from("lesson_assistant_threads")
+        .update({ updated_at: new Date().toISOString() })
+        .eq("id", data.id)
+        .eq("user_id", userId);
+      return data.id;
+    }
+  }
+
+  const { data } = await supabase
+    .from("lesson_assistant_threads")
+    .insert({
+      user_id: userId,
+      lesson_id: lesson.id,
+      started_block_index: blockIndex,
+      locale,
+    })
+    .select("id")
+    .single<AssistantThreadRow>();
+
+  return data?.id;
+}
+
+async function insertAssistantMessage(
+  supabase: SupabaseServerClient,
+  params: {
+    threadId: string | undefined;
+    userId: string;
+    role: "user" | "assistant";
+    body: string;
+    contextSnapshot: Record<string, unknown>;
+    learningSignal: Record<string, unknown>;
+    provider?: string;
+    model?: string;
+    tokensIn?: number;
+    tokensOut?: number;
+    costUsd?: number;
+    degradedReason?: string;
+  }
+) {
+  if (!params.threadId) return;
+  await supabase.from("lesson_assistant_messages").insert({
+    thread_id: params.threadId,
+    user_id: params.userId,
+    role: params.role,
+    body: params.body,
+    context_snapshot: params.contextSnapshot,
+    learning_signal: params.learningSignal,
+    provider: params.provider,
+    model: params.model,
+    tokens_in: params.tokensIn ?? 0,
+    tokens_out: params.tokensOut ?? 0,
+    cost_usd: params.costUsd ?? 0,
+    degraded_reason: params.degradedReason,
+    body_retained_until: retainedUntilIso(),
+  });
+}
+
 function assistantSystem(locale: Locale) {
   if (locale === "zh") {
     return [
@@ -156,9 +345,38 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "bad request" }, { status: 400 });
   }
 
+  await compactExpiredAssistantMessages(supabase, user.id);
+  const threadId = await ensureAssistantThread(
+    supabase,
+    user.id,
+    body.threadId,
+    lesson,
+    blockIndex,
+    locale
+  );
+  const snapshot = contextSnapshot(lesson, blockIndex, exercise, body, locale);
+  await insertAssistantMessage(supabase, {
+    threadId,
+    userId: user.id,
+    role: "user",
+    body: question,
+    contextSnapshot: snapshot,
+    learningSignal: learningSignal("user", question, lesson, blockIndex, locale),
+  });
+
   if (!hasOpenRouterKey()) {
+    await insertAssistantMessage(supabase, {
+      threadId,
+      userId: user.id,
+      role: "assistant",
+      body: fallback[locale],
+      contextSnapshot: snapshot,
+      learningSignal: learningSignal("assistant", fallback[locale], lesson, blockIndex, locale),
+      degradedReason: "missing_key",
+    });
     return NextResponse.json({
       text: fallback[locale],
+      threadId,
       degraded: true,
       reason: "missing_key",
     });
@@ -172,8 +390,18 @@ export async function POST(request: NextRequest) {
   ]);
 
   if (todaySpend >= dailyCap || monthSpend >= monthlyCap) {
+    await insertAssistantMessage(supabase, {
+      threadId,
+      userId: user.id,
+      role: "assistant",
+      body: fallback[locale],
+      contextSnapshot: snapshot,
+      learningSignal: learningSignal("assistant", fallback[locale], lesson, blockIndex, locale),
+      degradedReason: "cost_cap",
+    });
     return NextResponse.json({
       text: fallback[locale],
+      threadId,
       degraded: true,
       reason: "cost_cap",
     });
@@ -194,6 +422,8 @@ export async function POST(request: NextRequest) {
             }`,
             "Current block:",
             currentBlockContext(lesson, blockIndex, locale),
+            "Nearby lesson cards:",
+            nearbyBlockContext(lesson, blockIndex, locale),
             "Concepts:",
             lessonContext(lesson, locale),
             exercise
@@ -223,14 +453,39 @@ export async function POST(request: NextRequest) {
       cost_usd: completion.usage.costUsd,
     });
 
+    await insertAssistantMessage(supabase, {
+      threadId,
+      userId: user.id,
+      role: "assistant",
+      body: completion.text,
+      contextSnapshot: snapshot,
+      learningSignal: learningSignal("assistant", completion.text, lesson, blockIndex, locale),
+      provider: completion.provider,
+      model: completion.model,
+      tokensIn: completion.usage.tokensIn,
+      tokensOut: completion.usage.tokensOut,
+      costUsd: completion.usage.costUsd,
+    });
+
     return NextResponse.json({
       text: completion.text,
+      threadId,
       degraded: false,
       usageSaved: !usageError,
     });
   } catch {
+    await insertAssistantMessage(supabase, {
+      threadId,
+      userId: user.id,
+      role: "assistant",
+      body: fallback[locale],
+      contextSnapshot: snapshot,
+      learningSignal: learningSignal("assistant", fallback[locale], lesson, blockIndex, locale),
+      degradedReason: "provider_error",
+    });
     return NextResponse.json({
       text: fallback[locale],
+      threadId,
       degraded: true,
       reason: "provider_error",
     });

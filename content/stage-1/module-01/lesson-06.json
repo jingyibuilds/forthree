@@ -4,7 +4,7 @@
   "order": 6,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 12,
+  "est_minutes": 10,
   "title_en": "Claims, commands, output",
   "title_zh": "他说了什么，证据是什么",
   "outcome_en": "You can separate an agent's claim from the command and output that support it.",

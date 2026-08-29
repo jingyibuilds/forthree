@@ -4,7 +4,7 @@
   "order": 4,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 16,
+  "est_minutes": 8,
   "title_en": "Think before syntax",
   "title_zh": "先想清楚，再写代码",
   "outcome_en": "You can turn a fuzzy request into a plain-language plan that code can be checked against.",
@@ -27,6 +27,16 @@
       "anchor_zh": "像正式菜谱之前的做菜计划：洗菜，热锅，放油，炒到变软。它还不是标准菜谱文字，但已经把做事顺序说清楚了。",
       "explain_en": "Pseudocode is a plain-language version of code logic. It ignores exact syntax and focuses on steps, order, decisions, and repetition. It is especially useful when working with AI: a clear pseudocode plan gives the agent something concrete to implement and gives you something concrete to judge.",
       "explain_zh": "伪代码就是用普通语言写出的代码逻辑。它先不管准确语法，只关注步骤、顺序、判断和重复。和 AI 合作时它特别有用：清楚的伪代码给 agent 一个明确实现目标，也给你一个可以检查的标准。"
+    },
+    {
+      "type": "visual",
+      "kind": "pseudocode-vs-code",
+      "title_en": "Pseudocode is the plan; production code is the runnable version",
+      "title_zh": "伪代码是计划；正式代码是能运行的版本",
+      "caption_en": "The left side says the logic in plain language. The right side turns the same logic into Python syntax. You judge the code by checking whether it still follows the plan.",
+      "caption_zh": "左边用普通语言说清逻辑；右边把同一套逻辑写成 Python 语法。你检查代码时，先看它有没有忠实执行左边这份计划。",
+      "alt_en": "Two side-by-side panels comparing pseudocode steps with equivalent Python code.",
+      "alt_zh": "左右两个面板，对比伪代码步骤和对应的 Python 代码。"
     },
     {
       "type": "exercise",

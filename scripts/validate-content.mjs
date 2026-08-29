@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Content validator — fails the build on malformed content (DESIGN.md §4:
-// the 30-minute session budget is a build-time constraint, not a suggestion).
+// Content validator — fails the build on malformed content. DECISIONS.md
+// overrides the original long-session target: Phase 1 lessons should stay
+// friendly to 10-minute fragments.
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
@@ -9,7 +10,13 @@ const errors = [];
 const err = (file, msg) => errors.push(`${file}: ${msg}`);
 
 const isStr = (v) => typeof v === "string" && v.trim().length > 0;
-const visualKinds = new Set(["source-code-file", "terminal-command", "python-output"]);
+const visualKinds = new Set([
+  "source-code-file",
+  "terminal-command",
+  "agent-command-log",
+  "pseudocode-vs-code",
+  "python-output",
+]);
 const bilingual = (obj, base, file, ctx) => {
   for (const suffix of ["_en", "_zh"]) {
     if (!isStr(obj[base + suffix])) err(file, `${ctx}: missing ${base}${suffix}`);
@@ -67,7 +74,8 @@ for (const [rel, l] of lessons) {
   if (!moduleIds.has(l.module_id)) err(rel, `unknown module_id ${l.module_id}`);
   if (!["core", "elective"].includes(l.tag)) err(rel, `bad tag "${l.tag}"`);
   if (!Number.isInteger(l.est_minutes) || l.est_minutes < 1) err(rel, "bad est_minutes");
-  if (l.est_minutes > 30) err(rel, `est_minutes ${l.est_minutes} exceeds the 30-minute session budget`);
+  if (l.est_minutes > 10)
+    err(rel, `est_minutes ${l.est_minutes} exceeds the 10-minute micro-lesson budget`);
   bilingual(l, "title", rel, l.id);
   if ((l.why_en || l.why_zh) && !(isStr(l.why_en) && isStr(l.why_zh)))
     err(rel, `${l.id}: why must exist in both languages or neither`);

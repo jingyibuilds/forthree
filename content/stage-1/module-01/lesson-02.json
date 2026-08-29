@@ -4,7 +4,7 @@
   "order": 2,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 14,
+  "est_minutes": 10,
   "title_en": "Who makes the text move?",
   "title_zh": "谁把文字变成动作",
   "outcome_en": "You can distinguish an error caught before running from an error that happened during running.",

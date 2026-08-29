@@ -37,7 +37,7 @@ New files must be registered in `src/lib/content.ts` (static imports).
   "order": 1,
   "format": "reading",     // reading | drill | code | scenario
   "tag": "core",           // core | elective  (core is never auto-removed)
-  "est_minutes": 12,       // whole lesson; validator enforces ≤ 30
+  "est_minutes": 8,        // whole lesson; validator enforces ≤ 10 in Phase 1
   "title_en": "…", "title_zh": "…",
   "outcome_en": "…", "outcome_zh": "…", // optional: concrete ability after this lesson
   "review_tags": [],       // optional: e.g. ["must_master", "recognize_only", "profile_anchor:data"]
@@ -58,10 +58,11 @@ New files must be registered in `src/lib/content.ts` (static imports).
 - `{"type": "visual", "kind": "terminal-command", "title_en": …,
    "title_zh": …, "caption_en": …, "caption_zh": …, "alt_en": …,
    "alt_zh": …}` — a concept-bearing illustration, not decoration. Current
-  allowed kinds: `source-code-file`, `terminal-command`, `python-output`.
-  Use this when a new learner benefits from seeing the shape of an artifact:
-  a code file, terminal, output, traceback, folder tree, or similar. Captions
-  must state the learning point in the same language standard as prose.
+  allowed kinds: `source-code-file`, `terminal-command`, `agent-command-log`,
+  `pseudocode-vs-code`, `python-output`. Use this when a new learner benefits
+  from seeing the shape of an artifact: a code file, terminal, output,
+  traceback, folder tree, or similar. Captions must state the learning point in
+  the same language standard as prose.
 - `{"type": "exercise", "ref": "m01-l01-e01"}` — plays the exercise inline.
 
 ### Exercises

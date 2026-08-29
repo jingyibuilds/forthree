@@ -4,7 +4,7 @@
   "order": 1,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 12,
+  "est_minutes": 9,
   "title_en": "Code is text before it acts",
   "title_zh": "代码先只是文字",
   "outcome_en": "You can tell whether code is still an inert file or has actually run.",

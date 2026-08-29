@@ -4,7 +4,7 @@
   "order": 3,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 15,
+  "est_minutes": 9,
   "title_en": "Where commands are spoken",
   "title_zh": "在哪里向电脑发命令",
   "outcome_en": "You can read a terminal command as a concrete request sent from a folder.",
@@ -17,8 +17,8 @@
   "blocks": [
     {
       "type": "reading",
-      "body_en": "Lesson 2 explained who translates code. But an interpreter does not magically wake up by itself. Someone has to ask the computer to start it, usually by typing a command. The place where that conversation happens is the terminal.",
-      "body_zh": "第 2 课讲了谁来翻译代码。但解释器不会自己突然醒过来，总得有人对电脑说一句「现在运行这个」。这句话通常叫命令（command），而发出命令的地方，就是终端（terminal）。"
+      "body_en": "Lesson 2 explained who translates code. But an interpreter does not magically wake up by itself. Someone has to ask the computer to start it. Sometimes you click a **Run** button; sometimes an agent types a command. The visible place for that typed conversation is the terminal.",
+      "body_zh": "第 2 课讲了谁来翻译代码。但解释器不会自己突然醒过来，总得有人对电脑说一句「现在运行这个」。有时你点的是 **Run** 按钮；有时 agent 打出一条命令。能看见这种文字对话的地方，就是终端（terminal）。"
     },
     {
       "type": "concept",
@@ -26,8 +26,8 @@
       "term_zh": "终端（terminal）",
       "anchor_en": "A service counter. You do not walk into the kitchen yourself; you stand at the counter and say what you need. The counter passes that request to the right worker.",
       "anchor_zh": "像服务窗口。你不是自己冲进后厨做事，而是站在窗口说「我要办这个」。窗口再把请求交给对应的人处理。",
-      "explain_en": "The terminal is a text-based place to talk to your computer. You type commands, press Enter, and the computer responds with text. When an AI agent says it ran `npm run build` or `python3 hello.py`, it usually means it sent a command through a terminal-like environment. You do not need to understand `npm` yet; here, just notice that both examples are commands.",
-      "explain_zh": "终端是一个用文字和电脑对话的地方。你输入命令，按回车，电脑再用文字回应你。AI agent 说它运行了 `npm run build` 或 `python3 hello.py`，通常就是在类似终端的环境里发出了命令。现在不用懂 `npm` 是什么；这里只需要看出，这两个例子都是命令。"
+      "explain_en": "The terminal is a text-based place to talk to your computer. On a laptop or desktop, the system usually already has one: macOS has Terminal, Windows has PowerShell or Windows Terminal, and Linux has a terminal app. Phones usually do not show a terminal in normal use; you can install special apps on some phones, but this course treats terminal work as a laptop/desktop skill. When an AI agent says it ran `npm run build` or `python3 hello.py`, it usually means it sent a command through a terminal-like environment. You do not need to understand `npm` yet; here, just notice that both examples are commands.",
+      "explain_zh": "终端是一个用文字和电脑对话的地方。笔记本或台式电脑通常自带类似工具：Mac 上叫 Terminal（终端），Windows 上常见 PowerShell 或 Windows Terminal，Linux 上也通常有终端应用。手机日常使用里一般不会直接露出终端；有些手机可以装特殊 app，但这门课先把终端当成电脑上的工具来学。AI agent 说它运行了 `npm run build` 或 `python3 hello.py`，通常就是在类似终端的环境里发出了命令。现在不用懂 `npm` 是什么；这里只需要看出，这两个例子都是命令。"
     },
     {
       "type": "visual",
@@ -67,17 +67,39 @@
     },
     {
       "type": "reading",
-      "body_en": "This is why agents often show you command logs. They are not decoration. They answer three practical questions: what command was sent, where it was sent from, and what text came back.",
-      "body_zh": "这就是为什么 agent 常常把命令记录贴出来。它不是装饰，而是在回答三个很实际的问题：发了什么命令，从哪个文件夹发的，电脑回了什么文字。"
+      "body_en": "This is why agents often show you command logs. They are not decoration. A good log lets you point to three different things: the **location prompt**, the **command**, and the **output**.",
+      "body_zh": "这就是为什么 agent 常常把命令记录贴出来。它不是装饰。好的命令记录会让你指出三种东西：**位置提示符**、**命令**、**输出**。"
+    },
+    {
+      "type": "visual",
+      "kind": "agent-command-log",
+      "title_en": "Read a command log in three parts",
+      "title_zh": "把命令记录拆成三部分",
+      "caption_en": "`forthree %` is the location prompt: it hints where the terminal is standing. `python3 hello.py` is the command: the request. `hello` is output: the computer's response.",
+      "caption_zh": "`forthree %` 是位置提示符：它暗示终端站在哪个地方。`python3 hello.py` 是命令：你发出的请求。`hello` 是输出：电脑给回来的回应。",
+      "alt_en": "A terminal-like command log annotated with three labels: location prompt, command, and output.",
+      "alt_zh": "一段类似终端的命令记录，上面标出三个标签：位置提示符、命令、输出。"
     },
     {
       "type": "exercise",
       "ref": "m01-l03-e03"
     },
     {
+      "type": "exercise",
+      "ref": "m01-l03-e04"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l03-e05"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l03-e06"
+    },
+    {
       "type": "reading",
-      "body_en": "Checkpoint: after this lesson, you can read a terminal command as a concrete request: run which tool, on which file, from which folder. Next, we step back and decide what the code should do before anyone runs it.",
-      "body_zh": "这一课的小结：现在你能把一条终端命令读成一个具体请求：运行哪个工具、处理哪个文件、从哪个文件夹发出。下一课，我们先退一步：在运行之前，先判断这段代码到底应该做什么。"
+      "body_en": "Checkpoint: if you can split a log into location prompt, command, and output, terminal text starts to become readable evidence instead of a black box. Next, we step back and decide what the code should do before anyone runs it.",
+      "body_zh": "这一课的小结：如果你能把一段记录拆成位置提示符、命令和输出，终端文字就不再是一团黑框里的神秘内容，而是可以阅读的证据。下一课，我们先退一步：在运行之前，先判断这段代码到底应该做什么。"
     }
   ],
   "exercises": [
@@ -141,6 +163,75 @@
       "answer": 0,
       "explain_en": "Relative file names depend on the current directory. If the terminal is in the wrong folder, the command can fail even when the code itself is fine.",
       "explain_zh": "只写文件名时，终端会从当前目录开始找，而不是从整台电脑里到处找。如果终端站错了文件夹，代码本身没问题，命令也可能失败。",
+      "difficulty": 2,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l03-e04",
+      "type": "mcq",
+      "prompt_en": "In this log line, which part is the command you would actually type?\n\n`forthree % python3 hello.py`",
+      "prompt_zh": "看这一行记录，哪一部分才是你真正输入的命令？\n\n`forthree % python3 hello.py`",
+      "options_en": [
+        "`python3 hello.py`",
+        "`forthree %`",
+        "`hello.py` only",
+        "The whole line, including `forthree %`"
+      ],
+      "options_zh": [
+        "`python3 hello.py`",
+        "`forthree %`",
+        "只有 `hello.py`",
+        "整行都要输入，包括 `forthree %`"
+      ],
+      "answer": 0,
+      "explain_en": "`forthree %` is the prompt: the terminal showing its current place and saying it is ready. The command is the request after it.",
+      "explain_zh": "`forthree %` 是提示符：终端在显示自己当前的位置，并表示已经准备好。真正的命令是它后面的那段请求。",
+      "difficulty": 2,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l03-e05",
+      "type": "mcq",
+      "prompt_en": "A web app has a **Run** button. You click it, and the app runs your code. How is that related to a terminal command?",
+      "prompt_zh": "一个网页 app 里有 **Run** 按钮。你点它之后，app 会运行你的代码。这和终端命令是什么关系？",
+      "options_en": [
+        "The button is a shortcut that sends a run request for you",
+        "The button is output, because you can see it",
+        "The button is the current directory",
+        "The button means no command-like request exists"
+      ],
+      "options_zh": [
+        "按钮像快捷方式，替你发出「运行」请求",
+        "按钮看得见，所以它就是输出",
+        "按钮就是当前目录",
+        "有按钮就说明不存在类似命令的请求"
+      ],
+      "answer": 0,
+      "explain_en": "A button can hide the command-like request behind a friendly UI. The idea is the same: something asks a tool to run code.",
+      "explain_zh": "按钮会把类似命令的请求藏在友好的界面后面。底层想法是一样的：有东西在请求某个工具运行代码。",
+      "difficulty": 2,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l03-e06",
+      "type": "mcq",
+      "prompt_en": "In a command log, which question does the location prompt help answer?",
+      "prompt_zh": "在一段命令记录里，位置提示符主要帮你回答哪个问题？",
+      "options_en": [
+        "Where the terminal was standing when the command was sent",
+        "Whether the output is correct",
+        "What Python means",
+        "Whether the code is beautiful"
+      ],
+      "options_zh": [
+        "发出命令时，终端站在哪个文件夹里",
+        "输出结果是否一定正确",
+        "Python 这个词是什么意思",
+        "代码写得漂不漂亮"
+      ],
+      "answer": 0,
+      "explain_en": "The prompt is not the command. It gives surrounding context, especially where the terminal is standing before the request is sent.",
+      "explain_zh": "提示符不是命令。它给的是周围信息，尤其是发出请求之前，终端站在哪个文件夹里。",
       "difficulty": 2,
       "xp_value": 10
     }

@@ -8,7 +8,8 @@ hard requirements, enforced by tooling where possible.
 - API keys, tokens, passwords, connection strings — of any kind, even expired
 - `.env.local` or any file with real environment values (gitignored)
 - PII: real names, emails, addresses
-- Learning data (attempts, profiles, usage) — lives only in the owner's Supabase project
+- Learning data (attempts, profiles, usage, assistant questions/answers) —
+  lives only in the owner's Supabase project
 - Screenshots or logs containing any of the above
 
 ## Enforcement layers
@@ -25,6 +26,9 @@ hard requirements, enforced by tooling where possible.
 
 - Supabase Row Level Security on every table; user-scoped tables enforce
   `user_id = auth.uid()`.
+- Lesson assistant history is private learner data. Full question/answer text
+  is retained for 30 days by default, then compacted to non-public learning
+  signals.
 - The service-role/secret key is server-only and never shipped to the client.
 - All LLM calls go through one server-side route (`/api/llm`); no LLM keys or
   calls exist client-side.

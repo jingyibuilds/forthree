@@ -4,7 +4,7 @@
   "order": 9,
   "format": "scenario",
   "tag": "core",
-  "est_minutes": 15,
+  "est_minutes": 10,
   "title_en": "M1 checkpoint: read the agent trail",
   "title_zh": "M1 小测：读懂 agent 的工作痕迹",
   "outcome_en": "You can read a short agent transcript and judge what happened, what failed, and what may have changed.",

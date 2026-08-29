@@ -22,6 +22,18 @@ export default async function LearnPage() {
     .eq("correct", true);
   const correct = new Set((attempts ?? []).map((a) => a.exercise_id as string));
   const next = nextLesson(correct);
+  const totalExercises = lessons.reduce((sum, lesson) => sum + lesson.exercises.length, 0);
+  const completedExercises = lessons.reduce(
+    (sum, lesson) => sum + lesson.exercises.filter((exercise) => correct.has(exercise.id)).length,
+    0
+  );
+  const totalMinutes = lessons.reduce((sum, lesson) => sum + lesson.est_minutes, 0);
+  const completedMinutes = lessons.reduce((sum, lesson) => {
+    const complete = lesson.exercises.every((exercise) => correct.has(exercise.id));
+    return complete ? sum + lesson.est_minutes : sum;
+  }, 0);
+  const milestonePercent =
+    totalExercises === 0 ? 0 : Math.round((completedExercises / totalExercises) * 100);
 
   return (
     <main className="relative mx-auto min-h-screen w-full max-w-5xl px-5 py-12 sm:px-8">
@@ -72,6 +84,32 @@ export default async function LearnPage() {
             </li>
           ))}
         </ol>
+      </section>
+
+      <section className="mt-8 rounded-lg border border-line bg-surface p-5 shadow-sm">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-primary">{t.milestoneProgress}</p>
+            <p className="mt-1 max-w-3xl text-base leading-7 text-muted">
+              {modules[0] && (locale === "zh" ? modules[0].capability_zh : modules[0].capability_en)}
+            </p>
+          </div>
+          <p className="font-serif text-3xl font-semibold">{milestonePercent}%</p>
+        </div>
+        <div className="mt-4 h-3 overflow-hidden rounded-full bg-line">
+          <div
+            className="h-full rounded-full bg-primary transition-all"
+            style={{ width: `${milestonePercent}%` }}
+          />
+        </div>
+        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
+          <span>
+            {completedExercises}/{totalExercises} {t.exerciseProgress}
+          </span>
+          <span>
+            {t.learningTime}: {completedMinutes}/{totalMinutes} {t.minutes} · {t.estimatedComplete}
+          </span>
+        </div>
       </section>
 
       <div className="mt-12 space-y-12 border-t border-line pt-10">

@@ -4,7 +4,7 @@
   "order": 5,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 17,
+  "est_minutes": 8,
   "title_en": "Read your first Python output",
   "title_zh": "看懂第一段 Python 输出",
   "outcome_en": "You can connect a tiny Python output back to the code and command that produced it.",

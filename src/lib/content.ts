@@ -13,7 +13,12 @@ import m01l08 from "../../content/stage-1/module-01/lesson-08.json";
 import m01l09 from "../../content/stage-1/module-01/lesson-09.json";
 import stagesData from "../../content/stages.json";
 
-export type VisualKind = "source-code-file" | "terminal-command" | "python-output";
+export type VisualKind =
+  | "source-code-file"
+  | "terminal-command"
+  | "agent-command-log"
+  | "pseudocode-vs-code"
+  | "python-output";
 
 export type ReadingBlock = { type: "reading"; body_en: string; body_zh: string };
 export type ConceptBlock = {

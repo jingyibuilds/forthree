@@ -29,6 +29,16 @@ Review this learner-facing change from four perspectives:
 4. Strong zero-code learner: As a smart learner with no programming background,
    what feels confusing, passive, thin, or patronizing?
 
+If the change includes screenshots, diagrams, generated illustrations, or other
+visual teaching aids, reviewers must inspect the actual rendered visual (or a
+fresh screenshot of it), not just the JSON/prose. Ask them specifically:
+
+- Can a first-time learner tell what each visual part means?
+- Does the image answer a concrete confusion, or is it decorative?
+- Could any label, prompt marker, cursor, color, or layout create a new false
+  belief?
+- Is it readable on both laptop and phone?
+
 Run at least two passes when the first pass finds material issues:
 review -> revise -> re-review. Stop when comments converge to minor wording or
 future polish, or when token/time budget is near the limit. If stopping early,
@@ -72,5 +82,8 @@ failing commit locally before re-deploying.
 
 - Adding a lesson — Phase 1
 - Changing LLM models/providers — Phase 1 (`LLM_PROVIDER=openrouter`, `OPENROUTER_API_KEY`, `LLM_MODEL_*` env vars)
+- Applying assistant history migration — Phase 1:
+  open Supabase SQL Editor, paste `supabase/migrations/0003_lesson_assistant_history.sql`,
+  run it, then ask the agent to verify private assistant history writes.
 - Reading the cost dashboard — Phase 3
 - Quarterly Module 12 currency review — Phase 4

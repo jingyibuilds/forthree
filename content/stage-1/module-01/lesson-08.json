@@ -4,7 +4,7 @@
   "order": 8,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 13,
+  "est_minutes": 8,
   "title_en": "When running changes things",
   "title_zh": "运行之后，可能已经改了东西",
   "outcome_en": "You can distinguish harmless-looking checks from commands that may create, change, install, or delete things.",

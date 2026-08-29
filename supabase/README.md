@@ -25,4 +25,8 @@ One-time steps in the [Supabase dashboard](https://supabase.com/dashboard):
    ```
 
 Migrations are applied manually via the SQL Editor for now; the Supabase CLI
-can take over when migration volume justifies it.
+can take over when migration volume justifies it. Apply them in order:
+
+1. `migrations/0001_init.sql`
+2. `migrations/0002_phase1_content_in_repo.sql`
+3. `migrations/0003_lesson_assistant_history.sql`

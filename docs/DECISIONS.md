@@ -6,6 +6,52 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-08-29 — Assistant history is private and compacted after 30 days
+
+Owner wants lesson-assistant questions saved because they reveal learning
+habits, pain points, and course blind spots. Resolution: assistant history is
+private learner data in Supabase, not public content and never committed to the
+repo. Tables are user-scoped with RLS (`user_id = auth.uid()`), matching
+attempts and profiles.
+
+Full question/answer bodies are useful while the product is learning where the
+course is unclear, but they should not live forever by default. Store full
+messages for 30 days, and store compact `learning_signal` JSON beside each
+message immediately. Application cleanup can later null old bodies/context
+after `body_retained_until`, preserving the compact learning signal for
+stage-level summaries.
+
+## 2026-08-29 — XP is secondary to capability progress
+
+Owner pointed out that a visible "level" has no value unless it carries a real
+product meaning, such as unlocked difficulty, identity, or capability. For the
+Phase 1 learning path, remove the arbitrary level display. The primary progress
+signal is now distance toward the current module capability/milestone, measured
+by passed exercise checks. Pair that with cumulative estimated learning time so
+the learner sees both today's effort and long-term accumulation. XP remains an
+internal event stream for later streaks/achievements, but it should not be the
+main visible meaning until those systems exist.
+
+## 2026-08-29 — Lesson estimates should be honest micro-lesson estimates
+
+Owner noted that several early lessons felt shorter than their listed time.
+Resolution: estimate focused learner time honestly instead of padding lessons
+to look weighty. A normal Phase 1 micro-lesson should be 6-10 minutes, and the
+content validator enforces a 10-minute ceiling. A learner should be able to do
+one lesson in a small pocket of time, then choose whether to continue. The
+module should feel substantial through enough nodes, 3-5 meaningful checks per
+lesson, visuals where they clarify artifacts, and a module capability
+checkpoint, not through inflated duration labels.
+
+## 2026-08-29 — Visual review must inspect the rendered image
+
+Owner clarified that the four-reviewer loop must not review visual teaching
+aids from text alone. If a lesson change includes diagrams, screenshots, or
+illustrations, reviewers must inspect the rendered visual or a screenshot.
+They should check whether the image teaches the intended distinction, whether
+labels/cursors/prompts create false beliefs, and whether the visual is legible
+on laptop and phone.
+
 ## 2026-08-29 — Visual aids are concept-bearing lesson blocks
 
 Owner asked for illustrations inside lessons, especially for Python,

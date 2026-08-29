@@ -4,7 +4,7 @@
   "order": 7,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 13,
+  "est_minutes": 8,
   "title_en": "The folder changes the meaning",
   "title_zh": "站在哪个文件夹，很重要",
   "outcome_en": "You can spot when a command likely failed because it ran from the wrong folder.",

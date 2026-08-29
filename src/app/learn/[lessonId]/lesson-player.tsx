@@ -150,9 +150,7 @@ function ExerciseCard({
           {t.termBadge}
         </span>
       )}
-      <p className="text-lg font-medium leading-8">
-        <Inline text={prompt} />
-      </p>
+      <MarkdownText text={prompt} className="text-lg font-medium leading-8" />
 
       {exercise.type === "mcq" ? (
         <div className="space-y-3">
@@ -350,6 +348,7 @@ function AssistantDialog({
             rows={3}
             className="w-full resize-none rounded-lg border border-line bg-background px-3 py-2.5 text-base leading-7 outline-none transition-colors focus:border-primary"
           />
+          <p className="mt-2 text-xs leading-5 text-muted">{t.assistantPrivacyNote}</p>
           <div className="mt-3 flex justify-between gap-3">
             <button
               type="button"
@@ -428,7 +427,7 @@ function VisualBlockView({
   return (
     <figure className="space-y-4" aria-label={alt}>
       <div className="rounded-lg border border-line bg-surface p-4 shadow-sm sm:p-5">
-        <VisualIllustration kind={block.kind} />
+        <VisualIllustration kind={block.kind} locale={locale} />
       </div>
       <figcaption>
         <p className="font-serif text-2xl font-semibold leading-tight">{title}</p>
@@ -440,9 +439,11 @@ function VisualBlockView({
   );
 }
 
-function VisualIllustration({ kind }: { kind: VisualKind }) {
+function VisualIllustration({ kind, locale }: { kind: VisualKind; locale: Locale }) {
   if (kind === "source-code-file") return <SourceCodeFileIllustration />;
   if (kind === "terminal-command") return <TerminalCommandIllustration />;
+  if (kind === "agent-command-log") return <AgentCommandLogIllustration locale={locale} />;
+  if (kind === "pseudocode-vs-code") return <PseudocodeVsCodeIllustration locale={locale} />;
   return <PythonOutputIllustration />;
 }
 
@@ -502,6 +503,96 @@ function TerminalCommandIllustration() {
   );
 }
 
+function AgentCommandLogIllustration({ locale }: { locale: Locale }) {
+  const labels =
+    locale === "zh"
+      ? {
+          location: "位置提示符",
+          locationHint: "终端站在哪个文件夹",
+          command: "命令",
+          commandHint: "你发出的请求",
+          output: "输出",
+          outputHint: "电脑回来的结果",
+        }
+      : {
+          location: "location prompt",
+          locationHint: "where the terminal is standing",
+          command: "command",
+          commandHint: "the request you send",
+          output: "output",
+          outputHint: "what came back",
+        };
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_14rem]">
+      <WindowShell title="agent log">
+        <div className="space-y-2 bg-ink px-4 py-4 font-mono text-sm leading-7 text-on-primary">
+          <p>
+            <span className="rounded bg-success/25 px-1.5 py-0.5 text-success">
+              forthree %
+            </span>{" "}
+            <span className="rounded bg-primary/35 px-1.5 py-0.5">
+              python3 hello.py
+            </span>
+          </p>
+          <p>
+            <span className="rounded bg-accent/30 px-1.5 py-0.5">hello</span>
+          </p>
+        </div>
+      </WindowShell>
+      <div className="space-y-2 text-sm leading-6">
+        <div className="rounded-md border border-line bg-background px-3 py-2">
+          <span className="font-medium text-success">{labels.location}</span>
+          <span className="block text-muted">{labels.locationHint}</span>
+        </div>
+        <div className="rounded-md border border-line bg-background px-3 py-2">
+          <span className="font-medium text-primary">{labels.command}</span>
+          <span className="block text-muted">{labels.commandHint}</span>
+        </div>
+        <div className="rounded-md border border-line bg-background px-3 py-2">
+          <span className="font-medium text-accent">{labels.output}</span>
+          <span className="block text-muted">{labels.outputHint}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PseudocodeVsCodeIllustration({ locale }: { locale: Locale }) {
+  const labels =
+    locale === "zh"
+      ? {
+          plan: "伪代码：先检查逻辑",
+          code: "正式代码：再交给 Python 运行",
+          steps: ["对每个人", "如果这个人还没回复", "发送提醒"],
+        }
+      : {
+          plan: "Pseudocode: check the logic first",
+          code: "Production code: then Python can run it",
+          steps: ["FOR EACH person", "IF they have not replied", "send reminder"],
+        };
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <WindowShell title="plan.txt">
+        <div className="space-y-2 bg-background px-4 py-4 text-base leading-7 text-ink">
+          <p className="text-sm font-medium text-accent">{labels.plan}</p>
+          <ol className="list-decimal space-y-1 pl-5">
+            {labels.steps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ol>
+        </div>
+      </WindowShell>
+      <WindowShell title="reminders.py">
+        <pre className="overflow-x-auto bg-ink px-4 py-4 font-mono text-sm leading-7 text-on-primary">
+          <code>{'for person in people:\n    if not person.replied:\n        send_reminder(person)'}</code>
+        </pre>
+      </WindowShell>
+    </div>
+  );
+}
+
 function PythonOutputIllustration() {
   return (
     <div className="grid gap-4 sm:grid-cols-[1fr_1fr]">
@@ -538,13 +629,12 @@ export function LessonPlayer({
   const [index, setIndex] = useState(initialIndex);
   const [results, setResults] = useState<ExerciseResult[]>([]);
   const [finished, setFinished] = useState(false);
-  const [awardedXp, setAwardedXp] = useState<number | null>(null);
-  const [xpWarning, setXpWarning] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [assistantLoading, setAssistantLoading] = useState(false);
   const [assistantDraft, setAssistantDraft] = useState("");
   const [assistantMessages, setAssistantMessages] = useState<AssistantMessage[]>([]);
   const [assistantSeed, setAssistantSeed] = useState<AssistantSeed | null>(null);
+  const [assistantThreadId, setAssistantThreadId] = useState<string | null>(null);
 
   const exercisesById = useMemo(
     () => new Map(lesson.exercises.map((e) => [e.id, e])),
@@ -567,12 +657,9 @@ export function LessonPlayer({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ lessonId: lesson.id, results: all }),
       });
-      const data = await res.json();
-      setAwardedXp(data.awardedXp ?? 0);
-      setXpWarning(!data.xpPersisted);
+      await res.json();
     } catch {
-      setAwardedXp(0);
-      setXpWarning(true);
+      // Progress failure should not block the learner from finishing the lesson.
     }
   }
 
@@ -606,6 +693,7 @@ export function LessonPlayer({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           feature: "lesson_assistant",
+          threadId: assistantThreadId ?? undefined,
           lessonId: lesson.id,
           blockIndex: index,
           exerciseId: seed?.exerciseId ?? (isExercise ? block.ref : undefined),
@@ -622,7 +710,8 @@ export function LessonPlayer({
           },
         }),
       });
-      const data = (await res.json()) as { text?: string };
+      const data = (await res.json()) as { text?: string; threadId?: string };
+      if (data.threadId) setAssistantThreadId(data.threadId);
       setAssistantMessages((prev) => [
         ...prev,
         { role: "assistant", text: data.text || t.assistantFallback },
@@ -645,9 +734,10 @@ export function LessonPlayer({
           {t.lessonDone}
         </h1>
         <p className="mt-3 font-serif text-3xl font-semibold text-primary">
-          {awardedXp === null ? "…" : `+${awardedXp} XP`}
+          {locale === "zh"
+            ? `完成 ${lesson.est_minutes} 分钟学习`
+            : `${lesson.est_minutes} min completed`}
         </p>
-        {xpWarning && <p className="mt-2 text-xs text-warn">{t.xpNotSaved}</p>}
         <Link
           href="/learn"
           className="mt-8 rounded-lg bg-primary px-8 py-3 text-sm font-medium text-on-primary transition-colors hover:bg-primary-hover"
