@@ -26,6 +26,11 @@ maintenance crew; the owner is a data scientist, not a software engineer.
 - **Agent portability:** nothing load-bearing lives in chat history. Every
   decision fork goes into `docs/DECISIONS.md`; every runbook task into
   `docs/MAINTENANCE.md`. Any agent must be able to pick this repo up cold.
+- **Product/design hook:** before learner-facing UI, lesson-flow, onboarding,
+  course-map, AI-feedback, prioritization, PRD, or roadmap work, use
+  `$forthree-product-design` if available; otherwise read
+  `docs/agent-skills/forthree-product-design/SKILL.md` and the relevant
+  reference file under that folder.
 - **Phases:** work phase by phase (`docs/DESIGN.md` §7, as amended). Do not
   start phase N+1 before phase N acceptance passes.
 - **Commits:** granular, descriptive; history is part of the deliverable.

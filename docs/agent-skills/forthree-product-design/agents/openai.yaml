@@ -1,0 +1,4 @@
+interface:
+  display_name: "For Three Product Design"
+  short_description: "Product and visual design checks for For Three"
+  default_prompt: "Use $forthree-product-design to shape this For Three feature before implementation."

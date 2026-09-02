@@ -18,6 +18,7 @@ section so future reviews become sharper.
 | Interaction Reviewer | `docs/reviewers/interaction-reviewer.md` | UI, mobile/desktop flows, visual hierarchy, controls, states. |
 | AI-Era Engineer Reviewer | `docs/reviewers/ai-era-engineer-reviewer.md` | Agent workflows, engineering judgment, technical realism, old-vs-new coding emphasis. |
 | Zero-Code Learner Reviewer | `docs/reviewers/zero-code-learner-reviewer.md` | Learner-facing copy, onboarding, explanations, confusion/friction risk. |
+| Translation Reviewer | `docs/reviewers/translation-reviewer.md` | Bilingual landing/login/course copy, especially when Chinese and English should not mirror each other. |
 
 ## Approval Rule
 

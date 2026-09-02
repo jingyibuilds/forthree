@@ -47,3 +47,6 @@ significant learner-facing changes.
   content. A signed-out visitor needs the product job, the trust signal, and
   the next action; test reset, returning/new/tester distinctions, and internal
   review language belong behind authentication.
+- 2026-09-02: If a visual element has a card shell, border, shadow, number, and
+  sits near the primary CTA, first-time visitors read it as navigation. Either
+  make it interactive or downgrade it to clearly informational typography.
