@@ -16,7 +16,7 @@ export function LocaleToggle({
   return (
     <a
       href={href}
-      className={`rounded-md border border-line bg-surface px-2.5 py-1.5 text-xs font-medium text-muted shadow-sm transition-colors hover:border-primary hover:text-primary ${
+      className={`grid min-h-11 min-w-11 place-items-center rounded-lg border border-line bg-surface px-3 text-sm font-medium text-muted shadow-sm transition-[background-color,border-color,color,transform] hover:-translate-y-px hover:border-primary hover:bg-primary/5 hover:text-primary ${
         inline ? "" : "absolute right-4 top-4"
       }`}
     >

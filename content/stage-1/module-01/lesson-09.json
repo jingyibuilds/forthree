@@ -48,7 +48,7 @@
     {
       "type": "reading",
       "body_en": "Module 1 capability: you now have a map for AI-agent work. You can separate text from action, claim from evidence, command from output, folder mistake from code mistake, and harmless reading from possible side effects.",
-      "body_zh": "第 1 模块的能力闭环：你现在有了一张读 AI agent 工作过程的地图。你能分清文字和动作、说法和证据、命令和输出、文件夹错误和代码错误，以及单纯读取和可能产生副作用的运行。"
+      "body_zh": "第 1 模块的能力闭环：你现在有了一张读 AI agent（AI 代理）工作过程的地图。你能分清文字和动作、说法和证据、命令和输出、文件夹错误和代码错误，以及单纯读取和可能产生副作用的运行。"
     }
   ],
   "exercises": [

@@ -4,11 +4,11 @@
   "order": 2,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 10,
-  "title_en": "Who makes the text move?",
-  "title_zh": "谁把文字变成动作",
-  "outcome_en": "You can distinguish an error caught before running from an error that happened during running.",
-  "outcome_zh": "你能分清错误是在运行前被抓住，还是在运行过程中才出现。",
+  "est_minutes": 7,
+  "title_en": "When did it fail?",
+  "title_zh": "失败发生在什么时候",
+  "outcome_en": "You can judge whether failure stopped the work before action, or after some action may already have happened.",
+  "outcome_zh": "你能判断失败是把动作挡在门外，还是可能已经做了一半。",
   "review_tags": [
     "must_master",
     "recognize_only:C-Go-Rust"
@@ -16,26 +16,36 @@
   "blocks": [
     {
       "type": "reading",
-      "body_en": "Lesson 1 separated two moments: code can sit quietly as text, or it can run and do work. Now comes the obvious follow-up: computers do not naturally understand Python or SQL, so what turns human-readable text into computer action?",
-      "body_zh": "第 1 课先分清了两个时刻：代码可以安静地躺在文件里，也可以被运行起来、真的做事。接下来的问题很自然：电脑并不天然看得懂 Python 或 SQL，那到底是谁把人能读懂的文字，变成电脑能执行的动作？"
+      "body_en": "When technical work fails, timing matters. \"It failed before running\" and \"it crashed while running\" create different cleanup questions.",
+      "body_zh": "技术工作失败时，时间点很重要。「还没运行就失败」和「运行到一半崩了」，后面要追问的事不一样。"
     },
     {
       "type": "concept",
       "term": "interpreter",
       "term_zh": "解释器（interpreter）",
-      "anchor_en": "A simultaneous interpreter at a meeting: translates sentence by sentence, as the speaker goes. Speech starts immediately; if sentence 40 contains an error, you only find out when the interpreter gets there.",
-      "anchor_zh": "会议上的同声传译：说一句译一句，会议立刻开始；如果第 40 句有错，要等翻译讲到那里才暴露。",
-      "explain_en": "An interpreter reads your source code and executes it line by line, on the spot. Python works this way: `python3 hello.py` starts an interpreter that walks through the file. That's why a Python script can run halfway and then crash on a bug it only just reached.",
-      "explain_zh": "解释器逐行读你的源代码，并当场执行。Python 就是这么工作的：`python3 hello.py` 会启动解释器，从头往下走这个文件。这也是为什么一个 Python 脚本可能先跑一半，然后才在刚碰到的 bug（代码里的错误）上崩掉。"
+      "anchor_en": "A live interpreter at a meeting: sentence by sentence, while the meeting is already happening.",
+      "anchor_zh": "会议同传：说一句译一句，会议已经在进行。",
+      "explain_en": "An interpreter reads source code and runs it line by line. Python usually works this way. If line 40 fails, lines 1-39 may already have done work.",
+      "explain_zh": "解释器会逐行读源代码，并一边读一边执行。Python 通常就是这样。第 40 行出错时，前 39 行可能已经真的做过事。"
     },
     {
       "type": "concept",
       "term": "compiler",
       "term_zh": "编译器（compiler）",
-      "anchor_en": "A book translator: translates the entire book first, checking everything; readers then read the finished translation at full speed. Slow to start, fast to read, and typos are caught before publication.",
-      "anchor_zh": "图书翻译：先把整本书译完、通读校对，读者拿到的是成品，读起来很快。开始慢，阅读快，错别字在出版前就被抓住。",
-      "explain_en": "A compiler translates the whole program *before* anything runs, producing a finished executable file. Many errors are caught during this build step, before the program ever starts. Languages such as C, Go, and Rust often work this way; the language names are examples, not the point to memorize.",
-      "explain_zh": "编译器会在运行**之前**，先把整份程序翻成电脑更容易直接执行的成品文件。很多错误会在构建（build）这一步被抓住，程序根本还没开始跑。C、Go、Rust 这类语言常常这么工作；现在不用记这些语言名，它们只是例子。"
+      "anchor_en": "A book translator: finish the whole translation first, then readers see the final version.",
+      "anchor_zh": "图书翻译：先整本翻完，读者再拿到成品。",
+      "explain_en": "A compiler translates the whole program before it runs. Many errors are caught during build, which usually means the program never started. C, Go, and Rust are examples; the names are not the point yet.",
+      "explain_zh": "编译器会在运行之前，先把整份程序翻成电脑更容易执行的成品。很多错误会在构建（build）这一步被抓住，程序通常还没开始跑。C、Go、Rust 只是例子，现在不用背。"
+    },
+    {
+      "type": "visual",
+      "kind": "failure-stage",
+      "title_en": "Failure stage changes your next question",
+      "title_zh": "失败阶段决定你下一句问什么",
+      "caption_en": "Build failure points before running. Runtime crash points after running started.",
+      "caption_zh": "构建失败，多半卡在运行前；运行中崩溃，先问已经改了什么。",
+      "alt_en": "A four-step timeline from writing a file to build, run, and output, with build failure and runtime crash marked.",
+      "alt_zh": "一条从写文件、构建检查、开始运行到产生输出的四步时间线，标出构建失败和运行中崩溃的位置。"
     },
     {
       "type": "exercise",
@@ -43,8 +53,8 @@
     },
     {
       "type": "reading",
-      "body_en": "Where you'll meet this: an agent says \"the build failed\" (a compile-time error — the translation never finished) versus \"it crashed at runtime\" (an interpreter or a running program hit a bug mid-execution). Lesson 3 moves one step outward: how do you, or an agent, actually ask the computer to run something?",
-      "body_zh": "你会在哪里遇到它：agent 说 \"the build failed\"（构建失败），指的是编译期的错误——翻译根本没做完；说 \"it crashed at runtime\"（运行中崩溃），指的是程序跑到一半撞上了错误。第 3 课再往外走一步：你或者 agent 到底是在什么地方，向电脑发出「运行它」这个请求？"
+      "body_en": "Collaboration move: after a failure, ask for the failure stage. Build failed? likely no run. Runtime crash? ask what already changed.",
+      "body_zh": "协作动作：失败后先问阶段。构建失败？大概率还没运行。运行中崩溃？就要追问已经改过什么。"
     },
     {
       "type": "exercise",
@@ -56,8 +66,17 @@
     },
     {
       "type": "reading",
-      "body_en": "Checkpoint: after this lesson, you can tell whether an error was caught before the program ran, or while it was already running. Next, we look at the place where run requests are sent.",
-      "body_zh": "这一课的小结：现在你能分清，一个错误是在程序运行前被抓住，还是在程序已经跑起来之后才出现。下一课，我们看「请求它运行」这句话通常从哪里发出去。"
+      "body_en": "Advanced question: decide what risk remains after the failure message.",
+      "body_zh": "举一反三：根据失败信息，判断还剩什么风险。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l02-e04"
+    },
+    {
+      "type": "reading",
+      "body_en": "Checkpoint: ask when it failed before you ask whether the fix looks good.",
+      "body_zh": "小结：先问失败发生在什么时候，再判断修复方案好不好。"
     }
   ],
   "exercises": [
@@ -125,8 +144,32 @@
       "difficulty": 1,
       "xp_value": 15,
       "term_drill": true
+    },
+    {
+      "id": "m01-l02-e04",
+      "type": "mcq",
+      "prompt_en": "An agent says: \"The script crashed after creating `backup.csv`, before deleting old rows.\" What should you ask next?",
+      "prompt_zh": "agent 说：\"The script crashed after creating `backup.csv`, before deleting old rows.\"（脚本在创建 `backup.csv` 之后、删除旧行之前崩溃了。）你接下来最该问什么？",
+      "options_en": [
+        "Confirm what files now exist, because some action already happened.",
+        "Nothing changed, because the script crashed.",
+        "Only ask whether the code style is clean.",
+        "Treat it as a build failure."
+      ],
+      "options_zh": [
+        "确认现在有哪些文件存在，因为已经有动作发生过。",
+        "脚本崩溃了，所以什么都没变。",
+        "只问代码风格干不干净。",
+        "把它当成构建失败。"
+      ],
+      "answer": 0,
+      "explain_en": "This was a runtime failure after at least one step succeeded. Your next move is evidence: what was created, changed, or left half-done?",
+      "explain_zh": "这是运行中的失败，而且至少有一步已经成功。下一步要证据：创建了什么、改了什么、有没有半成品？",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
     }
   ],
-  "why_en": "Why this second: once code is text, the next question is who translates it, when errors are caught, and why \"build failed\" is not the same as \"it crashed.\"",
-  "why_zh": "为什么第二课学它：既然代码先是文字，下一步就要知道谁来翻译它、错误在哪个时刻被抓住，以及为什么「构建失败」和「运行中崩溃」不是一回事。"
+  "why_en": "Why second: failure timing tells you whether work was blocked, or may already have changed something.",
+  "why_zh": "为什么第二课学它：失败发生的时间点，会告诉你动作被挡住了，还是可能已经改了东西。"
 }

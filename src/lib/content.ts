@@ -2,6 +2,10 @@
 // ships inside the bundle (no fs, no DB). Register new files here; structure
 // is enforced by scripts/validate-content.mjs at build time.
 import m01 from "../../content/stage-1/module-01/module.json";
+import m00 from "../../content/stage-0/module-00/module.json";
+import m00l01 from "../../content/stage-0/module-00/lesson-01.json";
+import m00l02 from "../../content/stage-0/module-00/lesson-02.json";
+import m00l03 from "../../content/stage-0/module-00/lesson-03.json";
 import m01l01 from "../../content/stage-1/module-01/lesson-01.json";
 import m01l02 from "../../content/stage-1/module-01/lesson-02.json";
 import m01l03 from "../../content/stage-1/module-01/lesson-03.json";
@@ -13,11 +17,15 @@ import m01l08 from "../../content/stage-1/module-01/lesson-08.json";
 import m01l09 from "../../content/stage-1/module-01/lesson-09.json";
 import stagesData from "../../content/stages.json";
 
+const ORIENTATION_MODULE_ID = "m00";
+
 export type VisualKind =
+  | "cs-scope-map"
   | "source-code-file"
   | "terminal-command"
   | "agent-command-log"
   | "pseudocode-vs-code"
+  | "failure-stage"
   | "python-output";
 
 export type ReadingBlock = { type: "reading"; body_en: string; body_zh: string };
@@ -55,6 +63,7 @@ export type McqExercise = {
   explain_zh: string;
   difficulty: number;
   xp_value: number;
+  advanced?: boolean;
 };
 export type FillInExercise = {
   id: string;
@@ -70,8 +79,37 @@ export type FillInExercise = {
   explain_zh: string;
   difficulty: number;
   xp_value: number;
+  advanced?: boolean;
 };
-export type Exercise = McqExercise | FillInExercise;
+export type DragOrderExercise = {
+  id: string;
+  type: "drag_order";
+  prompt_en: string;
+  prompt_zh: string;
+  items_en: string[];
+  items_zh: string[];
+  answer: number[];
+  explain_en: string;
+  explain_zh: string;
+  difficulty: number;
+  xp_value: number;
+  advanced?: boolean;
+};
+export type Exercise = McqExercise | FillInExercise | DragOrderExercise;
+
+export type LessonResource = {
+  title_en: string;
+  title_zh: string;
+  source: string;
+  url: string;
+  est_minutes: number;
+  placement: "optional" | "required";
+  reviewed_on: string;
+  fit_en: string;
+  fit_zh: string;
+  note_en: string;
+  note_zh: string;
+};
 
 export type Lesson = {
   id: string;
@@ -88,6 +126,7 @@ export type Lesson = {
   // Optional concrete ability earned by the end of the lesson.
   outcome_en?: string;
   outcome_zh?: string;
+  resources?: LessonResource[];
   review_tags?: string[];
   blocks: Block[];
   exercises: Exercise[];
@@ -103,11 +142,22 @@ export type Stage = {
   milestone_zh: string;
 };
 
+export type CourseSource = {
+  name: string;
+  url: string;
+  focus_en: string;
+  focus_zh: string;
+  reviewed_on: string;
+  fit_en: string;
+  fit_zh: string;
+};
+
 export type CourseMap = {
   course_title_en: string;
   course_title_zh: string;
   course_promise_en: string;
   course_promise_zh: string;
+  course_sources?: CourseSource[];
   stages: Stage[];
 };
 
@@ -123,17 +173,25 @@ export type Module = {
   description_zh: string;
   capability_en?: string;
   capability_zh?: string;
+  refusal_en?: string;
+  refusal_zh?: string;
+  capability_moves_en?: string[];
+  capability_moves_zh?: string[];
   customization_points?: Array<{
     id: string;
     applies_to: string[];
     default_profile: string;
     rewrite_when: string;
   }>;
-  refs: string[];
 };
 
-export const modules: Module[] = [m01 as Module];
+export const modules: Module[] = [m00 as Module, m01 as Module].sort(
+  (a, b) => a.stage - b.stage || a.order - b.order
+);
 export const lessons: Lesson[] = [
+  m00l01 as Lesson,
+  m00l02 as Lesson,
+  m00l03 as Lesson,
   m01l01 as Lesson,
   m01l02 as Lesson,
   m01l03 as Lesson,
@@ -155,5 +213,24 @@ export function getModule(id: string): Module | undefined {
 
 // A lesson is complete when every one of its exercises has a correct attempt.
 export function nextLesson(correctExerciseIds: Set<string>): Lesson | undefined {
-  return lessons.find((l) => !l.exercises.every((e) => correctExerciseIds.has(e.id)));
+  const hasPostOrientationProgress = lessons.some(
+    (lesson) =>
+      lesson.module_id !== ORIENTATION_MODULE_ID &&
+      lesson.exercises.some((exercise) => correctExerciseIds.has(exercise.id))
+  );
+
+  return lessons.find((lesson) => {
+    if (hasPostOrientationProgress && lesson.module_id === ORIENTATION_MODULE_ID) {
+      return false;
+    }
+    return !lesson.exercises.every((exercise) => correctExerciseIds.has(exercise.id));
+  });
+}
+
+export function hasProgressAfterOrientation(correctExerciseIds: Set<string>) {
+  return lessons.some(
+    (lesson) =>
+      lesson.module_id !== ORIENTATION_MODULE_ID &&
+      lesson.exercises.some((exercise) => correctExerciseIds.has(exercise.id))
+  );
 }

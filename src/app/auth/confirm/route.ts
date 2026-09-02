@@ -1,6 +1,9 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
+import { hasRememberedInvite } from "@/lib/access";
 import { createClient } from "@/lib/supabase/server";
+import { getLearnerProfile, hasCompletedOnboarding, ONBOARDING_PATH } from "@/lib/profile";
+import { lessonPath } from "@/lib/routes";
 
 // Magic-link landing. Supports both Supabase email flows:
 // 1. Default template ({{ .ConfirmationURL }}): arrives with ?code=..., exchanged
@@ -17,14 +20,35 @@ export async function GET(request: NextRequest) {
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return redirectAfterAuth(supabase, request.url);
     }
   } else if (token_hash && type) {
     const { error } = await supabase.auth.verifyOtp({ type, token_hash });
     if (!error) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return redirectAfterAuth(supabase, request.url);
     }
   }
 
   return NextResponse.redirect(new URL("/login?error=invalid_link", request.url));
+}
+
+async function redirectAfterAuth(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  requestUrl: string
+) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.redirect(new URL("/login?error=invalid_link", requestUrl));
+  }
+
+  const profile = await getLearnerProfile(supabase, user.id);
+  const nextPath = hasCompletedOnboarding(profile)
+    ? "/"
+    : (await hasRememberedInvite(user.email))
+      ? lessonPath("m00-l01")
+      : ONBOARDING_PATH;
+  return NextResponse.redirect(new URL(nextPath, requestUrl));
 }

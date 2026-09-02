@@ -1,0 +1,34 @@
+{
+  "id": "m00",
+  "stage": 0,
+  "order": 0,
+  "title_en": "Start from one small incident",
+  "title_zh": "先看一场小事故",
+  "description_en": "Before the technical modules begin, this bridge lets you feel the gap this course is built for: AI can sound finished while the evidence is still missing.",
+  "description_zh": "正式进入技术模块之前，先看清这门课要补上的那层信息差：AI 说得像完成了，但证据可能还没补齐。",
+  "capability_en": "You can name the course method, spot a missing piece of evidence in an AI-agent update, and say when to pause before accepting a delivery.",
+  "capability_zh": "你能说清这门课的方法，也能在一段 AI agent（AI 代理）汇报里看出缺了哪块证据，以及什么时候该先停一下再接收交付。",
+  "refusal_en": "A handoff that sounds complete but has no checkable evidence.",
+  "refusal_zh": "听起来已经完成、但没有可检查证据的交付。",
+  "capability_moves_en": [
+    "Spot the gap",
+    "Ask for evidence",
+    "Know when to pause"
+  ],
+  "capability_moves_zh": [
+    "看出信息差",
+    "追问证据",
+    "知道何时停"
+  ],
+  "customization_points": [
+    {
+      "id": "m00-first-incident",
+      "applies_to": [
+        "lesson examples",
+        "landing-page bridge"
+      ],
+      "default_profile": "Learner has used AI to produce technical work but cannot always judge the result.",
+      "rewrite_when": "For a learner without coding-agent exposure, replace the agent transcript with a spreadsheet automation, no-code workflow, or vendor handoff while preserving the claim -> missing evidence -> pause decision."
+    }
+  ]
+}

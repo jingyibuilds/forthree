@@ -17,7 +17,7 @@
     {
       "type": "reading",
       "body_en": "An AI agent often writes in confident sentences: \"I fixed it,\" \"tests pass,\" \"the script ran.\" Confidence is not evidence. In engineering work, you look for the trail underneath the sentence: claim, command, output.",
-      "body_zh": "AI agent 常常会很有信心地说：「我修好了」「测试通过了」「脚本跑完了」。语气自信不等于证据。在工程工作里，你要看这句话下面有没有一条痕迹：说法、命令、输出。"
+      "body_zh": "AI agent（AI 代理）常常会很有信心地说：「我修好了」「测试通过了」「脚本跑完了」。语气自信不等于证据。在工程工作里，你要看这句话下面有没有一条痕迹：说法、命令、输出。"
     },
     {
       "type": "concept",
@@ -35,7 +35,7 @@
       "anchor_en": "A package tracking page. \"Delivered\" is the claim; the timestamp, address, and photo are evidence you can inspect.",
       "anchor_zh": "像快递页面。「已送达」是说法；时间、地址、照片，才是你能检查的证据。",
       "explain_en": "Evidence in a coding-agent transcript usually includes commands, terminal output, test results, file names, or diffs. At this stage, you do not need to verify everything perfectly. You only need the habit: ask what sentence is being supported by what evidence.",
-      "explain_zh": "在 AI coding agent 的工作记录里，证据通常包括命令、终端输出、测试结果、文件名，或者代码改动。现在不需要你完美核查一切，只要先养成习惯：它说的哪句话，是由哪条证据支撑的？"
+      "explain_zh": "在 AI coding agent（AI 编程代理）的工作记录里，证据通常包括命令、终端输出、测试结果、文件名，或者代码改动。现在不需要你完美核查一切，只要先养成习惯：它说的哪句话，是由哪条证据支撑的？"
     },
     {
       "type": "exercise",

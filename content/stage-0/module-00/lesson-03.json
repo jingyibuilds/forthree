@@ -1,0 +1,96 @@
+{
+  "id": "m00-l03",
+  "module_id": "m00",
+  "order": 3,
+  "format": "reading",
+  "tag": "core",
+  "est_minutes": 6,
+  "title_en": "From incident to structure",
+  "title_zh": "从问题走到结构",
+  "outcome_en": "You can explain why the course starts from familiar problems, then teaches the structure underneath.",
+  "outcome_zh": "你能说清：为什么课程先从熟悉的问题进入，再学背后的结构。",
+  "why_en": "Why third: knowing the route helps the technical modules feel necessary, not random.",
+  "why_zh": "为什么第三课学它：先看清路线，后面的技术模块才不会像随机知识点。",
+  "review_tags": [
+    "course_orientation",
+    "must_master"
+  ],
+  "blocks": [
+    {
+      "type": "reading",
+      "body_en": "You may arrive with a sentence like \"the error is red and I can only paste it back.\" The course starts there, because that is where the need is alive.\n\nThen it teaches the structure underneath: runtime, traceback, stack, file path, test, side effect. The problem gives you a reason to care; the structure gives you a way to keep learning.",
+      "body_zh": "你可能是带着一句话来的：「报错是红的，我只会整段贴回去。」课程会从这里开始，因为需要感就在这里。\n\n然后，我们再学它背后的结构：运行时（runtime）、traceback（报错追踪信息）、调用栈（stack）、文件路径（file path）、测试（test）、副作用（side effect）。问题让你知道为什么要学；结构让你以后还能继续学。"
+    },
+    {
+      "type": "concept",
+      "term": "computational literacy",
+      "term_zh": "计算素养（computational literacy）",
+      "anchor_en": "Literacy is not memorizing every book. It is enough reading ability to keep learning from new pages.",
+      "anchor_zh": "识字不是背完每一本书，而是有能力继续读下一页、下一本、下一个领域。",
+      "explain_en": "Computational literacy is the durable ability to understand technical structures well enough to keep learning, ask useful questions, and judge work that uses code or AI. New tools will keep arriving; the literacy is what lets you keep up without starting from zero each time.",
+      "explain_zh": "计算素养，是一种长期能力：你能看懂技术结构，足够继续学习、问出有用问题、判断代码或 AI 做出来的工作。新工具会一直来；这份素养让你不用每次都从零开始。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m00-l03-e01"
+    },
+    {
+      "type": "reading",
+      "body_en": "Try the pattern once more before M1.\n\n```text\nAgent: I made the report faster by adding a cache.\nChanged: api/report.ts\nNote: did not run the full test suite; small change only.\n```\n\nThe right question is not \"is caching good or bad?\" It is: what evidence would make this safe to accept?",
+      "body_zh": "进入 M1 之前，再用一次这个模式。\n\n```text\nAgent: I made the report faster by adding a cache.（我加了缓存，让报告更快了。）\nChanged: api/report.ts（已改动：api/report.ts）\nNote: did not run the full test suite; small change only.（没有跑完整测试；只是小改动。）\n```\n\n现在的问题不是「缓存好不好」，而是：要看到什么证据，你才可以放心接收？"
+    },
+    {
+      "type": "exercise",
+      "ref": "m00-l03-e02"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "m00-l03-e01",
+      "type": "mcq",
+      "prompt_en": "What is the course pattern?",
+      "prompt_zh": "这门课的组织方式是什么？",
+      "options_en": [
+        "Start from a problem you recognize, then learn the structure underneath",
+        "Random AI tips without a knowledge spine",
+        "Only Python syntax, with no work scenarios",
+        "Only product advice, with no technical structure"
+      ],
+      "options_zh": [
+        "先从你认得出的问题进入，再学背后的结构",
+        "随机给 AI 使用技巧，没有知识主线",
+        "只学 Python 语法，不看真实工作场景",
+        "只讲产品建议，不教技术结构"
+      ],
+      "answer": 0,
+      "explain_en": "The course starts from situations you can recognize, then teaches the technical structure that lets you respond better next time.",
+      "explain_zh": "课程先从你认得出的情境进入，再教支撑这个情境的技术结构。这样下次遇到类似问题，你能回应得更稳。",
+      "difficulty": 1,
+      "xp_value": 10
+    },
+    {
+      "id": "m00-l03-e02",
+      "type": "mcq",
+      "prompt_en": "In the cache handoff above, what is the best next question?",
+      "prompt_zh": "在上面的缓存交付里，下一句最好问什么？",
+      "options_en": [
+        "What got faster, what might become stale, and what check proves the report is still correct?",
+        "Can you rewrite the summary in a friendlier tone?",
+        "Can you add another cache anywhere else?",
+        "Can you promise there is no possible risk?"
+      ],
+      "options_zh": [
+        "哪里变快了？什么可能变旧？有什么检查证明报告仍然正确？",
+        "能不能把总结写得更友好一点？",
+        "能不能在别处也再加一个缓存？",
+        "能不能保证完全没有任何风险？"
+      ],
+      "answer": 0,
+      "explain_en": "This question asks for the tradeoff and the evidence. It is specific enough for an agent or engineer to answer.",
+      "explain_zh": "这句话同时追问取舍和证据，而且足够具体，agent 或工程师都能接着回答。",
+      "difficulty": 3,
+      "advanced": true,
+      "xp_value": 10
+    }
+  ]
+}

@@ -5,10 +5,10 @@
   "format": "reading",
   "tag": "core",
   "est_minutes": 8,
-  "title_en": "Think before syntax",
-  "title_zh": "先想清楚，再写代码",
-  "outcome_en": "You can turn a fuzzy request into a plain-language plan that code can be checked against.",
-  "outcome_zh": "你能把模糊需求改成普通语言的步骤计划，并用它检查代码是不是跑偏。",
+  "title_en": "Give the agent a plan",
+  "title_zh": "先给 agent 一份计划",
+  "outcome_en": "You can turn a fuzzy request into a checkable action plan.",
+  "outcome_zh": "你能把模糊需求改成一份可检查的动作计划。",
   "review_tags": [
     "must_master",
     "profile_anchor:ai-agent"
@@ -16,27 +16,27 @@
   "blocks": [
     {
       "type": "reading",
-      "body_en": "Now you know what code is, who translates it, and where commands are sent. Before you ask an AI agent or a computer to run anything, you need one more ability: can you tell whether the planned action is actually the action you wanted? That starts before syntax.",
-      "body_zh": "现在你已经知道：代码是什么，谁翻译它，命令从哪里发出去。但在请 AI agent 或电脑运行任何东西之前，你还需要一个能力：判断它准备做的事，是不是你真正想要的事。这个能力要在具体语法之前开始。"
+      "body_en": "Before code, make the work visible. A good plan lets you catch mismatch before an agent writes or runs the wrong thing.",
+      "body_zh": "写代码之前，先把要做的事摊开。计划写清楚，agent 写错方向或跑错动作时，你才抓得住。"
     },
     {
       "type": "concept",
       "term": "pseudocode",
       "term_zh": "伪代码（pseudocode）",
-      "anchor_en": "A cooking plan written before the formal recipe: wash vegetables, heat pan, add oil, cook until soft. It is not publishable recipe language, but it makes the logic visible.",
-      "anchor_zh": "像正式菜谱之前的做菜计划：洗菜，热锅，放油，炒到变软。它还不是标准菜谱文字，但已经把做事顺序说清楚了。",
-      "explain_en": "Pseudocode is a plain-language version of code logic. It ignores exact syntax and focuses on steps, order, decisions, and repetition. It is especially useful when working with AI: a clear pseudocode plan gives the agent something concrete to implement and gives you something concrete to judge.",
-      "explain_zh": "伪代码就是用普通语言写出的代码逻辑。它先不管准确语法，只关注步骤、顺序、判断和重复。和 AI 合作时它特别有用：清楚的伪代码给 agent 一个明确实现目标，也给你一个可以检查的标准。"
+      "anchor_en": "A prep note before the formal recipe: wash, heat, add, stop when soft.",
+      "anchor_zh": "像正式菜谱前的备忘：洗菜，热锅，放油，炒软就停。",
+      "explain_en": "Pseudocode is code logic in plain language. It focuses on steps, order, decisions, and repetition. With AI, it works like a contract: implement this, then prove the code follows it.",
+      "explain_zh": "伪代码就是用普通语言写代码逻辑。它关注步骤、顺序、判断和重复。和 AI 合作时，它像一份合约：请按这个实现，再证明代码没有跑偏。"
     },
     {
       "type": "visual",
       "kind": "pseudocode-vs-code",
       "title_en": "Pseudocode is the plan; production code is the runnable version",
       "title_zh": "伪代码是计划；正式代码是能运行的版本",
-      "caption_en": "The left side says the logic in plain language. The right side turns the same logic into Python syntax. You judge the code by checking whether it still follows the plan.",
-      "caption_zh": "左边用普通语言说清逻辑；右边把同一套逻辑写成 Python 语法。你检查代码时，先看它有没有忠实执行左边这份计划。",
-      "alt_en": "Two side-by-side panels comparing pseudocode steps with equivalent Python code.",
-      "alt_zh": "左右两个面板，对比伪代码步骤和对应的 Python 代码。"
+      "caption_en": "`plan.txt` is the contract. `reminders.py` is one runnable version. Judge by matching the two titles and steps.",
+      "caption_zh": "`plan.txt` 是合约；`reminders.py` 是一种可运行写法。检查时，就看两个标题下面的步骤是否对得上。",
+      "alt_en": "Two panels comparing pseudocode steps with equivalent Python code.",
+      "alt_zh": "两个面板，对比伪代码步骤和对应的 Python 代码。"
     },
     {
       "type": "exercise",
@@ -50,15 +50,15 @@
       "type": "concept",
       "term": "algorithm",
       "term_zh": "算法（algorithm）",
-      "anchor_en": "A reliable procedure, like sorting receipts by date: compare two receipts, put the earlier one first, repeat until the stack is ordered.",
-      "anchor_zh": "像一个可靠的办事流程，比如按日期整理小票：比较两张，把更早的放前面，不断重复，直到整叠排好。",
-      "explain_en": "An algorithm is a step-by-step method for solving a problem. At this stage, do not treat it as a scary math word. A pseudocode plan is often your first draft of an algorithm: what happens first, what happens next, and when the work stops.",
-      "explain_zh": "算法就是解决问题的一套分步方法。现在不要把它当成可怕的数学词。很多时候，伪代码就是算法的第一版草稿：先做什么，后做什么，什么时候停下来。"
+      "anchor_en": "A repeatable procedure, like sorting receipts by date until the stack is ordered.",
+      "anchor_zh": "像一套可重复的办事流程：按日期整理小票，直到整叠排好。",
+      "explain_en": "An algorithm is a step-by-step method for solving a problem. At this stage, treat pseudocode as your first visible draft of that method.",
+      "explain_zh": "算法就是解决问题的一套分步方法。现在先把伪代码当成算法的第一版草稿：方法先看得见，代码之后再说。"
     },
     {
       "type": "reading",
-      "body_en": "A useful pseudocode habit: write one step per line, and use small markers like IF, FOR EACH, and STOP. These uppercase words are not Python you need to memorize now. They simply mark decisions, repetition, and endings — the same shapes that later become real code.",
-      "body_zh": "一个好习惯：伪代码一行只写一个步骤，并用 IF（如果）、FOR EACH（对每一个）、STOP（停止）这样的小标记。这些大写英文不是现在要你背的 Python 语法，只是在标出判断、重复和结束——这些形状之后会变成真正的代码。"
+      "body_en": "Good habit: one step per line. Mark decisions with IF, repetition with FOR EACH, and endings with STOP.",
+      "body_zh": "好习惯：一行只写一步。IF 表示判断，FOR EACH 表示逐个处理，STOP 表示到此为止。"
     },
     {
       "type": "exercise",
@@ -66,8 +66,25 @@
     },
     {
       "type": "reading",
-      "body_en": "Checkpoint: after this lesson, you can write a plain plan before asking for code, and use that plan to judge whether the code is trying to do the right thing. Next, we run the smallest visible Python example.",
-      "body_zh": "这一课的小结：现在你能在请 AI 写代码之前，先写出一份普通语言的计划，并用这份计划判断代码是不是在做你真正想要的事。下一课，我们看一个最小、但能看见结果的 Python 例子。"
+      "body_en": "Advanced questions: catch mismatch before it becomes damage.",
+      "body_zh": "举一反三：在跑出损失之前，先抓住不一致。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l04-e04"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l04-e05"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l04-e06"
+    },
+    {
+      "type": "reading",
+      "body_en": "Checkpoint: vague request → checkable plan. Next, we run the smallest visible Python example.",
+      "body_zh": "小结：把模糊需求变成可检查计划。下一课，我们看最小的 Python 运行结果。"
     }
   ],
   "exercises": [
@@ -117,7 +134,7 @@
       "id": "m01-l04-e03",
       "type": "mcq",
       "prompt_en": "Why is pseudocode useful when asking an AI agent to write code?",
-      "prompt_zh": "请 AI agent 写代码前，先写伪代码有什么用？",
+      "prompt_zh": "请 AI agent（AI 代理）写代码前，先写伪代码有什么用？",
       "options_en": [
         "It makes your intended steps visible, so both you and the agent can check the plan",
         "It guarantees the final code has no bugs",
@@ -135,8 +152,85 @@
       "explain_zh": "伪代码不能证明代码一定正确。它的价值是清楚：后面真正写出的代码，至少有一个看得见的计划可以对照。",
       "difficulty": 2,
       "xp_value": 10
+    },
+    {
+      "id": "m01-l04-e04",
+      "type": "drag_order",
+      "prompt_en": "Turn this fuzzy request into a usable pseudocode order: \"flag customer rows that need follow-up, then save a new CSV.\"",
+      "prompt_zh": "把这个模糊需求排成可用的伪代码顺序：「标出需要跟进的客户行，然后保存成新的 CSV 表格文件。」",
+      "items_en": [
+        "Save the result as a new CSV file.",
+        "IF the customer's status is blank, mark the row as `needs follow-up`.",
+        "Open the customer CSV file.",
+        "FOR EACH customer row."
+      ],
+      "items_zh": [
+        "把结果保存成一个新的 CSV 表格文件。",
+        "如果客户状态为空，就把这一行标记为 `needs follow-up`（需要跟进）。",
+        "打开客户 CSV 表格文件。",
+        "对每一行客户记录。"
+      ],
+      "answer": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "explain_en": "The plan should start with the input, repeat over each row, make the conditional change, then save the result. That order is what later code must preserve.",
+      "explain_zh": "计划应该先说明输入来源，再逐行重复处理，满足条件时做标记，最后保存结果。后面真正的代码，必须保住这个顺序。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
+    },
+    {
+      "id": "m01-l04-e05",
+      "type": "mcq",
+      "prompt_en": "Your pseudocode says:\n\n1. Make a copy of `customers.csv`.\n2. Remove rows with missing email.\n3. Count how many rows were removed.\n4. Save the result as `customers_clean.csv`.\n\nAn agent replies: \"I will open `customers.csv`, delete rows with missing email, and save `customers.csv`.\" What should you flag?",
+      "prompt_zh": "你的伪代码写的是：\n\n1. 先复制一份 `customers.csv`。\n2. 删除缺少邮箱的行。\n3. 统计一共删除了多少行。\n4. 把结果保存成 `customers_clean.csv`。\n\nagent 回答：「我会打开 `customers.csv`，删除缺少邮箱的行，然后保存 `customers.csv`。」你应该提醒什么？",
+      "options_en": [
+        "It may overwrite the original file and it skipped the removal count",
+        "It used too many English words",
+        "It must be correct because it mentions missing email",
+        "It is only pseudocode, so it cannot be compared to your plan"
+      ],
+      "options_zh": [
+        "它可能覆盖原文件，而且漏掉了统计删除数量这一步",
+        "它用了太多英文词",
+        "它提到了缺少邮箱，所以一定正确",
+        "它只是伪代码，所以不能和你的计划对照"
+      ],
+      "answer": 0,
+      "explain_en": "You are not judging Python spelling here. You are checking whether the agent preserved the contract: copy first, count removed rows, and save to a new file.",
+      "explain_zh": "这里不是在检查 Python 拼写，而是在检查 agent 有没有守住计划约定：先复制、统计删除数量、保存到新文件。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
+    },
+    {
+      "id": "m01-l04-e06",
+      "type": "mcq",
+      "prompt_en": "Which message gives an AI agent the strongest pseudocode-style contract?",
+      "prompt_zh": "下面哪句话最像在给 AI agent（AI 代理）一份清楚的伪代码式约定？",
+      "options_en": [
+        "Read `orders.csv`; for each order, if `paid` is false, add it to a follow-up list; print the count",
+        "Write professional Python for my orders",
+        "Analyze the file and do the right thing",
+        "Make it clean and efficient"
+      ],
+      "options_zh": [
+        "读取 `orders.csv`；对每一笔订单，如果 `paid`（已付款）为 false（否），就加入待跟进列表；最后打印数量",
+        "给我的订单写一段专业 Python",
+        "分析这个文件，然后做正确的事",
+        "写得干净、高效一点"
+      ],
+      "answer": 0,
+      "explain_en": "The strongest contract names the input, the repeated item, the condition, the action, and the visible result. The vague requests sound confident but are hard to check.",
+      "explain_zh": "最强的约定会说清楚输入、重复处理的对象、判断条件、动作和可见结果。含糊请求听起来很自信，但后面很难检查。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
     }
   ],
-  "why_en": "Why this fourth: before you read or ask for code, you need a way to state the plan without getting trapped by syntax.",
-  "why_zh": "为什么第四课学它：在读代码、请 AI 写代码之前，你需要一种不被语法困住、但能把计划讲清楚的方法。"
+  "why_en": "Why fourth: a clear plan lowers the cost of judging AI work later.",
+  "why_zh": "为什么第四课学它：计划越清楚，后面判断 AI 工作的成本越低。"
 }

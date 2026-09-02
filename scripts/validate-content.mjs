@@ -11,10 +11,12 @@ const err = (file, msg) => errors.push(`${file}: ${msg}`);
 
 const isStr = (v) => typeof v === "string" && v.trim().length > 0;
 const visualKinds = new Set([
+  "cs-scope-map",
   "source-code-file",
   "terminal-command",
   "agent-command-log",
   "pseudocode-vs-code",
+  "failure-stage",
   "python-output",
 ]);
 const bilingual = (obj, base, file, ctx) => {
@@ -22,6 +24,7 @@ const bilingual = (obj, base, file, ctx) => {
     if (!isStr(obj[base + suffix])) err(file, `${ctx}: missing ${base}${suffix}`);
   }
 };
+const isIsoDate = (v) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v);
 
 function* jsonFiles(dir) {
   for (const name of readdirSync(dir)) {
@@ -52,9 +55,39 @@ for (const file of jsonFiles(ROOT)) {
     moduleIds.add(data.id);
     bilingual(data, "title", rel, data.id);
     bilingual(data, "description", rel, data.id);
+    if ((data.refusal_en || data.refusal_zh) && !(isStr(data.refusal_en) && isStr(data.refusal_zh)))
+      err(rel, `${data.id}: refusal must exist in both languages or neither`);
+    if (data.capability_moves_en || data.capability_moves_zh) {
+      if (!Array.isArray(data.capability_moves_en) || !Array.isArray(data.capability_moves_zh)) {
+        err(rel, `${data.id}: capability_moves must exist as arrays in both languages or neither`);
+      } else if (data.capability_moves_en.length !== data.capability_moves_zh.length) {
+        err(rel, `${data.id}: capability_moves_en/capability_moves_zh length mismatch`);
+      } else if (
+        data.capability_moves_en.length < 2 ||
+        data.capability_moves_en.length > 4 ||
+        data.capability_moves_en.some((move) => !isStr(move)) ||
+        data.capability_moves_zh.some((move) => !isStr(move))
+      ) {
+        err(rel, `${data.id}: capability_moves must contain 2-4 non-empty strings per language`);
+      }
+    }
   } else if (rel === "stages.json") {
     bilingual(data, "course_title", rel, "course");
     bilingual(data, "course_promise", rel, "course");
+    if (data.course_sources !== undefined) {
+      if (!Array.isArray(data.course_sources)) {
+        err(rel, "course_sources must be an array when present");
+      } else {
+        for (const [i, source] of data.course_sources.entries()) {
+          const ctx = `course_sources ${i}`;
+          if (!isStr(source.name)) err(rel, `${ctx}: missing name`);
+          if (!isStr(source.url)) err(rel, `${ctx}: missing url`);
+          bilingual(source, "focus", rel, ctx);
+          if (!isIsoDate(source.reviewed_on)) err(rel, `${ctx}: reviewed_on must be YYYY-MM-DD`);
+          bilingual(source, "fit", rel, ctx);
+        }
+      }
+    }
     for (const s of data.stages ?? []) {
       bilingual(s, "title", rel, `stage ${s.stage}`);
       bilingual(s, "milestone", rel, `stage ${s.stage}`);
@@ -79,6 +112,25 @@ for (const [rel, l] of lessons) {
   bilingual(l, "title", rel, l.id);
   if ((l.why_en || l.why_zh) && !(isStr(l.why_en) && isStr(l.why_zh)))
     err(rel, `${l.id}: why must exist in both languages or neither`);
+  if (l.resources !== undefined) {
+    if (!Array.isArray(l.resources)) {
+      err(rel, `${l.id}: resources must be an array when present`);
+    } else {
+      for (const [i, resource] of l.resources.entries()) {
+        const ctx = `${l.id} resource ${i}`;
+        bilingual(resource, "title", rel, ctx);
+        bilingual(resource, "note", rel, ctx);
+        bilingual(resource, "fit", rel, ctx);
+        if (!isStr(resource.source)) err(rel, `${ctx}: missing source`);
+        if (!isStr(resource.url)) err(rel, `${ctx}: missing url`);
+        if (!["optional", "required"].includes(resource.placement))
+          err(rel, `${ctx}: placement must be optional or required`);
+        if (!isIsoDate(resource.reviewed_on)) err(rel, `${ctx}: reviewed_on must be YYYY-MM-DD`);
+        if (!Number.isInteger(resource.est_minutes) || resource.est_minutes < 1)
+          err(rel, `${ctx}: bad est_minutes`);
+      }
+    }
+  }
 
   const localExercises = new Map();
   for (const e of l.exercises ?? []) {
@@ -90,6 +142,8 @@ for (const [rel, l] of lessons) {
     bilingual(e, "explain", rel, e.id);
     if (![1, 2, 3].includes(e.difficulty)) err(rel, `${e.id}: bad difficulty`);
     if (!Number.isInteger(e.xp_value) || e.xp_value < 1) err(rel, `${e.id}: bad xp_value`);
+    if (e.advanced !== undefined && typeof e.advanced !== "boolean")
+      err(rel, `${e.id}: advanced must be boolean when present`);
 
     if (e.type === "mcq") {
       if (!Array.isArray(e.options_en) || !Array.isArray(e.options_zh))
@@ -102,8 +156,20 @@ for (const [rel, l] of lessons) {
       const spec = e.answer_spec;
       if (!spec || (!Array.isArray(spec.accept) && !isStr(spec.regex)))
         err(rel, `${e.id}: fill_in needs answer_spec.accept[] or .regex`);
+    } else if (e.type === "drag_order") {
+      if (!Array.isArray(e.items_en) || !Array.isArray(e.items_zh))
+        err(rel, `${e.id}: drag_order needs items_en/items_zh`);
+      else if (e.items_en.length !== e.items_zh.length)
+        err(rel, `${e.id}: items_en/items_zh length mismatch`);
+      else if (
+        !Array.isArray(e.answer) ||
+        e.answer.length !== e.items_en.length ||
+        new Set(e.answer).size !== e.answer.length ||
+        e.answer.some((index) => !Number.isInteger(index) || index < 0 || index >= e.items_en.length)
+      )
+        err(rel, `${e.id}: drag_order answer must be a permutation of item indices`);
     } else {
-      err(rel, `${e.id}: unknown exercise type "${e.type}" (allowed now: mcq, fill_in)`);
+      err(rel, `${e.id}: unknown exercise type "${e.type}" (allowed now: mcq, fill_in, drag_order)`);
     }
   }
 

@@ -1,0 +1,101 @@
+{
+  "id": "m00-l01",
+  "module_id": "m00",
+  "order": 1,
+  "format": "scenario",
+  "tag": "core",
+  "est_minutes": 5,
+  "title_en": "It says fixed. What is missing?",
+  "title_zh": "它说修好了，少了什么",
+  "outcome_en": "You can separate a confident update from the evidence needed to trust it.",
+  "outcome_zh": "你能把一句很自信的汇报，和真正需要补看的证据分开。",
+  "why_en": "Why start here: a small gap in evidence is the cleanest doorway into the course.",
+  "why_zh": "为什么从这里开始：一块小小的证据缺口，是进入这门课最清楚的门。",
+  "review_tags": [
+    "course_orientation",
+    "must_master",
+    "profile_anchor:ai-agent"
+  ],
+  "blocks": [
+    {
+      "type": "reading",
+      "body_en": "Begin with one tiny incident.\n\n```text\nAgent: I fixed the import bug and cleaned up the script.\nChanged: cleanup.py\n```\n\nImagine this work will go out under your name. Do you accept it as finished?",
+      "body_zh": "先看一个很小的事故。下面是一段 AI agent（AI 代理）的汇报：\n\n```text\nAgent: I fixed the import bug and cleaned up the script.（我修好了导入错误，也清理了脚本。）\nChanged: cleanup.py（已改动：cleanup.py）\n```\n\n假设这件工作之后会挂到你名下。你会直接把它当成完成了吗？"
+    },
+    {
+      "type": "exercise",
+      "ref": "m00-l01-e01"
+    },
+    {
+      "type": "concept",
+      "term": "information asymmetry",
+      "term_zh": "信息不对称（information asymmetry）",
+      "anchor_en": "A mechanic says the car is fixed. You do not need to be a mechanic, but you can still ask what was tested before you drive away.",
+      "anchor_zh": "修车师傅说车修好了。你不必自己会修车，但开走之前可以问：检查了哪一项，结果是什么。",
+      "explain_en": "Information asymmetry means one side can see important details the other side cannot yet see. In AI-assisted technical work, the gap often sits between a claim and the evidence underneath it. In the update above, you can see the claim and the changed file, but not the command, output, or test result.",
+      "explain_zh": "信息不对称，就是一方看得见关键细节，另一方暂时看不见。在 AI 辅助的技术工作里，这层差距常常夹在「它说完成了」和「有什么证据」之间。上面的汇报里，你能看到说法和改过的文件，但还看不到命令、输出或测试结果。"
+    },
+    {
+      "type": "reading",
+      "body_en": "For Three is not trying to make you perform every technical task yourself. It trains a smaller, durable move: ask for the missing piece before the work carries your name.",
+      "body_zh": "反三不是要你亲手做完每个技术任务。它训练的是一个更小、更长久的动作：在工作挂到你名下之前，先问清缺的那块证据。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m00-l01-e02"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "m00-l01-e01",
+      "type": "mcq",
+      "prompt_en": "What is the best next move?",
+      "prompt_zh": "下一步最稳妥的做法是什么？",
+      "options_en": [
+        "Pause and ask what command, output, or test supports the fix",
+        "Accept it because the sentence sounds specific",
+        "Reject it because all AI work is unreliable",
+        "Ask for a longer summary in more polished language"
+      ],
+      "options_zh": [
+        "先停一下，追问有什么命令、输出或测试能支撑这次修复",
+        "直接接收，因为这句话听起来很具体",
+        "直接拒绝，因为所有 AI 工作都不可靠",
+        "让它写一段更漂亮、更长的总结"
+      ],
+      "answer": 0,
+      "explain_en": "This is not about mistrusting the agent. It is about asking for the missing evidence before accepting the handoff.",
+      "explain_zh": "这不是不信任 agent，而是在接收交付前，把缺的证据补上。",
+      "difficulty": 1,
+      "xp_value": 10
+    },
+    {
+      "id": "m00-l01-e02",
+      "type": "drag_order",
+      "prompt_en": "Put the handoff reading habit in order.",
+      "prompt_zh": "把阅读技术交付的习惯排成顺序。",
+      "items_en": [
+        "Read what the agent claims",
+        "Find what changed",
+        "Ask what command, output, or test supports it",
+        "Decide whether to accept, revise, or pause"
+      ],
+      "items_zh": [
+        "先读 agent 声称了什么",
+        "再看改了什么",
+        "追问有什么命令、输出或测试支撑",
+        "再决定接收、修改还是暂停"
+      ],
+      "answer": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain_en": "This is the course's first pattern: claim, changed surface, supporting evidence, then judgment.",
+      "explain_zh": "这是这门课的第一个模式：先看说法，再看改动表面，再找支撑证据，最后做判断。",
+      "difficulty": 2,
+      "xp_value": 15
+    }
+  ]
+}

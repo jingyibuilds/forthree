@@ -29,10 +29,17 @@ maintenance crew; the owner is a data scientist, not a software engineer.
 - **Phases:** work phase by phase (`docs/DESIGN.md` §7, as amended). Do not
   start phase N+1 before phase N acceptance passes.
 - **Commits:** granular, descriptive; history is part of the deliverable.
+- **Review board:** before final submission of meaningful code changes, obtain
+  approval from the standing Architecture Reviewer
+  (`docs/reviewers/architecture-reviewer.md`). For learner-facing work, run the
+  relevant reviewers in `docs/REVIEW_BOARD.md`. Do not simulate a separate
+  reviewer if a separate agent is available.
 - **Secrets:** only in `.env.local` / Vercel dashboard. gitleaks pre-commit +
   CI enforce this; never weaken them.
 - **Bilingual:** all learner-facing content has `_en` and `_zh` fields;
   technical terms keep English originals.
+- **Language standard:** learner-facing language must be rigorous, vivid,
+  concise, and clear. Cut repetition before adding explanation.
 - **Determinism first:** grading is deterministic (< 100 ms verdicts); LLM
   output streams after, never blocking. All LLM calls go through `/api/llm`.
 
@@ -51,6 +58,9 @@ maintenance crew; the owner is a data scientist, not a software engineer.
   NOT know English technical nouns. Chinese must carry the meaning alone;
   gloss every English term on first appearance. `content/stage-1/module-01/`
   L1–L2 are the reference implementation.
+- **语言密度** — every sentence must earn its place: precise enough to be
+  trusted, lively enough to be remembered, short enough to keep momentum.
+  Do not repeat the same promise in adjacent blocks.
 - **Anchor is mandatory** on every `concept` block: an analogy or a contrast
   to something the learner already knows. Break-point notes are conditional,
   not required (see DECISIONS.md).

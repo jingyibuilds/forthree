@@ -4,11 +4,11 @@
   "order": 3,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 9,
-  "title_en": "Where commands are spoken",
-  "title_zh": "在哪里向电脑发命令",
-  "outcome_en": "You can read a terminal command as a concrete request sent from a folder.",
-  "outcome_zh": "你能把一条终端命令读成一个从某个文件夹发出的具体请求。",
+  "est_minutes": 8,
+  "title_en": "Read commands as evidence",
+  "title_zh": "把命令读成证据",
+  "outcome_en": "You can point to the command, the folder, and the output in an agent log.",
+  "outcome_zh": "你能在 agent 记录里指出命令、所在文件夹和输出。",
   "review_tags": [
     "must_master",
     "recognize_only:npm",
@@ -17,17 +17,17 @@
   "blocks": [
     {
       "type": "reading",
-      "body_en": "Lesson 2 explained who translates code. But an interpreter does not magically wake up by itself. Someone has to ask the computer to start it. Sometimes you click a **Run** button; sometimes an agent types a command. The visible place for that typed conversation is the terminal.",
-      "body_zh": "第 2 课讲了谁来翻译代码。但解释器不会自己突然醒过来，总得有人对电脑说一句「现在运行这个」。有时你点的是 **Run** 按钮；有时 agent 打出一条命令。能看见这种文字对话的地方，就是终端（terminal）。"
+      "body_en": "An agent says \"I ran it.\" The useful follow-up is not trust or distrust. It is: show me the command and output.",
+      "body_zh": "agent 说「我运行过了」。你不用立刻相信或不信，先追问：命令和输出给我看。"
     },
     {
       "type": "concept",
       "term": "terminal",
       "term_zh": "终端（terminal）",
-      "anchor_en": "A service counter. You do not walk into the kitchen yourself; you stand at the counter and say what you need. The counter passes that request to the right worker.",
-      "anchor_zh": "像服务窗口。你不是自己冲进后厨做事，而是站在窗口说「我要办这个」。窗口再把请求交给对应的人处理。",
-      "explain_en": "The terminal is a text-based place to talk to your computer. On a laptop or desktop, the system usually already has one: macOS has Terminal, Windows has PowerShell or Windows Terminal, and Linux has a terminal app. Phones usually do not show a terminal in normal use; you can install special apps on some phones, but this course treats terminal work as a laptop/desktop skill. When an AI agent says it ran `npm run build` or `python3 hello.py`, it usually means it sent a command through a terminal-like environment. You do not need to understand `npm` yet; here, just notice that both examples are commands.",
-      "explain_zh": "终端是一个用文字和电脑对话的地方。笔记本或台式电脑通常自带类似工具：Mac 上叫 Terminal（终端），Windows 上常见 PowerShell 或 Windows Terminal，Linux 上也通常有终端应用。手机日常使用里一般不会直接露出终端；有些手机可以装特殊 app，但这门课先把终端当成电脑上的工具来学。AI agent 说它运行了 `npm run build` 或 `python3 hello.py`，通常就是在类似终端的环境里发出了命令。现在不用懂 `npm` 是什么；这里只需要看出，这两个例子都是命令。"
+      "anchor_en": "A service counter: you state a request there, and the right worker acts on it.",
+      "anchor_zh": "像服务窗口：你在窗口说清请求，后面的人按请求办事。",
+      "explain_en": "The terminal is a text-based place to send requests to your computer. Agent logs often show terminal-like commands such as `npm run build` or `python3 hello.py`. For now, notice the shape: a short typed request, then a response.",
+      "explain_zh": "终端是一个用文字向电脑发请求的地方。agent 记录里常见类似终端的命令，比如 `npm run build` 或 `python3 hello.py`。现在先看形状：一条打出来的请求，后面跟着回应。"
     },
     {
       "type": "visual",
@@ -45,8 +45,8 @@
       "term_zh": "命令（command）",
       "anchor_en": "A short instruction at the service counter: \"print this form,\" \"open that account,\" \"check this package.\" A command is not a conversation; it is one specific request.",
       "anchor_zh": "像你在服务窗口说的一句具体要求：「打印这张表」「打开这个账户」「查一下这个包裹」。命令不是闲聊，而是一条明确请求。",
-      "explain_en": "A command is a typed instruction sent to the operating system or a tool. The operating system is the computer's basic management software: it manages files, programs, and resources. `python3 hello.py` means: start Python, then ask Python to run the file named `hello.py`. Commands are why terminal logs matter: they tell you what was requested, not just what failed.",
-      "explain_zh": "命令是一条打出来、交给操作系统或某个工具执行的指令。操作系统就是电脑里负责管理文件、程序和资源的底层软件。`python3 hello.py` 的意思是：启动 Python，然后让 Python 运行名叫 `hello.py` 的文件。终端记录之所以重要，就是因为它不只告诉你哪里失败，还告诉你当时到底请求了什么。"
+      "explain_en": "A command is a typed instruction sent to a tool or the operating system. `python3 hello.py` means: start Python, then run `hello.py`. A command log tells you what was requested, not just what failed.",
+      "explain_zh": "命令是一条打出来、交给工具或操作系统执行的指令。`python3 hello.py` 的意思是：启动 Python，再运行 `hello.py`。命令记录能告诉你当时请求了什么，而不只是哪里失败。"
     },
     {
       "type": "exercise",
@@ -62,13 +62,13 @@
       "term_zh": "当前目录（current directory）",
       "anchor_en": "Your current aisle in a grocery store. If you ask for \"the red box\" while standing in the cereal aisle, the worker looks there first — not in the freezer section.",
       "anchor_zh": "像你现在站在超市的哪条货架前。你说「拿那个红盒子」时，工作人员会先看你所在的货架，而不是跑去冷冻区找。",
-      "explain_en": "The current directory is the folder the terminal is currently standing in. A command like `python3 hello.py` looks for `hello.py` from that location. Many beginner errors are not Python errors at all — the terminal is simply standing in the wrong folder.",
-      "explain_zh": "当前目录，就是终端此刻所在的文件夹。像 `python3 hello.py` 这样的命令，会从这个位置开始找 `hello.py`。很多新手报错其实不是 Python 写错了，而是终端站错了文件夹。"
+      "explain_en": "The current directory is the folder the terminal is standing in. `python3 hello.py` looks for `hello.py` from there. Some \"code errors\" are really wrong-folder errors.",
+      "explain_zh": "当前目录，就是终端此刻站在哪个文件夹里。`python3 hello.py` 会从这里找 `hello.py`。有些「代码错误」其实只是站错文件夹。"
     },
     {
       "type": "reading",
-      "body_en": "This is why agents often show you command logs. They are not decoration. A good log lets you point to three different things: the **location prompt**, the **command**, and the **output**.",
-      "body_zh": "这就是为什么 agent 常常把命令记录贴出来。它不是装饰。好的命令记录会让你指出三种东西：**位置提示符**、**命令**、**输出**。"
+      "body_en": "A useful log has three parts: **where**, **what request**, **what came back**.",
+      "body_zh": "一段有用的记录，至少能看出三件事：**在哪儿**、**请求了什么**、**返回了什么**。"
     },
     {
       "type": "visual",
@@ -98,8 +98,21 @@
     },
     {
       "type": "reading",
-      "body_en": "Checkpoint: if you can split a log into location prompt, command, and output, terminal text starts to become readable evidence instead of a black box. Next, we step back and decide what the code should do before anyone runs it.",
-      "body_zh": "这一课的小结：如果你能把一段记录拆成位置提示符、命令和输出，终端文字就不再是一团黑框里的神秘内容，而是可以阅读的证据。下一课，我们先退一步：在运行之前，先判断这段代码到底应该做什么。"
+      "body_en": "Advanced questions: use the same lens on a new log.",
+      "body_zh": "举一反三：换一段记录，也用同一套看法。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l03-e07"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l03-e08"
+    },
+    {
+      "type": "reading",
+      "body_en": "Checkpoint: when someone says \"I ran it,\" ask for command plus output. Next: decide what should be run in the first place.",
+      "body_zh": "小结：别人说「运行过了」，你要能追问命令和输出。下一课：先判断到底应该运行什么。"
     }
   ],
   "exercises": [
@@ -234,8 +247,58 @@
       "explain_zh": "提示符不是命令。它给的是周围信息，尤其是发出请求之前，终端站在哪个文件夹里。",
       "difficulty": 2,
       "xp_value": 10
+    },
+    {
+      "id": "m01-l03-e07",
+      "type": "drag_order",
+      "prompt_en": "Put the evidence from this log into the order you should read it.\n\n`forthree % python3 summarize.py`\n`summary saved`",
+      "prompt_zh": "把下面这段记录里的证据，按你应该阅读的顺序排好。\n\n`forthree % python3 summarize.py`\n`summary saved`（摘要已保存）",
+      "items_en": [
+        "The command asked Python to run `summarize.py`.",
+        "The output says the program reported `summary saved`.",
+        "The terminal was ready in the folder hinted by `forthree %`."
+      ],
+      "items_zh": [
+        "命令请求 Python 运行 `summarize.py` 这个文件。",
+        "输出说明程序回报了 `summary saved`（摘要已保存）。",
+        "位置提示符 `forthree %` 暗示终端当时站在哪个文件夹。"
+      ],
+      "answer": [
+        2,
+        0,
+        1
+      ],
+      "explain_en": "Read the surrounding place first, then the request, then the response. That order keeps you from treating output as proof without knowing what was actually run.",
+      "explain_zh": "先看周围位置，再看发出的请求，最后看返回结果。这个顺序能避免你只看见输出，就误以为已经知道当时到底运行了什么。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
+    },
+    {
+      "id": "m01-l03-e08",
+      "type": "mcq",
+      "prompt_en": "An agent shows this log:\n\n`reports % python3 cleanup.py`\n`FileNotFoundError: raw.csv`\n\nWhat is the safest judgment?",
+      "prompt_zh": "agent 给出这段记录：\n\n`reports % python3 cleanup.py`\n`FileNotFoundError: raw.csv`（找不到 `raw.csv` 这个文件）\n\n最稳妥的判断是什么？",
+      "options_en": [
+        "It asked Python to run `cleanup.py` from the `reports` location, but a needed file was not found there or from there",
+        "Python was never started, because the output is an error",
+        "`cleanup.py` definitely has broken logic",
+        "The command successfully cleaned the data"
+      ],
+      "options_zh": [
+        "它在 `reports` 这个位置请求 Python 运行 `cleanup.py`，但程序需要的文件没有在那个位置或从那个位置找到",
+        "Python 根本没有启动，因为输出里有错误",
+        "`cleanup.py` 的逻辑一定写坏了",
+        "这条命令已经成功清理了数据"
+      ],
+      "answer": 0,
+      "explain_en": "The command did run Python and point it at `cleanup.py`. The error is evidence about a missing file, not enough evidence to conclude the code logic is wrong or that the cleanup succeeded.",
+      "explain_zh": "这条命令确实启动了 Python，并把 `cleanup.py` 交给它运行。报错证明有文件没找到，但还不足以断定代码逻辑写错了，更不能说明清理已经成功。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
     }
   ],
-  "why_en": "Why this third: AI agents do real work by sending commands. If you can read the command, you can tell what was actually requested.",
-  "why_zh": "为什么第三课学它：AI agent 真正做事时，常常是在发命令。你能看懂命令，就能判断它到底请求电脑做了什么。"
+  "why_en": "Why third: commands turn an agent's claim into checkable evidence.",
+  "why_zh": "为什么第三课学它：命令能把 agent 的说法变成可以检查的证据。"
 }

@@ -1,0 +1,91 @@
+{
+  "id": "m00-l02",
+  "module_id": "m00",
+  "order": 2,
+  "format": "scenario",
+  "tag": "core",
+  "est_minutes": 5,
+  "title_en": "What can you pause?",
+  "title_zh": "什么时候该先停一下",
+  "outcome_en": "You can name one delivery you should pause before accepting.",
+  "outcome_zh": "你能说出一种不该立刻接收的技术交付。",
+  "why_en": "Why second: the course has a real edge only if it changes what you accept.",
+  "why_zh": "为什么第二课学它：这门课真正有用，必须改变你会直接接收什么。",
+  "review_tags": [
+    "course_orientation",
+    "must_master",
+    "profile_anchor:ai-agent"
+  ],
+  "blocks": [
+    {
+      "type": "reading",
+      "body_en": "A useful course does not only tell you what to know. It changes what you can pause.\n\nAfter this course, you should be able to pause a delivery with no checkable evidence, a plan with no acceptance standard, or a technical suggestion whose tradeoff has not been named.",
+      "body_zh": "一门真正有用的课，不只是告诉你该知道什么。它会改变你能在哪些地方先停一下。\n\n学完这门课，你应该能暂停三类交付：没有可检查证据的交付、没有验收标准的计划、没有说清取舍代价的技术建议。"
+    },
+    {
+      "type": "concept",
+      "term": "acceptance standard",
+      "term_zh": "验收标准（acceptance standard）",
+      "anchor_en": "Ordering a custom table is easier when both sides agree how to tell whether it fits: size, material, deadline, and where it will be placed.",
+      "anchor_zh": "定做一张桌子时，双方先说清尺寸、材料、交付时间和摆放位置，最后才知道这张桌子算不算合格。",
+      "explain_en": "An acceptance standard says what must be true before work counts as done. With AI agents, this matters before code appears: vague goals produce vague success, and vague success is hard to inspect.",
+      "explain_zh": "验收标准，就是提前说清哪些条件满足了，工作才算完成。和 AI agent（AI 代理）合作时，这件事要发生在代码出现之前：目标含糊，成功也会含糊；成功含糊，就很难检查。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m00-l02-e01"
+    },
+    {
+      "type": "reading",
+      "body_en": "Pausing is not distrust. It is how a careful collaborator keeps the work legible. You are not saying \"I know better than the tool.\" You are saying \"show me what would make this safe to accept.\"",
+      "body_zh": "暂停不是不信任，而是让协作保持清楚。你不是在说「我比工具懂」，而是在说：「请把能让我放心接收的依据补上。」"
+    },
+    {
+      "type": "exercise",
+      "ref": "m00-l02-e02"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "m00-l02-e01",
+      "type": "mcq",
+      "prompt_en": "Which delivery should you pause before accepting?",
+      "prompt_zh": "下面哪种交付最应该先停一下，不要立刻接收？",
+      "options_en": [
+        "\"I added caching; it should be faster now\" with no tradeoff or freshness check",
+        "\"Ran `npm test`; 12 tests passed\"",
+        "\"Changed only `copy.ts`; here is the diff\"",
+        "\"The script printed the expected three rows\""
+      ],
+      "options_zh": [
+        "只说「我加了缓存，现在应该更快」，没有说明取舍，也没有检查数据是否仍然新鲜",
+        "说明「运行了 `npm test`，12 个测试通过」",
+        "说明「只改了 `copy.ts`，这是代码差异」",
+        "说明「脚本打印出了预期的三行」"
+      ],
+      "answer": 0,
+      "explain_en": "Caching can be useful, but speed is not free. You need to know what got faster, what may become stale, and how the result was checked.",
+      "explain_zh": "缓存可能很有用，但速度不是白来的。你需要知道哪里变快了、什么可能变旧、结果怎么检查过。",
+      "difficulty": 2,
+      "xp_value": 10
+    },
+    {
+      "id": "m00-l02-e02",
+      "type": "fill_in",
+      "prompt_en": "The phrase for the conditions that make work count as done is acceptance ______.",
+      "prompt_zh": "提前说清「满足哪些条件才算完成」，英文叫 acceptance ______。",
+      "term_drill": true,
+      "answer_spec": {
+        "accept": [
+          "standard",
+          "standards"
+        ],
+        "ignore_case": true
+      },
+      "explain_en": "Acceptance standard is the phrase to keep. It gives AI, engineers, and you the same finish line.",
+      "explain_zh": "acceptance standard（验收标准）是要记住的词。它让 AI、工程师和你看向同一条终点线。",
+      "difficulty": 1,
+      "xp_value": 10
+    }
+  ]
+}

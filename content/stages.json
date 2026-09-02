@@ -1,9 +1,83 @@
 {
-  "course_title_en": "Practical CS Literacy",
-  "course_title_zh": "实用计算机科学素养",
-  "course_promise_en": "A module-based path from 10-minute foundations to a real capstone: read code, judge AI output, and ship a small tool of your own. The current release starts with Part 1 foundations.",
-  "course_promise_zh": "这是一条按模块推进的长期路线：先用 10 分钟左右的小课打基础，最后走到读懂代码、判断 AI 输出，并交付一个自己的小工具。当前版本先开放卷一的基础部分。",
+  "course_title_en": "Code & AI Fluency: Learning to Read Technical Work",
+  "course_title_zh": "代码与 AI 祛魅：学会读懂技术工作",
+  "course_promise_en": "For non-engineers who work with programmers and AI agents: reduce the information gap, read the work trail, and know what evidence to ask for. Current release: orientation plus Part 1 foundations.",
+  "course_promise_zh": "给需要和程序员、AI agent（AI 代理）协作的人：减少技术信息差，读懂工作痕迹，知道该追问什么证据。当前开放入门章与卷一。",
+  "course_sources": [
+    {
+      "name": "MIT 6.100L",
+      "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/",
+      "focus_en": "computational thinking",
+      "focus_zh": "计算思维",
+      "reviewed_on": "2026-08-30",
+      "fit_en": "Course-level reference for computational thinking and Python as a first medium; its syllabus and reading trail point to the Guttag textbook/code materials for deeper study.",
+      "fit_zh": "课程级参考：借鉴它用 Python 承载计算思维的顺序；顺着课程表深挖到 Guttag 教材和配套代码。"
+    },
+    {
+      "name": "Harvard CS50P",
+      "url": "https://cs50.harvard.edu/python/",
+      "focus_en": "Python foundations",
+      "focus_zh": "Python 入门",
+      "reviewed_on": "2026-08-30",
+      "fit_en": "Course-level reference for beginner Python sequencing; individual links still require lesson-level review.",
+      "fit_zh": "课程级参考：借鉴 Python 入门的组织顺序；具体页面是否外链，仍需逐课审核。"
+    },
+    {
+      "name": "Harvard CS50x",
+      "url": "https://cs50.harvard.edu/x/",
+      "focus_en": "CS breadth",
+      "focus_zh": "计算机科学全景",
+      "reviewed_on": "2026-08-30",
+      "fit_en": "Course-level reference for breadth and expectation setting around what CS contains.",
+      "fit_zh": "课程级参考：用于校准 CS 的范围感和学习预期。"
+    },
+    {
+      "name": "Stanford CS106A",
+      "url": "https://web.stanford.edu/class/cs106a/",
+      "focus_en": "program design",
+      "focus_zh": "程序设计",
+      "reviewed_on": "2026-08-30",
+      "fit_en": "Course-level reference for beginner program-design order and small-step problem solving.",
+      "fit_zh": "课程级参考：借鉴入门程序设计里的小步拆题方式。"
+    },
+    {
+      "name": "MIT Missing Semester",
+      "url": "https://missing.csail.mit.edu/",
+      "focus_en": "developer tools",
+      "focus_zh": "工程工具",
+      "reviewed_on": "2026-08-30",
+      "fit_en": "Course-level reference for tools that traditional CS courses often leave implicit; lesson placement requires page-level review.",
+      "fit_zh": "课程级参考：补上传统 CS 课常隐含的工具素养；具体页面要逐课审核后再放。"
+    },
+    {
+      "name": "Composing Programs",
+      "url": "https://composingprograms.com/3ed/",
+      "focus_en": "abstraction + AI-era reading",
+      "focus_zh": "抽象能力与 AI 时代代码阅读",
+      "reviewed_on": "2026-08-30",
+      "fit_en": "Course-level reference for framing CS as a broad field and for updating introductory programming in the AI era.",
+      "fit_zh": "课程级参考：借鉴它对 CS 范围和 AI 时代编程入门的开场处理。"
+    },
+    {
+      "name": "Guttag text/code",
+      "url": "https://github.com/guttag/Intro-to-Computation-and-Programming",
+      "focus_en": "textbook structure + code",
+      "focus_zh": "教材结构与代码",
+      "reviewed_on": "2026-09-01",
+      "fit_en": "Companion source for MIT's introductory computation sequence. Useful for chapter order, code density, and exercise style; not copied into lesson prose or problems.",
+      "fit_zh": "MIT 入门计算课程的配套资料。用于研究章节顺序、代码密度和题型风格；不复制原文和题目。"
+    }
+  ],
   "stages": [
+    {
+      "stage": 0,
+      "label_zh": "入门",
+      "label_en": "Orientation",
+      "title_en": "One small incident first",
+      "title_zh": "先看一场小事故",
+      "milestone_en": "You can spot a missing piece of evidence before accepting AI-assisted work.",
+      "milestone_zh": "你能在接收 AI 辅助交付之前，看出缺了哪块证据。"
+    },
     {
       "stage": 1,
       "label_zh": "卷一",

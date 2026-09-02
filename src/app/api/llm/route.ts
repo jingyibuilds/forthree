@@ -1,8 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { canEnterLearnerApp } from "@/lib/access";
 import { getLesson } from "@/lib/content";
 import { createClient } from "@/lib/supabase/server";
 import { getLLMProvider } from "@/lib/llm";
 import { hasOpenRouterKey } from "@/lib/llm/openrouter";
+import { getLearnerProfile } from "@/lib/profile";
 import type { Exercise, Lesson } from "@/lib/content";
 import type { Locale } from "@/lib/i18n-shared";
 
@@ -64,15 +66,37 @@ function exercisePrompt(exercise: Exercise, locale: Locale) {
       .join("\n");
     return `${locale === "zh" ? exercise.prompt_zh : exercise.prompt_en}\n${options}`;
   }
+  if (exercise.type === "drag_order") {
+    const items = (locale === "zh" ? exercise.items_zh : exercise.items_en)
+      .map((item, index) => `${index}. ${item}`)
+      .join("\n");
+    return `${locale === "zh" ? exercise.prompt_zh : exercise.prompt_en}\n${items}`;
+  }
   return locale === "zh" ? exercise.prompt_zh : exercise.prompt_en;
 }
 
 function learnerAnswer(exercise: Exercise, response: string | undefined, locale: Locale) {
   if (!response) return "(no answer provided)";
-  if (exercise.type !== "mcq") return response;
-  const index = Number(response);
-  const options = locale === "zh" ? exercise.options_zh : exercise.options_en;
-  return Number.isInteger(index) && options[index] ? options[index] : response;
+  if (exercise.type === "mcq") {
+    const index = Number(response);
+    const options = locale === "zh" ? exercise.options_zh : exercise.options_en;
+    return Number.isInteger(index) && options[index] ? options[index] : response;
+  }
+  if (exercise.type === "drag_order") {
+    try {
+      const indices = JSON.parse(response) as unknown;
+      const items = locale === "zh" ? exercise.items_zh : exercise.items_en;
+      if (Array.isArray(indices)) {
+        return indices
+          .map((index) => (Number.isInteger(index) ? items[index] : undefined))
+          .filter(Boolean)
+          .join(" -> ");
+      }
+    } catch {
+      return response;
+    }
+  }
+  return response;
 }
 
 function lessonContext(lesson: Lesson, locale: Locale) {
@@ -328,6 +352,10 @@ export async function POST(request: NextRequest) {
   } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
+  }
+  const profile = await getLearnerProfile(supabase, user.id);
+  if (!canEnterLearnerApp(user.email, profile)) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
   const body = (await request.json().catch(() => ({}))) as LessonAssistantBody;

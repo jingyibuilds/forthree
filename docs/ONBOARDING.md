@@ -101,8 +101,9 @@ conversion moment.
 
 **D3. 内容语言默认** / Default content language: 中文 · English
 
-Then: the 10-item calibration quiz (DESIGN.md §4) — placement is measured,
-not just self-reported.
+Phase 1 now uses a five-question calibration. It records a starting point for
+future tailoring and review; it does not yet change the deterministic lesson
+route. Richer placement remains a later phase.
 
 ## Early re-anchor checkpoint (owner addition, 2026-08-27)
 

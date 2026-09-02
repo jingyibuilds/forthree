@@ -4,11 +4,11 @@
   "order": 1,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 9,
-  "title_en": "Code is text before it acts",
-  "title_zh": "代码先只是文字",
-  "outcome_en": "You can tell whether code is still an inert file or has actually run.",
-  "outcome_zh": "你能判断一段代码现在还只是安静的文件，还是已经真的运行过。",
+  "est_minutes": 7,
+  "title_en": "Written code is not action",
+  "title_zh": "写了代码，不等于做了事",
+  "outcome_en": "You can ask whether code was only written, or also run.",
+  "outcome_zh": "你能追问：它只是写好了，还是已经运行过。",
   "review_tags": [
     "must_master",
     "profile_anchor:ai-agent"
@@ -16,8 +16,8 @@
   "blocks": [
     {
       "type": "reading",
-      "body_en": "Picture the moment an AI agent says: \"I wrote a script for you.\" A script is a small code file meant to automate a task. Before trusting it, the first question is simple: is this still just text, or has it already done something?",
-      "body_zh": "想象 AI agent 对你说：\"I wrote a script for you.\"（我给你写了一个脚本。）脚本就是一小段用来自动做事的代码文件。在判断它靠不靠谱之前，第一件事很简单：它现在还只是文字，还是已经真的做了什么？"
+      "body_en": "An agent says: \"I wrote a script.\" Good. But your first judgment is not \"is it smart?\" It is: did anything run?",
+      "body_zh": "agent 说：\"I wrote a script.\"（我写了一个脚本。）很好。但你先别急着判断它聪不聪明，先问一句：它运行过吗？"
     },
     {
       "type": "concept",
@@ -25,16 +25,16 @@
       "term_zh": "源代码（source code）",
       "anchor_en": "A recipe card. It describes every step of a dish precisely, but the card itself is just text — nothing gets cooked until a cook follows it.",
       "anchor_zh": "一张菜谱。它精确写下每个步骤，但菜谱本身只是文字——没有厨师照着做，菜就不会出现。",
-      "explain_en": "Source code is the text of a program: instructions written by a human in a programming language, stored in an ordinary file. `hello.py` is source code the same way `recipe.txt` is a recipe — a plain file you can open, read, and edit.",
-      "explain_zh": "源代码就是程序的文字版：人用编程语言写下的指令，存在一个普通文件里。`hello.py` 是源代码，就像 `菜谱.txt` 是菜谱——它只是一个能打开、能读、能改的普通文件。"
+      "explain_en": "Source code is the text of a program: instructions stored in an ordinary file. `hello.py` is source code the way `recipe.txt` is a recipe: readable, editable, and still not action.",
+      "explain_zh": "源代码就是程序的文字版：指令存在一个普通文件里。`hello.py` 是源代码，就像 `菜谱.txt` 是菜谱：能读，能改，但还没有变成动作。"
     },
     {
       "type": "visual",
       "kind": "source-code-file",
       "title_en": "A Python file is still just text",
       "title_zh": "Python 文件先是一张文字稿",
-      "caption_en": "`hello.py` looks like a small note with numbered lines. You do not need to understand the syntax yet; first notice that it is readable text in a file.",
-      "caption_zh": "`hello.py` 看起来像一张带行号的小纸条。现在不用读懂这两行语法，先看见它只是文件里能读的文字。",
+      "caption_en": "First judgment: this is a file, not proof that anything ran.",
+      "caption_zh": "第一层判断：这是文件，不是运行证据。",
       "alt_en": "A small code editor window named hello.py, showing two lines of Python source code.",
       "alt_zh": "一个名为 hello.py 的代码编辑窗口，里面有两行 Python 源代码。"
     },
@@ -44,8 +44,8 @@
       "term_zh": "运行 / 执行（run / execute）",
       "anchor_en": "Cooking the dish. The recipe (code) sits there until something actually performs its steps, one by one, in order.",
       "anchor_zh": "开火做菜。菜谱（代码）一直只是纸，直到有人真的照着步骤一步步做出来。",
-      "explain_en": "To run (execute) a program is to have the computer perform its instructions, top to bottom. Writing code and running code are two separate moments — a file full of perfect code does nothing until it is run. When an AI agent says \"let me run this script,\" this is exactly what it means.",
-      "explain_zh": "运行（执行）程序，就是让电脑把指令从上到下真的做一遍。写代码和跑代码是两个独立的动作——一个写得再完美的文件，不运行就什么都不会发生。AI agent 说 \"let me run this script\"（让我运行这个脚本）时，指的就是这件事。"
+      "explain_en": "To run (execute) a program is to make the computer perform the instructions. Writing and running are separate moments. \"I wrote it\" is not the same claim as \"I ran it.\"",
+      "explain_zh": "运行（执行）程序，就是让电脑真的照着指令做。写代码和运行代码是两个时刻。\"I wrote it\"（我写好了）和 \"I ran it\"（我运行过了）不是同一个承诺。"
     },
     {
       "type": "exercise",
@@ -53,8 +53,8 @@
     },
     {
       "type": "reading",
-      "body_en": "If you have seen a data query, it is also a kind of source code: you write instruction text, then a database follows it when you run it. If not, no problem. Keep the main point: code is text first; only running turns it into action. Lesson 2 asks the next question: who translates text into action?",
-      "body_zh": "如果你见过数据查询，它其实**也是**一种源代码：你写下一段指令文字，再点「运行」（run），数据库才真的照做。没见过也没关系，先抓住这一点：代码先是文字，运行后才变成动作。第 2 课接着问：那是谁把这些文字翻译成动作？"
+      "body_en": "In collaboration, this distinction saves time. If the agent only wrote code, ask to see the plan. If it ran code, ask what changed.",
+      "body_zh": "协作时，这个区别很省时间。agent 只是写了代码，你就看计划；它已经运行过，你就追问改动了什么。"
     },
     {
       "type": "exercise",
@@ -66,8 +66,17 @@
     },
     {
       "type": "reading",
-      "body_en": "Checkpoint: after this lesson, you can tell whether you are looking at a quiet code file or an action that has actually run. Next, we ask who makes that action possible.",
-      "body_zh": "这一课的小结：现在你能分清，自己看到的是一段安静躺着的代码文件，还是一个已经运行过的动作。下一课，我们看是谁让这个动作真正发生。"
+      "body_en": "Advanced question: now read a status update as evidence, not as vibes.",
+      "body_zh": "举一反三：现在把一句进度汇报当成证据读，不要只听语气。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l01-e04"
+    },
+    {
+      "type": "reading",
+      "body_en": "Checkpoint: code file or completed action? Ask that before you judge the quality of the work.",
+      "body_zh": "小结：代码文件，还是已经完成的动作？先问这个，再判断工作质量。"
     }
   ],
   "exercises": [
@@ -134,8 +143,32 @@
       "difficulty": 1,
       "xp_value": 15,
       "term_drill": true
+    },
+    {
+      "id": "m01-l01-e04",
+      "type": "mcq",
+      "prompt_en": "An agent reports: \"I created `rename_files.py` but have not run it yet.\" What is the best next question?",
+      "prompt_zh": "agent 汇报：\"I created `rename_files.py` but have not run it yet.\"（我创建了 `rename_files.py`，但还没有运行。）你最该问什么？",
+      "options_en": [
+        "Show me what the script plans to change before you run it.",
+        "Great, so the files are already renamed.",
+        "Why is Python installed?",
+        "No need to review anything because it has not run."
+      ],
+      "options_zh": [
+        "先给我看它准备改哪些东西，再运行。",
+        "很好，所以文件已经改名完成了。",
+        "为什么安装了 Python？",
+        "既然还没运行，就完全不用看。"
+      ],
+      "answer": 0,
+      "explain_en": "Nothing has changed yet, so this is the cheap moment to review intent. The collaboration move is: inspect before action.",
+      "explain_zh": "还没运行，就还没改东西；这正是最便宜的检查时刻。协作动作是：先看意图，再让它动手。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
     }
   ],
-  "why_en": "Why this first: before you judge AI-written code, you need to know whether you are looking at inert text or an action that has already run.",
-  "why_zh": "为什么先学这个：判断 AI 写的代码之前，你得先知道自己看到的是一段还没动的文字，还是一个已经发生过的动作。"
+  "why_en": "Why first: collaboration starts by separating a written artifact from an executed action.",
+  "why_zh": "为什么先学这个：协作判断的第一步，是分清「写出来了」和「已经做了」。"
 }

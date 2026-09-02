@@ -6,6 +6,449 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-02 — Course map follows incidents outside, concepts inside
+
+Owner reframed the course around information asymmetry: learners are not
+collecting CS facts for their own sake; each concept should reduce one class
+of technical information gap between the learner, programmers, and AI agents.
+The best test of a module's positioning is what the learner can now refuse,
+pause, or challenge. If the answer is only a list of terms, the module has not
+yet become a capability.
+
+Resolution: preserve the existing CS spine, but expose it through an incident
+line. Course and module navigation should name lived failure modes first
+("I don't know whether it really ran", "I can only paste the error back",
+"they suggested caching and I don't know whether to agree"), then teach the
+CS concepts needed to interpret that incident. In short: the learner-facing
+directory follows accidents; the lesson internals follow knowledge order.
+
+Every module should be able to answer "what can the learner now refuse?" in a
+plain sentence, such as "a delivery with no checkable evidence" or "a proposed
+architecture whose tradeoff has not been named." Refusal here does not mean a
+defensive or superior posture; it means learned judgment, clear boundaries,
+and the ability to ask for the missing evidence before work becomes expensive.
+
+The first lesson may start with a small, authored incident review: an AI agent
+claim or code/result that looks plausible but hides a gap. The goal is not to
+scare or humiliate the learner, but to create a memorable need for the first
+concept. Keep it low-risk, deterministic, and short enough that the learner can
+recover inside the lesson. Existing M1 content already supports this direction
+through claim/command/output, failure timing, current directory, and side
+effects; future content should make that incident arc visible rather than
+presenting the module as a generic Python introduction.
+
+Follow-up: adding an M0 is allowed if the landing-page promise needs a stronger
+bridge into the course. M0 should not become a generic "what is programming"
+preface. Its job would be orientation by incident: let the learner experience
+one small information-asymmetry gap, name the course's method, and show the
+learning route. Keep it short, low-stakes, and capability-shaped. M1 remains
+the first real technical module; M0 is the threshold where the learner sees why
+the technical modules matter.
+
+Second follow-up: M0 should come before the full onboarding form for invited
+first-time learners. The learner should feel the small information gap before
+doing profile setup; otherwise the setup arrives before the reason to care.
+Allow only M0 to be entered and saved with a valid remembered invite but no
+completed learner profile. After M0, the learner must complete onboarding
+before entering M1 or later. Existing learners who already have M1 progress
+should not be pulled back to M0 by the new content; M0 becomes an optional
+bridge for them.
+
+## 2026-09-02 — Study minutes measure active effort, not seat time
+
+Owner asked whether the app should measure real lesson interaction time because
+"I studied N more minutes today" might feel satisfying. Industry patterns
+support minutes as a habit and effort signal, but not as a proxy for learning
+quality. For Three should therefore use time as warm confirmation, while
+capability progress remains primary.
+
+Resolution: show lesson estimates as honest ranges before entry, then record
+`lesson_time_events` as learner-owned active learning intervals. Count only
+visible lesson time with recent interaction; pause on background tabs and
+idle stretches. On lesson completion, show "this lesson" and "today learned"
+minutes. On the course map, show active learning time beside exercise progress,
+with planned estimate as supporting context. Do not award or gate progress by
+minutes.
+
+## 2026-09-02 — Learner language must be dense, not long
+
+Owner clarified the language standard across the app: rigorous, vivid,
+concise, and clear. The product should not rely on long explanations or repeat
+the same promise in several places.
+
+Resolution: treat brevity as a quality gate, not a style preference. When a
+lesson feels too short, add interaction, transfer, or scenario judgment before
+adding prose. Chinese and English may differ by wording, but both should read
+like native editorial writing.
+
+## 2026-09-02 — Auth entry splits real learning from test review
+
+Owner requested a full rethink of login, signup, test accounts, and the
+before-Lesson-0 experience for a likely 5-10 person private testing group.
+
+Resolution: keep Supabase passwordless magic links. Passwords would add reset
+and setup UX before they add learner value. Email remains the stable identity;
+Supabase user id remains the private progress key. First signup stays invite-
+gated, while returning learners sign in with email only. The owner distributes
+one invite code and should not need to add each learner email by hand. A valid
+invite code stores a short-lived, signed, httpOnly invite cookie for that email;
+only that browser session can create the first learner profile. After
+onboarding, the profile is the app access record. Profile writes are server-
+owned: `authenticated` users may read their own `learner_profiles` row, but
+cannot create or update it directly through the Data API.
+
+New learners complete a short onboarding profile before the course path: role,
+known tools, confidence, motivation, success definition, weekly time, language
+preference, and example preference. The five-question calibration is no longer
+a gate before Lesson 0; missing calibration saves as a gentle start and can be
+collected inside the learning flow. This writes to `learner_profiles` and sets
+`preferences.onboarding.completed=true`.
+
+Allowlisted test accounts serve two QA jobs: reset learner-owned app state to
+re-run new-user onboarding, and browse/open any lesson without creating new
+auth users. Test accounts are still emails the owner controls, preferably
+email aliases, not guessable usernames. Real learners without onboarding are
+redirected to `/onboarding`; test accounts may still enter the course map after
+reset.
+
+Content updates should respect lived progress. The profile and attempt history
+are the stable learner record; future personalization should change upcoming
+plan steps, not repeatedly invalidate lessons a real learner already completed.
+
+Follow-up: the login page must answer what the app is for, but must not expose
+internal operating personas such as "returning learner", "new tester", or
+"test account." Those distinctions are implementation and QA rules, not useful
+landing-page content for anyone except the owner. Keep the public login surface
+to the product job and the email/invite action. Test reset and lesson-jump
+affordances belong only after a test account is signed in.
+
+Second follow-up: the signed-out homepage is the landing page. It must make the
+product job clear before asking a friend to sign in. The login page is the
+action surface: email, invite code, and the passwordless-link constraint. Copy
+should state that the individual email link is device/browser-bound for that
+login attempt, while the learner's progress syncs across devices after signing
+in.
+
+## 2026-09-01 — Review board uses living specialist cards
+
+Owner clarified that architecture review should not be the only standing
+independent gate. Education, interaction design, AI-era engineering judgment,
+and zero-code learner clarity should also exist as separate senior reviewers
+with their own context and accumulated learnings.
+
+Resolution: add `docs/REVIEW_BOARD.md` and reviewer cards under
+`docs/reviewers/`. The board mirrors the owner's Claude agent-fleet logic:
+specialist reviewers are independent agents when tooling allows, not simulated
+voices inside the implementer's answer. Reusable corrections go into each
+reviewer card's `Learned Corrections`; durable product or architecture forks go
+into this decision log. Architecture approval remains mandatory before final
+submission of meaningful code changes. Learner-facing changes run the relevant
+reviewers as capacity allows, and any skipped reviewer must be named rather
+than silently implied.
+
+## 2026-09-01 — Public-course research follows source trails
+
+Owner corrected the depth standard for public CS references. A source list is
+not enough if the actual course points to a textbook, readings, instructor
+notes, code files, or problem-style materials. For example, MIT 6.100L's
+reading path points into Guttag's introductory computation textbook and its
+public companion code/errata.
+
+Resolution: research public courses deeply but lawfully. Follow syllabus source
+trails and index the materials that influence curriculum sequence, concept
+density, explanations, visual patterns, and exercise style. Do not copy prose,
+problem statements, screenshots, or long excerpts. Login remains a compact
+trust signal, so it shows representative roots plus "and more"/"等"; the
+course page and resource index carry the fuller source map.
+
+## 2026-08-30 — Standing Architecture Reviewer before submission
+
+Owner requested an independent senior-architect review role that persists
+beyond one chat turn. This reviewer exists to catch issues an implementation
+agent is likely to miss after becoming attached to its own patch: inconsistent
+code, brittle extension paths, unnecessary complexity, wrong global/local
+scope, and security regressions.
+
+Resolution: add `docs/ARCHITECT_REVIEWER.md` as the reviewer's charter and
+make it a required pre-submission gate in `docs/MAINTENANCE.md`. For meaningful
+code changes, the implementation agent must obtain approval from a separate
+agent when multi-agent tooling is available. If that tooling is unavailable,
+the agent should not fake an approval; it should report that the required gate
+cannot be completed.
+
+## 2026-08-30 — Visual system avoids both AI futurism and AI minimalism
+
+Owner asked for a broader visual refresh: not just color, but typography,
+borders, and interaction. The target is 文雅中有活泼: a refined learning
+tool with enough warmth and motion to feel alive, without emoji, purple-blue
+gradients, glass cards, glow blobs, or the flat grey minimalism now associated
+with large AI chat products.
+
+Resolution: update the global palette from bright indigo on warm paper to a
+cooler 瓷青 paper ground, 墨 ink, 孔雀青 for primary actions, and a deeper
+朱砂 for the seal and teacher-margin emphasis. Remove wide letter-spacing from
+major Chinese headings and source labels. Give buttons, inputs, locale toggles,
+and source chips a consistent tactile layer: clearer borders, custom soft
+shadows, visible focus rings, and a small hover lift. The brand should signal
+specific learning judgment, not generic AI category membership.
+
+## 2026-08-30 — Auth form states keep one visual skeleton
+
+Owner flagged that the post-submit login page felt inconsistent because the
+screen lost much of the content below the hero after the magic link was sent.
+This is a state-design issue: initial, error, and sent states should feel like
+the same login surface, not separate pages.
+
+Resolution: keep the email form visible after submit, preserve the submitted
+email in the input, and render success/error/link-invalid messages in one
+stable status slot under the primary button. Invite code remains a first-signup
+detail, not part of the old-user login path.
+
+## 2026-08-30 — Login pitch leads with target-user pain
+
+Owner liked "not a coding bootcamp" but flagged the follow-up sentence as
+stiff and too narrow. The login page is the highest-value information reveal:
+it must answer, in one glance, why this product is different from general
+adult-learning apps and why a practical non-engineer should care.
+
+Review through four target profiles clarified the hierarchy. A product or
+operations lead wants fewer unclear handoffs; a founder wants less expensive
+rework; a data/AI-heavy user wants to judge agent output earlier; a non-
+technical manager wants better questions before engineering time is spent.
+All four respond to collaboration leverage, not to curriculum provenance.
+
+Resolution: the primary pitch should say For Three is not a coding bootcamp,
+but a demystification course for code and AI. It should still land on the
+practical job: read what programmers and AI agents are doing, ask earlier, and
+avoid expensive misunderstandings. Public CS course sources remain a trust
+signal below the fold or below the form, not the lead sentence.
+
+Follow-up: "engineering collaboration course" is strategically accurate but
+too stiff as a learner-facing category in Chinese. Keep collaboration as the
+underlying job-to-be-done, but expose the course as code and AI demystification
+or code and AI fluency.
+
+Second follow-up: the login page should hint that For Three is itself an
+AI-assisted learning product, not only a course about AI. The promise should
+carry the mission clearly: AI helps prepare and improve the course, and the
+learning path should fit each learner's starting point and sticking points.
+
+## 2026-08-30 — Bilingual copy optimizes for 信达雅, not word matching
+
+Owner flagged that "rewritten" and the Chinese "改写" can sound copyright-
+adjacent, as if For Three were laundering public-course material. The deeper
+copy principle is that English and Chinese should not mirror each other word
+for word when that weakens native fluency or creates the wrong implication.
+
+Resolution: bilingual learner-facing copy should preserve shared intent and
+technical meaning, but each language should read as if written originally in
+that language. The review standard is a bilingual professor's eye: accurate,
+faithful to the product promise, and elegant enough not to feel translated.
+For the login page, lead with the learner's job-to-be-done rather than with
+course provenance. Provenance is supporting trust, not the primary pitch.
+
+## 2026-08-30 — External links require resource-index review before placement
+
+Owner corrected the first external-resource implementation: linking out is not
+just a copyright question. It is a learning-flow decision. A useful external
+page can still be a bad in-lesson link if it interrupts the learner at the
+wrong time, duplicates the app's own explanation, takes too long, opens poorly
+on phone, or leaves the learner unsure how to return and continue.
+
+Resolution: keep course-level public links compact and mostly as provenance.
+The login page may show a lightweight source signal, but should not become a
+public-link directory. The course homepage may show the full source list in a
+small footprint. Lesson-level links must come from a maintained resource index
+after the exact page/video has been read or watched, matched to a specific
+lesson moment, classified as optional or required, and checked on phone and
+desktop for open/return continuity. Remove premature lesson-level links until
+that review is complete.
+
+## 2026-08-30 — Add Lesson 0 as orientation, not an essay
+
+Owner asked for a short opening frame inspired by public course introductions:
+what computer science roughly contains, what AI changes today, why this course
+exists, and what commitment the learner should bring. This is valuable, but
+only if it behaves like the product: concrete, visual, and quickly testable.
+
+Resolution: add Lesson 0 before the first technical lesson. It gives a compact
+CS scope map, defines engineering literacy as collaboration leverage, explains
+why AI makes judgment more important rather than optional, and sets expectations
+around 5-8 minute practice, answering before hints, and not running risky
+agent-suggested actions blindly. Keep it short. The purpose is orientation and
+trust, not a textbook preface.
+
+## 2026-08-30 — External course links are optional references, not copied content
+
+Owner wants useful public course materials linked at the moment they become
+relevant, especially short videos or tool demonstrations from resources such
+as Missing Semester. This is pedagogically right: a learner who wants breadth
+can leave the app briefly without forcing every learner through a longer path.
+
+Resolution: lessons may declare optional external `resources` with source, URL,
+and reference minutes. These links open the original site and do not count
+toward required lesson completion. The app should not embed, download, rehost,
+copy screenshots, copy problem text, or summarize large portions of external
+materials unless the exact license and attribution requirements have been
+checked. We link out as provenance and enrichment; For Three remains the
+teaching surface.
+
+## 2026-08-30 — Visual copy must survive mobile stacking
+
+Owner noticed a recurring responsive-learning problem: desktop layouts often
+place artifacts side by side, but mobile stacks them vertically. Copy that says
+"left" and "right" stops matching what the learner sees.
+
+Resolution: visual titles, captions, and exercise prompts should identify
+artifacts by semantic labels, window titles, filenames, or highlighted terms,
+not by fragile screen position. Mobile and desktop should be checked separately
+for major learner-facing visual changes. When one copy cannot work naturally
+across both, prefer a more universal layout before creating divergent text.
+
+## 2026-08-30 — Course URLs use specific slugs, not `/learn`
+
+Owner clarified that the course suffix itself should be specific because For
+Three may later host multiple courses. A generic `/learn` path would become
+ambiguous and create migration debt once a second course exists.
+
+Resolution: the active course lives at
+`/courses/engineering-literacy-code-ai-agents`, with lesson pages underneath
+that same course slug. Do not keep `/learn` as a compatibility redirect in
+Phase 1; there is no public contract worth preserving yet, and keeping it would
+teach the codebase the wrong routing model. Shared lesson UI belongs outside
+route folders, so the player now lives as a reusable component.
+
+## 2026-08-30 — Current course name and influences must be visible
+
+As For Three may later host multiple courses, the current course should not be
+labeled with a generic umbrella title. Rename it around the actual job-to-be-
+done: engineering literacy for collaboration with programmers and AI agents.
+
+Resolution: the active course is "Engineering Literacy: Code & AI Agents" /
+"工程协作入门：读懂代码与 AI agent". Public course links should be visible in
+the app, not only in design docs, so learners can open the original courses
+directly. The product claim is "集众家所长", not endorsement and not copied
+content: these sources shape sequencing and emphasis; For Three's Chinese
+explanations, AI-agent collaboration framing, and exercises remain original.
+
+## 2026-08-30 — Fresh onboarding tests reset learner state, not auth users
+
+Owner needs to repeatedly experience the app as a new learner. Creating a new
+Supabase auth account for every test run would be closer to a literal signup,
+but it creates account clutter and makes routine onboarding review slower.
+
+Resolution: use one fixed test account and give only allowlisted test emails a
+server-side reset action. The reset clears learner-owned app data for that user
+— progress, XP, profile, plans, SRS, pulse checks, assistant history, and usage
+logs — but keeps the Supabase auth user. This tests the product state that
+matters for onboarding without changing identity infrastructure. Production
+requires both `TEST_ACCOUNT_EMAILS` and `TEST_ACCOUNT_RESET_ENABLED=true`; local
+development only needs the email allowlist.
+
+The reset must also clear lesson-player browser caches on return, because
+client-side interruption recovery can otherwise make a freshly reset test user
+look partly complete.
+
+## 2026-08-30 — The pain is collaboration leverage, not becoming a programmer
+
+Owner clarified the deeper personal pain: she does not need to become a
+programmer, but she does need to understand what programmers are doing, why
+they are doing it, and roughly how the work is carried out. That understanding
+reduces communication and interpretation cost in engineering collaboration,
+lets her contribute from her own strengths, and creates better synergy with
+programmers and AI agents.
+
+AI does not remove this pain. It raises the floor by letting the owner create
+more than she could have built alone, but if judgment stays after-the-fact,
+time cost and communication cost compound. The ceiling is still limited by the
+parts she cannot explain or evaluate. This refines the app's founding frame:
+For Three is not a programming course wearing AI clothing; it is a course in
+engineering literacy for people who need to direct, judge, and collaborate
+around technical work without becoming full-time engineers.
+
+Resolution: lessons should repeatedly connect concepts to collaboration moves:
+what to ask before work starts, what evidence to request while work happens,
+what output proves after work finishes, and which risks need escalation to a
+human engineer. "Understand programmers" and "understand AI agents" are not
+separate tracks; AI makes the same collaboration gap faster, cheaper to enter,
+and easier to underestimate.
+
+Also set the AI-cost design principle: practical-feeling lessons do not imply
+frequent runtime AI calls. Use AI heavily during development and authoring:
+researching curricula, designing lesson packages, writing code, preparing fixed
+scenario variants, and reviewing content. At runtime, prefer deterministic,
+pre-authored, copyable, and selectable interactions whenever they can teach the
+same move. Reserve live AI calls for genuine per-user customization, open-ended
+questions, and cases where static packages would clearly fail. The intended
+shape is roughly 80/20: most AI leverage happens before the course is shipped;
+only the high-value minority happens inside the live lesson.
+
+## 2026-08-30 — Mobile lesson flow must be interruption-safe
+
+Owner supplied a mobile-first critique after live production use and a second
+model's code read. Triage: the main claims are accurate. The lesson player
+kept correct answers only in React state until the final screen, `?step=` was
+read only on entry, checkpoint material was separated from its questions, and
+several controls were below comfortable mobile tap targets. This made normal
+phone behaviors — language switching, app switching, lock-screen recovery, and
+edge-back gestures — feel like punishment.
+
+Resolution: progress must be recorded at the exercise boundary, not only at
+lesson completion. Correct exercise results are POSTed immediately and mirrored
+in a same-tab session cache so a language refresh can restore the local lesson
+state while the database remains the source of truth. Lesson navigation writes
+the current step into browser history so refresh/language switch resumes in
+place and mobile back gestures can walk through recent steps. Use `dvh` and a
+sticky lesson footer for phone browser chrome; lesson chrome controls should
+meet mobile tap-target expectations.
+
+Module checkpoints need a different layout from ordinary reading cards:
+assessment material should stay visible in a collapsible panel while the
+question is answered. Wrong answers also need deterministic help without
+depending on an LLM call; after repeated misses, show the authored explanation
+as a static clue.
+
+Course entry should answer "what am I doing today?" before showing the whole
+route. The home continue action should deep-link to the next unfinished lesson,
+and the course page should lead with today's lesson and the current module capability.
+Longer-term session bundles, warm-up/SRS, and placement testing remain separate
+progress-model work; do not fake them with copy-only UI.
+
+## 2026-08-30 — Micro-lessons need real transfer friction, not padded time
+
+Owner retook L3-L4 in production and finished each in under 3 minutes despite
+the 8-minute labels. The issue is not merely dishonest estimation; it means the
+lesson path lets a fast learner recognize definitions without doing enough
+evidence-sorting, variation, or application work to feel "举一反三."
+
+Resolution: keep Phase 1 lessons under the 10-minute ceiling, but treat 5-6
+minutes of focused work as the practical center of gravity, with slower
+learners plausibly taking about 8 minutes. Add marked transfer prompts via
+`advanced: true`, rendered as "Advanced question" / "举一反三", when a lesson
+needs more capability weight. These prompts should reuse the concept in a new
+terminal log, agent transcript, pseudocode plan, or small work scenario.
+
+Also formally enable `drag_order` now. Tap-to-order is the first interaction
+that is richer than reading/MCQ/fill-in while staying deterministic and mobile
+honest. Use it where ordering or mapping evidence is the skill, not as a
+decorative activity.
+
+## 2026-08-30 — Supabase Data API grants are explicit
+
+Supabase's 2026 Data API defaults mean new `public` tables are not reliably
+reachable by `supabase-js` unless migrations grant role privileges explicitly.
+Resolution: keep RLS as the row-ownership layer, but make table exposure an
+intentional migration concern too. `0004_explicit_data_api_grants.sql` revokes
+signed-out access, grants authenticated users only the operations the app uses,
+and leaves `service_role` available for trusted server-side maintenance.
+
+Add `supabase/SCHEMA.md` as the human schema ledger and
+`npm run check:supabase` as the non-destructive preview check after applying
+migrations. The check validates expected tables/columns with
+`SUPABASE_SECRET_KEY` and fails if the anon key can reach app tables.
+
+---
+
 ## 2026-08-29 — Assistant history is private and compacted after 30 days
 
 Owner wants lesson-assistant questions saved because they reveal learning
@@ -161,13 +604,13 @@ explicitly named as residual risk if it is intentionally deferred.
 
 ## 2026-08-28 — Course map separates overview from active module
 
-Owner caught a product-design ambiguity on `/learn`: the four Part summaries
-looked like clickable cards, while the real lesson list below felt visually
-detached from that overview. Resolution: the Part area is now a non-clickable
-course arc, styled as a route overview rather than an action grid. The lesson
-area is explicitly presented as the current module within that arc, with the
-stage label repeated above the module title and only lesson rows behaving like
-navigation.
+Owner caught a product-design ambiguity on the course path: the four Part
+summaries looked like clickable cards, while the real lesson list below felt
+visually detached from that overview. Resolution: the Part area is now a
+non-clickable course arc, styled as a route overview rather than an action
+grid. The lesson area is explicitly presented as the current module within
+that arc, with the stage label repeated above the module title and only lesson
+rows behaving like navigation.
 
 Rejected for now: making the Part summaries filter or switch the lower list.
 That would imply functionality the product does not have yet, and would make

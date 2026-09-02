@@ -1,8 +1,10 @@
 import { notFound, redirect } from "next/navigation";
+import { canEnterLearnerApp, hasRememberedInvite } from "@/lib/access";
 import { createClient } from "@/lib/supabase/server";
 import { dict, getLocale } from "@/lib/i18n";
 import { getLesson } from "@/lib/content";
-import { LessonPlayer } from "./lesson-player";
+import { LessonPlayer } from "@/components/lesson-player";
+import { getLearnerProfile, ONBOARDING_PATH } from "@/lib/profile";
 
 export default async function LessonPage({
   params,
@@ -27,6 +29,13 @@ export default async function LessonPage({
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+  const profile = await getLearnerProfile(supabase, user.id);
+  const hasFullAccess = canEnterLearnerApp(user.email, profile);
+  const hasOrientationAccess =
+    !hasFullAccess && lesson.module_id === "m00" && (await hasRememberedInvite(user.email));
+  if (!hasFullAccess && !hasOrientationAccess) {
+    redirect(ONBOARDING_PATH);
+  }
 
   const ids = lesson.exercises.map((e) => e.id);
   const { data: attempts } = await supabase

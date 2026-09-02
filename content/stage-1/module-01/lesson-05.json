@@ -31,12 +31,12 @@
     {
       "type": "visual",
       "kind": "python-output",
-      "title_en": "Code on the left, output on the right",
-      "title_zh": "左边是代码，右边是输出",
+      "title_en": "The file shows code; the output window shows the result",
+      "title_zh": "文件里是代码；输出窗口里是结果",
       "caption_en": "The quote marks live in the code. The visible output is only the text inside them: `hello`.",
       "caption_zh": "引号留在代码里；真正显示到屏幕上的输出，只有引号里面的文字：`hello`。",
-      "alt_en": "Two small windows: a Python file with print(\"hello\") on the left, and an output window showing hello on the right.",
-      "alt_zh": "两块小窗口：左边是写着 print(\"hello\") 的 Python 文件，右边是显示 hello 的输出窗口。"
+      "alt_en": "Two small windows: a Python file with print(\"hello\"), and an output window showing hello.",
+      "alt_zh": "两个小窗口：一个 Python 文件写着 print(\"hello\")，另一个输出窗口显示 hello。"
     },
     {
       "type": "exercise",
