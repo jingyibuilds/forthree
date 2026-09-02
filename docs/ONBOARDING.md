@@ -17,8 +17,10 @@
 3. **Ask for the No-list, not just the Yes-list.** Explicit anti-goals
    ("I do NOT need to write complex engineering code") are stronger
    steering signal than goals, and they license the course to cut content.
-4. **Multi-selects: ≤ 5 options, MECE.** Every option list below follows
-   this. Free text only where a fixed list would flatten the answer.
+4. **Multiple choice first.** Early beta onboarding should not feel like a
+   writing assignment. Use single-select or multi-select questions for target,
+   success, pacing, and example preferences; add free text later only when the
+   fixed list is proven too flat.
 5. **Explanation style is a first-class preference.** Some people want the
    definition straight; some (like the first user) only understand a
    definition after translating it into something they can relate to.
@@ -135,7 +137,7 @@ cost — in that order, all three.
 | B1–B3 | `preferences` (modality, explanation_style, dislikes) | Tier-1 prompt template; lesson modality choice |
 | C1–C2 | `background.goals` / `background.anti_goals` | Plan seeding; Tier-2 replanning; elective pruning |
 | C3 | `success_definition` | Stage checkpoints; capstone spec |
-| D1 | `weekly_budget_hours` | Pacing, streak expectations |
+| D1 | `weekly_budget_hours` + `preferences.daily_learning_minutes` | Pacing, streak expectations. UI asks daily minutes; storage keeps weekly-hour equivalent for schema compatibility. |
 | D2 | `lang_pref` | Content locale |
 
 Anti-goals are honored the same way core/elective is: Tier-2 may prune or

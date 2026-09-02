@@ -6,6 +6,84 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-02 — Landing typography uses real CJK title font without preloading all CJK
+
+The landing page exposed a font bug: `Noto_Serif_SC` was configured with
+`subsets: ["latin"]`, so Chinese headings fell through to system serif fonts
+instead of the declared title face. Loading a full CJK web font eagerly would
+also be too heavy for a small private beta landing page.
+
+Resolution: keep `Noto Serif SC` for the serif title/brand voice, but configure
+it with `preload: false`, `display: "swap"`, and only the used `600` weight.
+This lets Next emit unicode-range CJK slices and lets the browser request only
+the glyph ranges used on the page. Body text stays on Geist for Latin plus an
+explicit system Chinese sans stack, so Chinese body copy no longer depends on
+browser-default fallback. Latin font names stay before Chinese font names in
+the stacks so mixed strings such as AI, CS50P, and MDN keep the Latin face.
+
+Tradeoff: local Chrome timing on the logged-out landing page at 375px showed
+about 268KB of woff2 font resources for Chinese first view and about 72KB for
+English. That is heavier than the earlier Latin-only title setup, but avoids
+shipping a full multi-megabyte CJK font up front and fixes the visible Songti
+fallback problem.
+
+---
+
+## 2026-09-02 — Product/design skill hook guides future learner-facing work
+
+Owner asked to bring higher-quality web/mobile visual design and product
+development practice into the repo as reusable agent capability, not as chat
+memory. Installing every available PM/design skill would add noise and make
+future agents over-framework simple work.
+
+Resolution: install a curated local Codex skill set for deeper dives
+(`refactoring-ui`, `problem-framing-canvas`, `discovery-interview-prep`,
+`opportunity-solution-tree`, `prioritization-advisor`, `prd-development`,
+`user-story`, `user-story-splitting`, `context-engineering-advisor`) and add a
+project-specific `forthree-product-design` skill under
+`docs/agent-skills/forthree-product-design/`. `AGENTS.md` now treats this as a
+pre-work hook for learner-facing UI, lesson flow, onboarding, course maps, AI
+feedback, prioritization, PRDs, user stories, and roadmap choices. The project
+skill translates external frameworks into For Three's own gates: learner job
+first, calm density, concise bilingual language, deterministic checks before
+LLM output, and small phase-bound vertical slices.
+
+---
+
+## 2026-09-02 — Public landing defaults to Chinese and names the product job
+
+Owner rejected the deployed Chinese landing copy as visually heavy and
+semantically mushy. The page also exposed a deeper inconsistency: the app name
+and pitch cannot sound like generic anxiety comfort.
+
+Resolution: the default locale is Chinese unless the user has chosen English.
+English surfaces keep **For Three** with the explainer "Learn one thing. Use
+it three ways." Chinese landing uses **举一反三** with **学点真本事** as the
+lockup. The landing promise should name the actual job: a 10-minute daily
+learning experience that gives non-engineers just enough CS to use AI better
+and judge whether it is capable. Avoid abstract comfort lines, treadmill
+promises such as "you can keep up," and literal translations such as "按事故进入."
+Non-interactive signals should not be styled as clickable cards.
+
+Course-map pages should be task-first, not syllabus-first: put resume lesson,
+current module, and today's next action before broad course arc or source
+links. Long roadmaps and all-module lists belong in collapsible sections so
+the learner is not met by a wall of text before they can continue.
+
+Onboarding should also lower the writing burden for friend beta. Personal
+targets, success definitions, and daily learning time are multiple-choice
+signals by default. Store daily minutes in `preferences.daily_learning_minutes`
+while computing the existing `weekly_budget_hours` value for schema
+compatibility.
+
+Do not put an isolated no-account sample question on the public landing page
+unless it has a clear next step. The "first small incident" belongs in M0,
+where the learner can continue directly into the course method.
+
+Add a standing Translation Reviewer to the review board for bilingual,
+learner-facing copy. This reviewer checks 信、达、雅 and proposes replacement
+lines instead of only flagging awkward wording.
+
 ## 2026-09-02 — Course map follows incidents outside, concepts inside
 
 Owner reframed the course around information asymmetry: learners are not

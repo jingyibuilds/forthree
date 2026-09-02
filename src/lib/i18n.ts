@@ -6,5 +6,5 @@ export type { Dict, Locale } from "./i18n-shared";
 
 export async function getLocale(): Promise<Locale> {
   const value = (await cookies()).get("locale")?.value;
-  return value === "zh" ? "zh" : "en";
+  return value === "en" ? "en" : "zh";
 }

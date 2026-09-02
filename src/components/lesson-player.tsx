@@ -134,6 +134,7 @@ function ExerciseCard({
   locale,
   t,
   completed,
+  assistantEnabled,
   onDone,
   onAskAssistant,
 }: {
@@ -141,6 +142,7 @@ function ExerciseCard({
   locale: Locale;
   t: Dict;
   completed: boolean;
+  assistantEnabled: boolean;
   onDone: (r: ExerciseResult) => void;
   onAskAssistant: (seed?: AssistantSeed) => void;
 }) {
@@ -282,19 +284,21 @@ function ExerciseCard({
               </p>
             </div>
           )}
-          <button
-            type="button"
-            onClick={() =>
-              onAskAssistant({
-                exerciseId: exercise.id,
-                response: lastResponse,
-                question: t.assistantWrongQuestion,
-              })
-            }
-            className="min-h-11 rounded-lg border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink shadow-sm transition-colors hover:border-muted disabled:text-muted"
-          >
-            {t.assistantHint}
-          </button>
+          {assistantEnabled && (
+            <button
+              type="button"
+              onClick={() =>
+                onAskAssistant({
+                  exerciseId: exercise.id,
+                  response: lastResponse,
+                  question: t.assistantWrongQuestion,
+                })
+              }
+              className="min-h-11 rounded-lg border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink shadow-sm transition-colors hover:border-muted disabled:text-muted"
+            >
+              {t.assistantHint}
+            </button>
+          )}
         </div>
       )}
 
@@ -1121,12 +1125,14 @@ export function LessonPlayer({
   t,
   alreadyCorrect,
   initialIndex,
+  assistantEnabled,
 }: {
   lesson: Lesson;
   locale: Locale;
   t: Dict;
   alreadyCorrect: string[];
   initialIndex: number;
+  assistantEnabled: boolean;
 }) {
   const [index, setIndex] = useState(initialIndex);
   const [results, setResults] = useState<ExerciseResult[]>(() =>
@@ -1373,13 +1379,25 @@ export function LessonPlayer({
         </span>
       </div>
 
-      <button
-        type="button"
-        onClick={() => openAssistant()}
-        className="fixed bottom-24 right-4 z-40 min-h-12 rounded-full border border-line bg-surface px-4 text-sm font-medium text-ink shadow-lg transition-colors hover:border-muted sm:bottom-8 sm:right-8"
-      >
-        {t.assistantButton}
-      </button>
+      {assistantEnabled && (
+        <button
+          type="button"
+          onClick={() => openAssistant()}
+          className="fixed bottom-24 right-4 z-40 flex min-h-16 items-center gap-3 rounded-lg border border-primary/30 bg-surface px-4 py-3 text-left shadow-xl transition-[border-color,transform,box-shadow] hover:-translate-y-px hover:border-primary sm:bottom-8 sm:right-8"
+        >
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-accent-soft">
+            <Seal size={24} />
+          </span>
+          <span>
+            <span className="block text-xs font-medium uppercase text-primary">
+              {t.assistantCtaTitle}
+            </span>
+            <span className="block text-sm font-semibold text-ink">
+              {t.assistantButton}
+            </span>
+          </span>
+        </button>
+      )}
 
       <div className="flex flex-1 flex-col justify-center py-8 sm:py-14">
         {index === 0 && (
@@ -1461,6 +1479,7 @@ export function LessonPlayer({
               locale={locale}
               t={t}
               completed={blockDone}
+              assistantEnabled={assistantEnabled}
               onAskAssistant={openAssistant}
               onDone={recordCorrectResult}
             />

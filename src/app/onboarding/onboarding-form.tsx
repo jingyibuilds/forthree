@@ -74,19 +74,22 @@ export function OnboardingForm({ t }: { t: Dict }) {
             </select>
           </label>
 
-          <label className="block text-sm font-medium">
-            {t.weeklyBudget}
-            <input
-              name="weekly_budget"
-              type="number"
-              min={1}
-              max={8}
-              step={0.5}
-              required
-              defaultValue={2.5}
-              className="mt-2 min-h-11 w-full rounded-lg border border-line bg-background px-3 py-2 text-sm outline-none shadow-sm transition-colors focus:border-primary"
-            />
-          </label>
+          <fieldset>
+            <legend className="text-sm font-medium">{t.dailyBudget}</legend>
+            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+              {t.dailyBudgetOptions.map((option) => (
+                <ChoiceCard
+                  key={option.value}
+                  name="daily_budget_minutes"
+                  type="radio"
+                  value={option.value}
+                  label={option.label}
+                  required
+                  defaultChecked={option.value === "10"}
+                />
+              ))}
+            </div>
+          </fieldset>
         </div>
 
         <fieldset className="mt-5">
@@ -124,26 +127,36 @@ export function OnboardingForm({ t }: { t: Dict }) {
       <section className="rounded-lg border border-line bg-surface p-5 shadow-sm">
         <h2 className="font-serif text-2xl font-semibold">{t.onboardingGoalTitle}</h2>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          <label className="block text-sm font-medium">
-            {t.motivation}
-            <textarea
-              name="motivation"
-              required
-              rows={4}
-              className="mt-2 w-full rounded-lg border border-line bg-background px-3 py-2 text-sm outline-none shadow-sm transition-colors focus:border-primary"
-              placeholder={t.motivationPlaceholder}
-            />
-          </label>
-          <label className="block text-sm font-medium">
-            {t.successDefinition}
-            <textarea
-              name="success_definition"
-              required
-              rows={4}
-              className="mt-2 w-full rounded-lg border border-line bg-background px-3 py-2 text-sm outline-none shadow-sm transition-colors focus:border-primary"
-              placeholder={t.successPlaceholder}
-            />
-          </label>
+          <fieldset>
+            <legend className="text-sm font-medium">{t.motivation}</legend>
+            <div className="mt-3 grid gap-2">
+              {t.motivationOptions.map((option) => (
+                <ChoiceCard
+                  key={option.value}
+                  name="motivation"
+                  type="radio"
+                  value={option.value}
+                  label={option.label}
+                  required
+                />
+              ))}
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend className="text-sm font-medium">{t.successDefinition}</legend>
+            <div className="mt-3 grid gap-2">
+              {t.successOptions.map((option) => (
+                <ChoiceCard
+                  key={option.value}
+                  name="success_definition"
+                  type="radio"
+                  value={option.value}
+                  label={option.label}
+                  required
+                />
+              ))}
+            </div>
+          </fieldset>
         </div>
 
         <fieldset className="mt-5">

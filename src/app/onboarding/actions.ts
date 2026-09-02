@@ -22,6 +22,33 @@ const calibrationAnswers = {
   c5: "test",
 } as const;
 
+const allowedSingleSelects = {
+  role: [
+    "owner_data_scientist",
+    "product_ops",
+    "founder_manager",
+    "curious_friend",
+  ],
+  motivation: [
+    "review_ai_work",
+    "work_with_engineers",
+    "ship_with_ai",
+    "reduce_confusion",
+  ],
+  successDefinition: [
+    "ask_better_questions",
+    "check_ai_claims",
+    "read_change_summary",
+    "make_small_tool",
+  ],
+  confidence: ["low", "medium", "high"],
+  learningMode: ["read", "do", "compare"],
+} as const;
+
+function isAllowed(value: string, allowed: readonly string[]) {
+  return allowed.includes(value);
+}
+
 function getAll(formData: FormData, name: string) {
   return formData
     .getAll(name)
@@ -54,7 +81,7 @@ export async function saveOnboarding(
   const role = String(formData.get("role") ?? "").trim();
   const motivation = String(formData.get("motivation") ?? "").trim();
   const successDefinition = String(formData.get("success_definition") ?? "").trim();
-  const weeklyBudget = Number(formData.get("weekly_budget"));
+  const dailyBudgetMinutes = Number(formData.get("daily_budget_minutes"));
   const langPref = formData.get("lang_pref") === "en" ? "en" : "zh";
   const confidence = String(formData.get("confidence") ?? "").trim();
   const learningMode = String(formData.get("learning_mode") ?? "").trim();
@@ -63,9 +90,24 @@ export async function saveOnboarding(
     return { status: "error", message: messages.onboardingRequired };
   }
 
-  if (!Number.isFinite(weeklyBudget) || weeklyBudget < 1 || weeklyBudget > 8) {
+  if (
+    !isAllowed(role, allowedSingleSelects.role) ||
+    !isAllowed(motivation, allowedSingleSelects.motivation) ||
+    !isAllowed(successDefinition, allowedSingleSelects.successDefinition) ||
+    !isAllowed(confidence, allowedSingleSelects.confidence) ||
+    !isAllowed(learningMode, allowedSingleSelects.learningMode)
+  ) {
+    return { status: "error", message: messages.onboardingRequired };
+  }
+
+  if (
+    !Number.isFinite(dailyBudgetMinutes) ||
+    dailyBudgetMinutes < 10 ||
+    dailyBudgetMinutes > 30
+  ) {
     return { status: "error", message: messages.weeklyBudgetInvalid };
   }
+  const weeklyBudget = Math.round((dailyBudgetMinutes * 7) / 6) / 10;
 
   const calibration = Object.keys(calibrationAnswers).map((key) => {
     const answer = String(formData.get(key) ?? "");
@@ -109,6 +151,7 @@ export async function saveOnboarding(
       },
       learning_mode: learningMode,
       content_examples: getAll(formData, "content_examples"),
+      daily_learning_minutes: dailyBudgetMinutes,
     },
     success_definition: successDefinition,
     lang_pref: langPref,

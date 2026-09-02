@@ -52,6 +52,7 @@ export default async function LessonPage({
       t={dict[locale]}
       alreadyCorrect={alreadyCorrect}
       initialIndex={initialIndex}
+      assistantEnabled={hasFullAccess}
     />
   );
 }
