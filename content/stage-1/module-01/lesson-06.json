@@ -9,6 +9,8 @@
   "title_zh": "他说了什么，证据是什么",
   "outcome_en": "You can separate an agent's claim from the command and output that support it.",
   "outcome_zh": "你能分清 agent 的说法、它运行的命令，以及命令返回的证据。",
+  "takeaway_move_en": "You say it is done. Which command output proves that?",
+  "takeaway_move_zh": "你说完成了，哪段命令输出能证明？",
   "review_tags": [
     "must_master",
     "profile_anchor:ai-agent"

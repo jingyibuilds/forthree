@@ -9,6 +9,8 @@
   "title_zh": "写了代码，不等于做了事",
   "outcome_en": "You can ask whether code was only written, or also run.",
   "outcome_zh": "你能追问：它只是写好了，还是已经运行过。",
+  "takeaway_move_en": "Separate what you wrote from what you actually ran.",
+  "takeaway_move_zh": "把「写了什么」和「实际跑了什么」分开说。",
   "review_tags": [
     "must_master",
     "profile_anchor:ai-agent"

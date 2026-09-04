@@ -9,6 +9,8 @@
   "title_zh": "什么时候该先停一下",
   "outcome_en": "You can name one delivery you should pause before accepting.",
   "outcome_zh": "你能说出一种不该立刻接收的技术交付。",
+  "takeaway_move_en": "Before I accept this, show me the checkable evidence.",
+  "takeaway_move_zh": "我接收之前，先给我可检查的证据。",
   "why_en": "Why second: the course has a real edge only if it changes what you accept.",
   "why_zh": "为什么第二课学它：这门课真正有用，必须改变你会直接接收什么。",
   "review_tags": [

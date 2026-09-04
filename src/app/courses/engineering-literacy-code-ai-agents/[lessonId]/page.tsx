@@ -1,10 +1,12 @@
 import { notFound, redirect } from "next/navigation";
 import { canEnterLearnerApp, hasRememberedInvite } from "@/lib/access";
+import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { createClient } from "@/lib/supabase/server";
 import { dict, getLocale } from "@/lib/i18n";
 import { getLesson } from "@/lib/content";
 import { LessonPlayer } from "@/components/lesson-player";
 import { getLearnerProfile, ONBOARDING_PATH } from "@/lib/profile";
+import { START_PATH } from "@/lib/routes";
 
 export default async function LessonPage({
   params,
@@ -35,6 +37,9 @@ export default async function LessonPage({
     !hasFullAccess && lesson.module_id === "m00" && (await hasRememberedInvite(user.email));
   if (!hasFullAccess && !hasOrientationAccess) {
     redirect(ONBOARDING_PATH);
+  }
+  if (hasOrientationAccess && !hasCompletedActivation(profile)) {
+    redirect(START_PATH);
   }
 
   const ids = lesson.exercises.map((e) => e.id);

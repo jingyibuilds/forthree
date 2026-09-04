@@ -9,6 +9,8 @@
   "title_zh": "运行之后，可能已经改了东西",
   "outcome_en": "You can distinguish harmless-looking checks from commands that may create, change, install, or delete things.",
   "outcome_zh": "你能初步分清哪些命令像是在检查，哪些命令可能创建、修改、安装或删除东西。",
+  "takeaway_move_en": "Will this command create, change, install, or delete anything?",
+  "takeaway_move_zh": "这条命令会创建、修改、安装或删除东西吗？",
   "review_tags": [
     "must_master",
     "later_formalize:shell-safety",

@@ -9,6 +9,8 @@
   "title_zh": "M1 小测：读懂 agent 的工作痕迹",
   "outcome_en": "You can read a short agent transcript and judge what happened, what failed, and what may have changed.",
   "outcome_zh": "你能读一小段 agent 工作记录，判断发生了什么、哪里失败、什么东西可能已经被改过。",
+  "takeaway_move_en": "Summarize the claim, command, output, failure, and side effect separately.",
+  "takeaway_move_zh": "把说法、命令、输出、失败和可能改动了什么分开总结。",
   "review_tags": [
     "must_master",
     "module_checkpoint",

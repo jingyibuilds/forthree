@@ -9,6 +9,8 @@
   "title_zh": "把命令读成证据",
   "outcome_en": "You can point to the command, the folder, and the output in an agent log.",
   "outcome_zh": "你能在 agent 记录里指出命令、所在文件夹和输出。",
+  "takeaway_move_en": "Paste the exact command, folder, and output.",
+  "takeaway_move_zh": "贴出命令原文、所在文件夹和输出原文。",
   "review_tags": [
     "must_master",
     "recognize_only:npm",

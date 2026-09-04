@@ -87,6 +87,7 @@ the actual moves being trained.
   "est_minutes": 8,        // whole lesson; validator enforces ≤ 10 in Phase 1
   "title_en": "…", "title_zh": "…",
   "outcome_en": "…", "outcome_zh": "…", // optional: concrete ability after this lesson
+  "takeaway_move_en": "…", "takeaway_move_zh": "…", // required: one sentence the learner can say to AI today
   "resources": [
     {
       "title_en": "…", "title_zh": "…",
@@ -234,6 +235,9 @@ words forever; that makes the course feel like it does not trust the learner.
   ("why this lesson, why now"). Both languages or neither.
 - `outcome_en` / `outcome_zh` — one sentence stating the concrete ability the
   learner should have after the lesson.
+- `takeaway_move_en` / `takeaway_move_zh` — required sentence the learner can
+  say directly to AI after the lesson. Keep it short enough to copy into a real
+  agent chat.
 - (future) `source_refs` — provenance footnote when a lesson's design
   clearly derives from a public course (e.g. a CS50 week).
 

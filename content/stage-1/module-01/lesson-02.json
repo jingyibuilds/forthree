@@ -9,6 +9,8 @@
   "title_zh": "失败发生在什么时候",
   "outcome_en": "You can judge whether failure stopped the work before action, or after some action may already have happened.",
   "outcome_zh": "你能判断失败是把动作挡在门外，还是可能已经做了一半。",
+  "takeaway_move_en": "Did it fail before running, or after some steps already ran?",
+  "takeaway_move_zh": "它是还没运行就失败，还是运行到一半才失败？",
   "review_tags": [
     "must_master",
     "recognize_only:C-Go-Rust"

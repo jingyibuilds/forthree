@@ -6,6 +6,42 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-03 — Activation starts with a deterministic diagnostic
+
+Owner brought in an activation action plan arguing that the course should not
+open by explaining the solution ("read agent logs"), but by letting a learner
+feel the problem: AI can sound done while the evidence, pre-check, or risky
+diff is missing. The reasoning matches the existing product direction: start
+from lived incidents, keep deterministic checks first, and make the learner's
+next action obvious.
+
+Resolution: add a `/start` route before M0 for invited first-time learners.
+It is a 90-second, three-question diagnostic across evidence, pre-check, and
+diff-risk axes. It shows no mid-quiz correctness feedback and makes no LLM
+request. The result is stored in
+`learner_profiles.background.activation_diagnostic` instead of adding columns,
+because `background` is already the profile JSONB for starting-point signals
+and this avoids a Phase 1 migration.
+
+After the diagnostic, the learner receives one copyable sentence to use in a
+real AI-agent conversation, then continues into M0. Existing fully onboarded
+learners are not forced back through `/start`; test accounts can reset and
+rerun the new-user path. `/learn` stays available for full learners, but its
+first screen is now one decision: resume/start today's lesson, with the full
+route folded below.
+
+Also adopt the action plan's "portable move" requirement for lessons:
+`takeaway_move_en` / `takeaway_move_zh` are now required content fields and
+validated at build time. They appear on lesson completion with a copy button.
+Second wrong attempts show static authored explanation plus the nearest concept
+anchor, so help is available without `/api/llm`.
+
+Not adopted yet: visit-count-based copy decay, pre/post checkpoint comparison,
+task-first rewrites of every lesson, and term-drill demotion. Those remain P1
+or later because they change broader content structure.
+
+---
+
 ## 2026-09-02 — Landing typography uses real CJK title font without preloading all CJK
 
 The landing page exposed a font bug: `Noto_Serif_SC` was configured with

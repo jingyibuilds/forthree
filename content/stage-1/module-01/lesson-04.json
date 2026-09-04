@@ -9,6 +9,8 @@
   "title_zh": "先给 agent 一份计划",
   "outcome_en": "You can turn a fuzzy request into a checkable action plan.",
   "outcome_zh": "你能把模糊需求改成一份可检查的动作计划。",
+  "takeaway_move_en": "Do not edit yet. Give me the steps, risks, and verification.",
+  "takeaway_move_zh": "先别改。告诉我步骤、风险和验证方式。",
   "review_tags": [
     "must_master",
     "profile_anchor:ai-agent"

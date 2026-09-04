@@ -126,6 +126,8 @@ export type Lesson = {
   // Optional concrete ability earned by the end of the lesson.
   outcome_en?: string;
   outcome_zh?: string;
+  takeaway_move_en: string;
+  takeaway_move_zh: string;
   resources?: LessonResource[];
   review_tags?: string[];
   blocks: Block[];

@@ -135,6 +135,7 @@ function ExerciseCard({
   t,
   completed,
   assistantEnabled,
+  anchorHint,
   onDone,
   onAskAssistant,
 }: {
@@ -143,6 +144,7 @@ function ExerciseCard({
   t: Dict;
   completed: boolean;
   assistantEnabled: boolean;
+  anchorHint?: string;
   onDone: (r: ExerciseResult) => void;
   onAskAssistant: (seed?: AssistantSeed) => void;
 }) {
@@ -282,6 +284,12 @@ function ExerciseCard({
               <p className="mt-2">
                 <Inline text={explain} />
               </p>
+              {anchorHint && (
+                <p className="mt-3 border-t border-warn/20 pt-3 text-sm leading-6">
+                  <span className="font-medium">{t.anchorClue}: </span>
+                  <Inline text={anchorHint} />
+                </p>
+              )}
             </div>
           )}
           {assistantEnabled && (
@@ -1141,6 +1149,7 @@ export function LessonPlayer({
   const [finished, setFinished] = useState(false);
   const [finishedLessonSeconds, setFinishedLessonSeconds] = useState(0);
   const [finishedTodaySeconds, setFinishedTodaySeconds] = useState(0);
+  const [copiedTakeaway, setCopiedTakeaway] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [assistantLoading, setAssistantLoading] = useState(false);
   const [assistantDraft, setAssistantDraft] = useState("");
@@ -1179,6 +1188,17 @@ export function LessonPlayer({
   const last = index === lesson.blocks.length - 1;
   // Derived, so navigating back and forward keeps answered exercises done.
   const blockDone = !isExercise || completedExerciseIds.has(block.ref);
+  const takeawayMove =
+    locale === "zh" ? lesson.takeaway_move_zh : lesson.takeaway_move_en;
+  const currentAnchorHint = useMemo(() => {
+    for (let i = index - 1; i >= 0; i -= 1) {
+      const candidate = lesson.blocks[i];
+      if (candidate.type === "concept") {
+        return locale === "zh" ? candidate.anchor_zh : candidate.anchor_en;
+      }
+    }
+    return undefined;
+  }, [index, lesson.blocks, locale]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -1272,6 +1292,16 @@ export function LessonPlayer({
     }
   }
 
+  async function copyTakeaway() {
+    try {
+      await navigator.clipboard.writeText(takeawayMove);
+      setCopiedTakeaway(true);
+      window.setTimeout(() => setCopiedTakeaway(false), 1400);
+    } catch {
+      setCopiedTakeaway(false);
+    }
+  }
+
   async function askAssistant(question: string, seed = assistantSeed) {
     const trimmed = question.trim();
     if (!trimmed || assistantLoading) return;
@@ -1324,6 +1354,19 @@ export function LessonPlayer({
         <h1 className="mt-4 font-serif text-2xl font-semibold">
           {t.lessonDone}
         </h1>
+        <div className="mt-5 w-full rounded-lg border-l-4 border-accent bg-surface px-4 py-3 text-left shadow-sm">
+          <p className="text-sm font-medium text-accent">{t.moveToday}</p>
+          <p className="mt-2 text-base leading-7 text-ink">
+            <Inline text={takeawayMove} />
+          </p>
+          <button
+            type="button"
+            onClick={copyTakeaway}
+            className="mt-3 min-h-11 rounded-lg border border-line bg-background px-4 py-2.5 text-sm font-medium text-muted transition-[border-color,color,transform] hover:-translate-y-px hover:border-primary hover:text-primary active:translate-y-0"
+          >
+            {copiedTakeaway ? t.copied : t.copyTakeaway}
+          </button>
+        </div>
         <div className="mt-5 grid w-full grid-cols-2 gap-3 text-left">
           <div className="rounded-lg border border-line bg-surface p-4 shadow-sm">
             <p className="text-sm font-medium text-muted">{t.lessonLearned}</p>
@@ -1480,6 +1523,7 @@ export function LessonPlayer({
               t={t}
               completed={blockDone}
               assistantEnabled={assistantEnabled}
+              anchorHint={currentAnchorHint}
               onAskAssistant={openAssistant}
               onDone={recordCorrectResult}
             />

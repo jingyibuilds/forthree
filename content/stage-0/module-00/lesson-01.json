@@ -9,6 +9,8 @@
   "title_zh": "它说修好了，少了什么",
   "outcome_en": "You can separate a confident update from the evidence needed to trust it.",
   "outcome_zh": "你能把一句很自信的汇报，和真正需要补看的证据分开。",
+  "takeaway_move_en": "Show me what changed, what ran, and the raw output.",
+  "takeaway_move_zh": "把改了什么、跑了什么、原始输出贴出来。",
   "why_en": "Why start here: a small gap in evidence is the cleanest doorway into the course.",
   "why_zh": "为什么从这里开始：一块小小的证据缺口，是进入这门课最清楚的门。",
   "review_tags": [

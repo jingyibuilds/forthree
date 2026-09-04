@@ -9,6 +9,8 @@
   "title_zh": "看懂第一段 Python 输出",
   "outcome_en": "You can connect a tiny Python output back to the code and command that produced it.",
   "outcome_zh": "你能把一段很小的 Python 输出，倒回去连到产生它的代码和命令。",
+  "takeaway_move_en": "Show which line produced this output.",
+  "takeaway_move_zh": "指出是哪一行代码产生了这个输出。",
   "review_tags": [
     "must_master",
     "later_formalize:Python-syntax"

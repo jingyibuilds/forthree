@@ -9,6 +9,8 @@
   "title_zh": "从问题走到结构",
   "outcome_en": "You can explain why the course starts from familiar problems, then teaches the structure underneath.",
   "outcome_zh": "你能说清：为什么课程先从熟悉的问题进入，再学背后的结构。",
+  "takeaway_move_en": "Start from the failure I can see, then name the structure underneath.",
+  "takeaway_move_zh": "先从我看得见的问题说起，再说背后的结构。",
   "why_en": "Why third: knowing the route helps the technical modules feel necessary, not random.",
   "why_zh": "为什么第三课学它：先看清路线，后面的技术模块才不会像随机知识点。",
   "review_tags": [

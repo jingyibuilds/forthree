@@ -110,6 +110,11 @@ for (const [rel, l] of lessons) {
   if (l.est_minutes > 10)
     err(rel, `est_minutes ${l.est_minutes} exceeds the 10-minute micro-lesson budget`);
   bilingual(l, "title", rel, l.id);
+  bilingual(l, "takeaway_move", rel, l.id);
+  if (isStr(l.takeaway_move_en) && l.takeaway_move_en.length > 120)
+    err(rel, `${l.id}: takeaway_move_en is too long for a copyable move`);
+  if (isStr(l.takeaway_move_zh) && l.takeaway_move_zh.length > 60)
+    err(rel, `${l.id}: takeaway_move_zh is too long for a copyable move`);
   if ((l.why_en || l.why_zh) && !(isStr(l.why_en) && isStr(l.why_zh)))
     err(rel, `${l.id}: why must exist in both languages or neither`);
   if (l.resources !== undefined) {

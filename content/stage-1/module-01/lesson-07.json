@@ -9,6 +9,8 @@
   "title_zh": "站在哪个文件夹，很重要",
   "outcome_en": "You can spot when a command likely failed because it ran from the wrong folder.",
   "outcome_zh": "你能看出一条命令是不是可能因为站错文件夹而失败。",
+  "takeaway_move_en": "Before running it, tell me the current folder and branch.",
+  "takeaway_move_zh": "运行前，先说清当前文件夹和分支。",
   "review_tags": [
     "must_master",
     "profile_anchor:ai-agent"
