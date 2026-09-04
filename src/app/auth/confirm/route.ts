@@ -1,9 +1,10 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
 import { hasRememberedInvite } from "@/lib/access";
+import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { createClient } from "@/lib/supabase/server";
 import { getLearnerProfile, hasCompletedOnboarding, ONBOARDING_PATH } from "@/lib/profile";
-import { lessonPath } from "@/lib/routes";
+import { lessonPath, START_PATH } from "@/lib/routes";
 
 // Magic-link landing. Supports both Supabase email flows:
 // 1. Default template ({{ .ConfirmationURL }}): arrives with ?code=..., exchanged
@@ -48,7 +49,9 @@ async function redirectAfterAuth(
   const nextPath = hasCompletedOnboarding(profile)
     ? "/"
     : (await hasRememberedInvite(user.email))
-      ? lessonPath("m00-l01")
+      ? hasCompletedActivation(profile)
+        ? lessonPath("m00-l01")
+        : START_PATH
       : ONBOARDING_PATH;
   return NextResponse.redirect(new URL(nextPath, requestUrl));
 }

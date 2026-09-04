@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { canEnterLearnerApp, hasRememberedInvite } from "@/lib/access";
+import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { FreshStartCleanup } from "@/components/fresh-start-cleanup";
 import { LocaleToggle } from "@/components/locale-toggle";
 import { Seal } from "@/components/seal";
 import { dict, getLocale } from "@/lib/i18n";
 import { getLearnerProfile, hasCompletedOnboarding, learningId } from "@/lib/profile";
-import { COURSE_PATH } from "@/lib/routes";
+import { COURSE_PATH, START_PATH } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
 import { OnboardingForm } from "./onboarding-form";
 
@@ -27,8 +28,14 @@ export default async function OnboardingPage({
 
   const profile = await getLearnerProfile(supabase, user.id);
   const canCreateProfile =
-    canEnterLearnerApp(user.email, profile) || (await hasRememberedInvite(user.email));
+    canEnterLearnerApp(user.email, profile) ||
+    hasCompletedActivation(profile) ||
+    (await hasRememberedInvite(user.email));
   if (!canCreateProfile) redirect("/login?error=not_authorized");
+
+  if (!hasCompletedOnboarding(profile) && !hasCompletedActivation(profile)) {
+    redirect(START_PATH);
+  }
 
   if (hasCompletedOnboarding(profile) && edit !== "1") {
     redirect(COURSE_PATH);

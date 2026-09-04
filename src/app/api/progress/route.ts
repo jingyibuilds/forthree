@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { canEnterLearnerApp, hasRememberedInvite } from "@/lib/access";
+import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getLesson } from "@/lib/content";
@@ -130,7 +131,10 @@ export async function POST(request: NextRequest) {
   const profile = await getLearnerProfile(supabase, user.id);
   const hasFullAccess = canEnterLearnerApp(user.email, profile);
   const hasOrientationAccess =
-    !hasFullAccess && lesson.module_id === "m00" && (await hasRememberedInvite(user.email));
+    !hasFullAccess &&
+    hasCompletedActivation(profile) &&
+    lesson.module_id === "m00" &&
+    (await hasRememberedInvite(user.email));
   if (!hasFullAccess && !hasOrientationAccess) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }

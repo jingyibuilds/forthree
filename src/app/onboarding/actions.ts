@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { canEnterLearnerApp, clearRememberedInvite, hasRememberedInvite } from "@/lib/access";
+import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { actionMessages, getLocale } from "@/lib/i18n";
 import { getLearnerProfile } from "@/lib/profile";
 import { COURSE_PATH } from "@/lib/routes";
@@ -73,7 +74,9 @@ export async function saveOnboarding(
 
   const existingProfile = await getLearnerProfile(supabase, user.id);
   const canCreateProfile =
-    canEnterLearnerApp(user.email, existingProfile) || (await hasRememberedInvite(user.email));
+    canEnterLearnerApp(user.email, existingProfile) ||
+    hasCompletedActivation(existingProfile) ||
+    (await hasRememberedInvite(user.email));
   if (!canCreateProfile) {
     return { status: "error", message: messages.inviteRequired };
   }

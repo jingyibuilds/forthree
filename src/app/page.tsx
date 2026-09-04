@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { hasRememberedInvite } from "@/lib/access";
+import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { dict, getLocale } from "@/lib/i18n";
 import { LocaleToggle } from "@/components/locale-toggle";
 import { Seal } from "@/components/seal";
@@ -14,7 +15,7 @@ import {
   learningId,
   ONBOARDING_PATH,
 } from "@/lib/profile";
-import { COURSE_PATH, lessonPath } from "@/lib/routes";
+import { COURSE_PATH, START_PATH, lessonPath } from "@/lib/routes";
 
 export default async function Home({
   searchParams,
@@ -41,11 +42,16 @@ export default async function Home({
   const canStartOrientation =
     Boolean(user && next?.module_id === "m00") &&
     !onboarded &&
+    hasCompletedActivation(profile) &&
     (rememberedInvite || showTestReset);
+  const canStartDiagnostic =
+    Boolean(user) && !onboarded && !hasCompletedActivation(profile) && (rememberedInvite || showTestReset);
   const continueHref = onboarded
     ? next
       ? lessonPath(next.id)
       : COURSE_PATH
+    : canStartDiagnostic
+      ? START_PATH
     : canStartOrientation && next
       ? lessonPath(next.id)
     : ONBOARDING_PATH;
@@ -95,6 +101,8 @@ export default async function Home({
               >
                 {onboarded
                   ? t.continueLearning
+                  : canStartDiagnostic
+                    ? t.startDiagnostic
                   : canStartOrientation
                     ? t.startOrientation
                     : t.beginOnboarding}
