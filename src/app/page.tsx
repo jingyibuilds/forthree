@@ -85,17 +85,6 @@ export default async function Home({
                     : learningId(user)}
                 </span>
               </p>
-              <div className="grid grid-cols-3 gap-2 text-left">
-                {t.homeSignals.map((signal, index) => (
-                  <div
-                    key={signal}
-                    className="rounded-lg border border-line bg-surface px-3 py-3 shadow-sm transition-[border-color,transform,box-shadow] hover:-translate-y-px hover:border-primary/45"
-                  >
-                    <span className="font-mono text-xs text-primary">0{index + 1}</span>
-                    <p className="mt-1 text-sm font-medium leading-5">{signal}</p>
-                  </div>
-                ))}
-              </div>
               <Link
                 href={continueHref}
                 className="inline-block rounded-lg bg-primary px-9 py-3.5 text-base font-semibold text-on-primary shadow-sm transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover active:translate-y-0"
