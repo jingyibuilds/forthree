@@ -680,14 +680,22 @@ function AssistantDialog({
         className="flex max-h-[92dvh] w-full max-w-xl flex-col rounded-t-lg border border-line bg-surface shadow-xl sm:max-h-[86dvh] sm:rounded-lg"
       >
         <div className="flex shrink-0 items-start justify-between gap-4 border-b border-line px-5 py-4">
-          <div>
-            <h2 id="lesson-assistant-title" className="font-serif text-xl font-semibold">
-              {t.assistantLabel}
-            </h2>
-            <p className="mt-1 text-sm text-muted">
-              {locale === "zh" ? lesson.title_zh : lesson.title_en} ·{" "}
-              {blockIndex + 1}/{lesson.blocks.length} · {blockLabel}
-            </p>
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-accent-soft">
+              <Seal size={28} />
+            </span>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase text-primary">
+                {t.assistantCtaTitle}
+              </p>
+              <h2 id="lesson-assistant-title" className="mt-1 font-serif text-2xl font-semibold leading-tight">
+                {t.assistantButton}
+              </h2>
+              <p className="mt-1 text-sm leading-5 text-muted">
+                {locale === "zh" ? lesson.title_zh : lesson.title_en} ·{" "}
+                {blockIndex + 1}/{lesson.blocks.length} · {blockLabel}
+              </p>
+            </div>
           </div>
           <button
             type="button"
@@ -701,7 +709,7 @@ function AssistantDialog({
 
         <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 py-4">
           {messages.length === 0 && (
-            <div className="rounded-lg bg-background p-4 text-base leading-7 text-muted">
+            <div className="rounded-lg border border-line bg-background p-4 text-base leading-7 text-muted">
               {t.assistantEmpty}
             </div>
           )}
@@ -710,8 +718,8 @@ function AssistantDialog({
               key={i}
               className={`rounded-lg p-3.5 text-base leading-7 ${
                 message.role === "user"
-                  ? "ml-8 bg-primary text-on-primary"
-                  : "mr-8 border border-line bg-background text-ink"
+                  ? "ml-10 bg-primary text-on-primary sm:ml-20"
+                  : "mr-10 border border-line bg-background text-ink sm:mr-20"
               }`}
             >
               <Inline text={message.text} />
@@ -735,6 +743,7 @@ function AssistantDialog({
           <textarea
             value={draft}
             onChange={(event) => onDraft(event.target.value)}
+            aria-label={t.assistantPlaceholder}
             placeholder={t.assistantPlaceholder}
             rows={2}
             className="w-full resize-none rounded-lg border border-line bg-background px-3 py-2.5 text-base leading-7 outline-none transition-colors focus:border-primary"

@@ -28,8 +28,8 @@ type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 type AssistantThreadRow = { id: string };
 
 const fallback = {
-  en: "The lesson assistant is offline for now. Use the anchor card above, then compare your answer with the prompt one piece at a time.",
-  zh: "助教现在暂时离线。先回看上面的朱批锚点，再把你的答案和题目逐句对照。",
+  en: "I can’t generate a new answer right now. Try this 30-second check: reread the marked clue, name the exact claim in the question, then compare your answer one sentence at a time.",
+  zh: "我现在暂时不能生成新回答。先做一个 30 秒检查：回看上面的朱批锚点，说清题目到底在问什么，再把你的答案逐句对照。",
 } as const;
 
 function parseUsd(value: string | undefined, defaultValue: number) {
@@ -501,7 +501,10 @@ export async function POST(request: NextRequest) {
       degraded: false,
       usageSaved: !usageError,
     });
-  } catch {
+  } catch (error) {
+    console.error("lesson_assistant provider_error", {
+      message: error instanceof Error ? error.message : "unknown error",
+    });
     await insertAssistantMessage(supabase, {
       threadId,
       userId: user.id,

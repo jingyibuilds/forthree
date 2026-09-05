@@ -114,10 +114,10 @@ export const dict = {
     assistantLoading: "Thinking…",
     assistantLabel: "AI tutor",
     assistantFallback:
-      "The lesson assistant is offline for now. Re-read the anchor, then compare your answer with the prompt one piece at a time.",
+      "I can’t generate a new answer right now. Try this 30-second check: reread the marked clue, name the exact claim in the question, then compare your answer one sentence at a time.",
     assistantEmpty:
-      "Ask about the current step, or have the AI tutor explain this card in another way.",
-    assistantPlaceholder: "Ask what feels fuzzy…",
+      "Ask about the part that feels stuck. I can give a hint, rephrase this step, or help compare your answer with the prompt.",
+    assistantPlaceholder: "What feels stuck?",
     assistantPrivacyNote:
       "Your questions are saved privately for review summaries. Full text is kept for 30 days by default.",
     assistantExplainCurrent: "Explain this step",
@@ -363,9 +363,9 @@ export const dict = {
     assistantHint: "给我一点提示",
     assistantLoading: "AI 助教思考中…",
     assistantLabel: "AI 助教",
-    assistantFallback: "AI 助教现在暂时离线。先回看朱批锚点，再把你的答案和题目逐句对照。",
-    assistantEmpty: "可以问当前这一步哪里没懂，也可以让 AI 助教换一种说法解释。",
-    assistantPlaceholder: "把卡住的地方写在这里……",
+    assistantFallback: "我现在暂时不能生成新回答。先做一个 30 秒检查：回看上面的朱批锚点，说清题目到底在问什么，再把你的答案逐句对照。",
+    assistantEmpty: "直接写卡住的地方。也可以让我给一点提示、换种说法，或帮你对照答案。",
+    assistantPlaceholder: "哪里卡住了？",
     assistantPrivacyNote:
       "你的问题会保存到私人学习记录，用来生成复习总结；原文默认保留 30 天。",
     assistantExplainCurrent: "解释当前这一步",
