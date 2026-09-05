@@ -91,7 +91,7 @@ textarea {
 }
 
 .landing-home-headline {
-  font-size: clamp(2.35rem, 6.2vw, 3.25rem);
+  font-size: clamp(2.15rem, 5.4vw, 2.95rem);
 }
 
 .landing-home-headline > span {
@@ -111,7 +111,7 @@ textarea {
 
 @media (max-width: 420px) {
   .landing-home-headline {
-    font-size: clamp(2.05rem, 10.5vw, 2.55rem);
+    font-size: clamp(1.9rem, 9vw, 2.15rem);
   }
 
   .landing-home-headline > span + span {
@@ -119,7 +119,7 @@ textarea {
   }
 
   :lang(zh) .landing-home-headline {
-    font-size: clamp(1.95rem, 9.6vw, 2.35rem);
+    font-size: clamp(1.8rem, 8.5vw, 2rem);
   }
 
   :lang(zh) .landing-home-headline > span + span {
