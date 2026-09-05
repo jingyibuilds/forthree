@@ -279,10 +279,10 @@ export const dict = {
     loginValueLine: "邀请制。需邀请码。",
     loginInviteNote:
       "暂时不用密码。在哪台设备学习，就在哪台设备发送链接；登录后进度会同步。",
-    landingTitle: "你不必会写代码，但要能验收 AI 交出的东西。",
+    landingTitle: "你不必会写代码，\n但要能验收 AI 交出的东西。",
     landingBody:
       "这是一个让你每天学习十分钟的小网站：不用成为码农，也能看懂 AI 在做什么、做得对不对、有没有按要求来。",
-    landingAudience: "只需要能判断 AI 可不可靠。",
+    landingAudience: "",
     landingProof: "课程脉络参考公开课和官方文档",
     landingPrimary: "用邀请码进入",
     landingSecondary: "已经开始？继续学习",

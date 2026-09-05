@@ -90,11 +90,41 @@ textarea {
     "halt" 1;
 }
 
+.landing-home-headline {
+  font-size: clamp(2.35rem, 6.2vw, 3.25rem);
+}
+
+.landing-home-headline > span {
+  display: block;
+}
+
+.landing-home-headline > span + span {
+  margin-top: 0.28em;
+}
+
 :lang(zh) .landing-headline {
   line-height: 1.08;
   text-wrap: balance;
   line-break: strict;
   word-break: auto-phrase;
+}
+
+@media (max-width: 420px) {
+  .landing-home-headline {
+    font-size: clamp(2.05rem, 10.5vw, 2.55rem);
+  }
+
+  .landing-home-headline > span + span {
+    margin-top: 0.34em;
+  }
+
+  :lang(zh) .landing-home-headline {
+    font-size: clamp(1.95rem, 9.6vw, 2.35rem);
+  }
+
+  :lang(zh) .landing-home-headline > span + span {
+    margin-top: 0.4em;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

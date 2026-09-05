@@ -24,6 +24,7 @@ export default async function Home({
 }) {
   const locale = await getLocale();
   const t = dict[locale];
+  const landingTitleParts = t.landingTitle.split("\n");
   const { fresh } = await searchParams;
 
   const supabase = await createClient();
@@ -158,16 +159,22 @@ export default async function Home({
                 </div>
 
                 <div className="max-w-3xl space-y-4 border-l-4 border-accent pl-5 sm:space-y-6 sm:pl-6">
-                  <h1 className="landing-headline max-w-[21ch] font-serif text-[clamp(1.75rem,7.2vw,3.5rem)] font-semibold text-ink">
-                    {t.landingTitle}
+                  <h1 className="landing-headline landing-home-headline max-w-[22ch] font-serif font-semibold text-ink">
+                    {landingTitleParts.map((part, index) => (
+                      <span key={`${index}-${part}`}>
+                        {part}
+                      </span>
+                    ))}
                   </h1>
                   <div className="max-w-[34rem] space-y-3 sm:space-y-4">
                     <p className="text-base leading-6 text-muted sm:text-lg sm:leading-8">
                       {t.landingBody}
                     </p>
-                    <p className="text-base italic leading-6 text-muted sm:leading-7">
-                      {t.landingAudience}
-                    </p>
+                    {t.landingAudience && (
+                      <p className="text-base italic leading-6 text-muted sm:leading-7">
+                        {t.landingAudience}
+                      </p>
+                    )}
                   </div>
                 </div>
               </section>
