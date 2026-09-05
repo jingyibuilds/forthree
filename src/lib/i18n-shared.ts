@@ -505,7 +505,7 @@ export type Dict = (typeof dict)[Locale];
 export const actionMessages = {
   en: {
     enterEmail: "Please enter an email.",
-    inviteRequired: "First-time signup requires a valid invite code.",
+    inviteRequired: "Use a valid invite code. Already started? Leave it blank.",
     notAuthorized: "This email has not been invited yet.",
     sendFailed: "We could not send the link. Try again in a minute.",
     loginRequired: "Please sign in again before saving your profile.",
@@ -517,7 +517,7 @@ export const actionMessages = {
   },
   zh: {
     enterEmail: "请输入邮箱。",
-    inviteRequired: "首次注册需要正确的邀请码。",
+    inviteRequired: "邀请码不对。已经开始过就留空登录。",
     notAuthorized: "这个邮箱还没有被邀请。",
     sendFailed: "登录链接暂时发送失败，请稍后再试。",
     loginRequired: "请重新登录后再保存学习档案。",

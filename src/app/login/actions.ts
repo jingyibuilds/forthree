@@ -27,9 +27,15 @@ export async function sendMagicLink(
   }
 
   // Signup gate: a new account is only created when the invite code matches.
-  // Existing users sign in with email alone.
-  const allowSignup =
-    invite.length > 0 && invite === process.env.INVITE_CODE;
+  // Existing users sign in with email alone. A mistyped invite must not send a
+  // magic link, even for an existing email, because the user explicitly tried
+  // the gated path.
+  const configuredInvite = process.env.INVITE_CODE?.trim();
+  const allowSignup = Boolean(configuredInvite) && invite === configuredInvite;
+
+  if (invite.length > 0 && !allowSignup) {
+    return { status: "error", message: m.inviteRequired, email, needsInvite: true };
+  }
 
   if (allowSignup && !isInviteCookieSigningConfigured()) {
     return { status: "error", message: m.sendFailed, email, needsInvite: false };
