@@ -1419,6 +1419,14 @@ export function LessonPlayer({
           >
             {t.toggleLabel}
           </a>
+          <form action="/auth/signout" method="post">
+            <button
+              type="submit"
+              className="min-h-11 rounded-lg border border-line bg-surface px-3 text-sm font-medium text-muted shadow-sm transition-colors hover:border-primary hover:text-primary"
+            >
+              {t.signOut}
+            </button>
+          </form>
         </div>
         <div className="h-2 min-w-0 overflow-hidden rounded-full bg-line">
           <div

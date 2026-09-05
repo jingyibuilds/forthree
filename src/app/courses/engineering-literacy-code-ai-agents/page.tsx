@@ -121,8 +121,18 @@ export default async function LearnPage() {
 
   return (
     <main className="relative mx-auto min-h-dvh w-full max-w-5xl px-5 py-6 sm:px-8 sm:py-10">
-      <LocaleToggle locale={locale} />
-      <header className="flex max-w-4xl items-start gap-3 pr-20 sm:pr-0">
+      <div className="mb-4 flex justify-end gap-2">
+        <LocaleToggle locale={locale} inline />
+        <form action="/auth/signout" method="post">
+          <button
+            type="submit"
+            className="min-h-11 rounded-lg border border-line bg-surface px-3 text-sm font-medium text-muted shadow-sm transition-[background-color,border-color,color,transform] hover:-translate-y-px hover:border-primary hover:bg-primary/5 hover:text-primary"
+          >
+            {t.signOut}
+          </button>
+        </form>
+      </div>
+      <header className="flex max-w-4xl items-start gap-3">
         <Link href="/" aria-label={t.name}>
           <Seal size={36} />
         </Link>
