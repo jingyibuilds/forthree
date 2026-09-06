@@ -91,15 +91,31 @@ textarea {
 }
 
 .landing-home-headline {
-  font-size: clamp(2.15rem, 5.4vw, 2.95rem);
+  max-width: min(22ch, 100%);
+  font-size: 1.95rem;
 }
 
-.landing-home-headline > span {
+.landing-login-headline {
+  max-width: min(20ch, 100%);
+  font-size: clamp(1.45rem, 6.2vw, 2.55rem);
+}
+
+.landing-title-line {
   display: block;
 }
 
-.landing-home-headline > span + span {
-  margin-top: 0.28em;
+.landing-title-lead {
+  display: block;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.landing-title-gap {
+  display: block;
+  height: 0.48em;
 }
 
 :lang(zh) .landing-headline {
@@ -109,21 +125,48 @@ textarea {
   word-break: auto-phrase;
 }
 
+:lang(zh) .landing-home-headline {
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
+.landing-home-headline .landing-title-gap {
+  height: 0.75rem;
+}
+
 @media (max-width: 420px) {
   .landing-home-headline {
-    font-size: clamp(1.9rem, 9vw, 2.15rem);
+    max-width: min(18ch, 100%);
+    font-size: 1.72rem;
+    text-wrap: wrap;
   }
 
-  .landing-home-headline > span + span {
-    margin-top: 0.34em;
+  .landing-title-gap {
+    height: 0.56em;
+  }
+
+  .landing-home-headline .landing-title-gap {
+    height: 0.75rem;
   }
 
   :lang(zh) .landing-home-headline {
-    font-size: clamp(1.8rem, 8.5vw, 2rem);
+    font-size: 1.68rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .landing-home-headline {
+    font-size: 2.3rem;
   }
 
-  :lang(zh) .landing-home-headline > span + span {
-    margin-top: 0.4em;
+  .landing-title-lead {
+    font-size: 1.125rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .landing-home-headline {
+    font-size: 2.65rem;
   }
 }
 

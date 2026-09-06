@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { hasRememberedInvite } from "@/lib/access";
+import { hasRedeemedInvite, hasRememberedInvite } from "@/lib/access";
 import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { dict, getLocale } from "@/lib/i18n";
 import { LocaleToggle } from "@/components/locale-toggle";
@@ -8,6 +8,7 @@ import { Seal } from "@/components/seal";
 import { courseMap, nextLesson } from "@/lib/content";
 import { FreshStartCleanup } from "@/components/fresh-start-cleanup";
 import { TestAccountReset } from "@/components/test-account-reset";
+import { TrackedLink } from "@/components/tracked-link";
 import { canResetTestAccount } from "@/lib/test-account";
 import {
   getLearnerProfile,
@@ -40,14 +41,19 @@ export default async function Home({
   const profile = user ? await getLearnerProfile(supabase, user.id) : null;
   const onboarded = hasCompletedOnboarding(profile);
   const rememberedInvite = user ? await hasRememberedInvite(user.email) : false;
+  const redeemedInvite = hasRedeemedInvite(profile);
   const canStartOrientation =
     Boolean(user && next?.module_id === "m00") &&
     !onboarded &&
-    hasCompletedActivation(profile) &&
-    (rememberedInvite || showTestReset);
+    hasCompletedActivation(profile);
+  const canContinueWithoutOnboarding =
+    Boolean(user) && !onboarded && hasCompletedActivation(profile);
   const canStartDiagnostic =
-    Boolean(user) && !onboarded && !hasCompletedActivation(profile) && (rememberedInvite || showTestReset);
-  const continueHref = onboarded
+    Boolean(user) &&
+    !onboarded &&
+    !hasCompletedActivation(profile) &&
+    (rememberedInvite || redeemedInvite || showTestReset);
+  const continueHref = onboarded || canContinueWithoutOnboarding
     ? next
       ? lessonPath(next.id)
       : COURSE_PATH
@@ -58,7 +64,7 @@ export default async function Home({
     : ONBOARDING_PATH;
 
   return (
-    <main className="relative min-h-dvh px-5 py-10 sm:px-8">
+    <main className="relative min-h-dvh overflow-x-hidden px-5 py-10 sm:px-8">
       {fresh === "1" && <FreshStartCleanup />}
       <LocaleToggle locale={locale} />
       {user ? (
@@ -89,7 +95,7 @@ export default async function Home({
                 href={continueHref}
                 className="inline-block rounded-lg bg-primary px-9 py-3.5 text-base font-semibold text-on-primary shadow-sm transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover active:translate-y-0"
               >
-                {onboarded
+                {onboarded || (canContinueWithoutOnboarding && !canStartOrientation)
                   ? t.continueLearning
                   : canStartDiagnostic
                     ? t.startDiagnostic
@@ -136,21 +142,39 @@ export default async function Home({
                     <p className="font-serif text-3xl font-semibold leading-none text-ink sm:text-4xl">
                       {t.name}
                     </p>
-                    <p className="text-sm leading-5 text-muted sm:text-base sm:leading-6">
-                      {t.tagline}
-                    </p>
+                    {locale === "zh" && (
+                      <p className="text-sm leading-5 text-muted sm:text-base sm:leading-6">
+                        {t.tagline}
+                      </p>
+                    )}
                     {t.nameMeaning && (
-                      <p className="text-xs leading-4 text-muted sm:text-sm sm:leading-5">
+                      <p className="text-sm leading-5 text-muted sm:text-base sm:leading-6">
                         {t.nameMeaning}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="max-w-3xl space-y-4 border-l-4 border-accent pl-5 sm:space-y-6 sm:pl-6">
-                  <h1 className="landing-headline landing-home-headline max-w-[22ch] font-serif font-semibold text-ink">
+                <div
+                  className={
+                    locale === "en"
+                      ? "max-w-3xl space-y-4 sm:space-y-6"
+                      : "max-w-3xl space-y-4 border-l-4 border-accent pl-5 sm:space-y-6 sm:pl-6"
+                  }
+                >
+                  <h1 className="landing-headline landing-home-headline font-serif font-semibold text-ink">
                     {landingTitleParts.map((part, index) => (
-                      <span key={`${index}-${part}`}>
+                      <span
+                        key={`${index}-${part}`}
+                        aria-hidden={part === "" ? "true" : undefined}
+                        className={
+                          part === ""
+                            ? "landing-title-gap"
+                            : index === 0
+                              ? "landing-title-lead"
+                              : "landing-title-line"
+                        }
+                      >
                         {part}
                       </span>
                     ))}
@@ -173,26 +197,38 @@ export default async function Home({
                   <p className="text-xs font-semibold uppercase text-muted">
                     {t.landingProof}
                   </p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs font-semibold leading-5 text-primary sm:text-base sm:leading-7">
+                  <div className="flex min-w-0 flex-wrap gap-x-4 gap-y-1.5 text-xs font-semibold leading-5 text-primary sm:text-base sm:leading-7">
                     {t.landingSources.map((source) => (
-                      <span key={source}>{source}</span>
+                      <span key={source} className="min-w-0 max-w-full break-words">
+                        {source}
+                      </span>
                     ))}
                   </div>
                 </div>
 
                 <div className="space-y-3 sm:space-y-4">
-                  <Link
+                  <TrackedLink
                     href="/login"
+                    event={{
+                      eventName: "landing_cta_clicked",
+                      locale,
+                      properties: { surface: "home", cta: "primary" },
+                    }}
                     className="block min-h-11 rounded-lg bg-primary px-7 py-3 text-center text-base font-semibold text-on-primary shadow-lg transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover hover:shadow-xl active:translate-y-0 sm:min-h-12 sm:py-4"
                   >
                     {t.landingPrimary}
-                  </Link>
-                  <Link
+                  </TrackedLink>
+                  <TrackedLink
                     href="/login"
+                    event={{
+                      eventName: "landing_cta_clicked",
+                      locale,
+                      properties: { surface: "home", cta: "secondary" },
+                    }}
                     className="block min-h-11 text-center text-sm font-medium leading-10 text-muted transition-colors hover:text-ink"
                   >
                     {t.landingSecondary}
-                  </Link>
+                  </TrackedLink>
                 </div>
               </aside>
             </div>

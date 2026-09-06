@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { dict, getLocale } from "@/lib/i18n";
 import { LocaleToggle } from "@/components/locale-toggle";
-import { LoginForm } from "./login-form";
+import { InviteRecoveryForm, LoginForm } from "./login-form";
 import { Seal } from "@/components/seal";
-import { hasRememberedInvite } from "@/lib/access";
+import { hasRedeemedInvite, hasRememberedInvite } from "@/lib/access";
 import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { nextLesson } from "@/lib/content";
 import { createClient } from "@/lib/supabase/server";
@@ -22,6 +22,7 @@ export default async function LoginPage({
 }) {
   const locale = await getLocale();
   const t = dict[locale];
+  const landingTitleParts = t.landingTitle.split("\n");
   const { error } = await searchParams;
   const supabase = await createClient();
   const {
@@ -35,15 +36,23 @@ export default async function LoginPage({
   const correct = new Set((attempts ?? []).map((a) => a.exercise_id as string));
   const next = nextLesson(correct);
   const rememberedInvite = user ? await hasRememberedInvite(user.email) : false;
+  const redeemedInvite = hasRedeemedInvite(profile);
   const canStartOrientation =
     Boolean(user && !onboarded) &&
     hasCompletedActivation(profile) &&
-    (rememberedInvite || canResetTestAccount(user?.email));
+    Boolean(next?.module_id === "m00" || canResetTestAccount(user?.email));
   const canStartDiagnostic =
     Boolean(user) &&
     !onboarded &&
     !hasCompletedActivation(profile) &&
-    (rememberedInvite || canResetTestAccount(user?.email));
+    (rememberedInvite || redeemedInvite || canResetTestAccount(user?.email));
+  const needsInviteRecovery =
+    Boolean(user) &&
+    !onboarded &&
+    !hasCompletedActivation(profile) &&
+    !rememberedInvite &&
+    !redeemedInvite &&
+    !canResetTestAccount(user?.email);
   const continueHref = onboarded
     ? next
       ? lessonPath(next.id)
@@ -71,8 +80,18 @@ export default async function LoginPage({
           </div>
 
           <div className="max-w-2xl border-l-4 border-accent pl-5">
-            <h1 className="landing-headline max-w-[20ch] whitespace-pre-line font-serif text-[clamp(1.6rem,7vw,3rem)] font-semibold text-ink">
-              {t.landingTitle}
+            <h1 className="landing-headline landing-login-headline font-serif font-semibold text-ink">
+              {landingTitleParts.map((part, index) => (
+                <span
+                  key={`${index}-${part}`}
+                  aria-hidden={part === "" ? "true" : undefined}
+                  className={
+                    part === "" ? "landing-title-gap" : "landing-title-line"
+                  }
+                >
+                  {part}
+                </span>
+              ))}
             </h1>
             <p className="mt-4 max-w-lg text-sm leading-6 text-muted sm:text-base sm:leading-7">
               {t.landingBody}
@@ -96,12 +115,23 @@ export default async function LoginPage({
           {user ? (
             <div className="space-y-4">
               <p className="text-sm font-medium text-ink">{t.signedInNote}</p>
-              <Link
-                href={continueHref}
-                className="block rounded-lg bg-primary px-5 py-3 text-center text-sm font-semibold text-on-primary shadow-sm transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover active:translate-y-0"
-              >
-                {t.continueLearning}
-              </Link>
+              {needsInviteRecovery ? (
+                <InviteRecoveryForm
+                  t={{
+                    firstSignupInvite: t.firstSignupInvite,
+                    inviteRecoveryBody: t.inviteRecoveryBody,
+                    inviteRecoverySubmit: t.inviteRecoverySubmit,
+                    savingProfile: t.savingProfile,
+                  }}
+                />
+              ) : (
+                <Link
+                  href={continueHref}
+                  className="block rounded-lg bg-primary px-5 py-3 text-center text-sm font-semibold text-on-primary shadow-sm transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover active:translate-y-0"
+                >
+                  {t.continueLearning}
+                </Link>
+              )}
               <form action="/auth/signout" method="post">
                 <button
                   type="submit"

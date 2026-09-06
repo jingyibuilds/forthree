@@ -2,8 +2,9 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { canEnterLearnerApp, clearRememberedInvite, hasRememberedInvite } from "@/lib/access";
+import { canEnterFirstRun, clearRememberedInvite, hasRememberedInvite } from "@/lib/access";
 import { hasCompletedActivation } from "@/lib/activation-diagnostic";
+import { recordEvent } from "@/lib/analytics-server";
 import { actionMessages, getLocale } from "@/lib/i18n";
 import { getLearnerProfile } from "@/lib/profile";
 import { COURSE_PATH } from "@/lib/routes";
@@ -44,6 +45,30 @@ const allowedSingleSelects = {
   ],
   confidence: ["low", "medium", "high"],
   learningMode: ["read", "do", "compare"],
+  entryIntent: [
+    "use_ai_better",
+    "understand_engineers",
+    "build_small_tool",
+    "read_code_errors",
+    "explore_fit",
+  ],
+} as const;
+
+const allowedMultiSelects = {
+  knownTools: ["sql", "python", "github", "terminal", "ai_agents"],
+  contentExamples: [
+    "data_work",
+    "product_specs",
+    "ai_agent_logs",
+    "debugging",
+  ],
+  antiGoals: [
+    "no_bootcamp",
+    "no_interview_prep",
+    "no_long_video",
+    "no_big_code",
+    "no_deep_theory",
+  ],
 } as const;
 
 function isAllowed(value: string, allowed: readonly string[]) {
@@ -74,7 +99,7 @@ export async function saveOnboarding(
 
   const existingProfile = await getLearnerProfile(supabase, user.id);
   const canCreateProfile =
-    canEnterLearnerApp(user.email, existingProfile) ||
+    canEnterFirstRun(user.email, existingProfile) ||
     hasCompletedActivation(existingProfile) ||
     (await hasRememberedInvite(user.email));
   if (!canCreateProfile) {
@@ -85,11 +110,22 @@ export async function saveOnboarding(
   const motivation = String(formData.get("motivation") ?? "").trim();
   const successDefinition = String(formData.get("success_definition") ?? "").trim();
   const dailyBudgetMinutes = Number(formData.get("daily_budget_minutes"));
-  const langPref = formData.get("lang_pref") === "en" ? "en" : "zh";
+  const langPref = formData.get("lang_pref") === "zh" ? "zh" : "en";
   const confidence = String(formData.get("confidence") ?? "").trim();
   const learningMode = String(formData.get("learning_mode") ?? "").trim();
+  const entryIntent = String(formData.get("entry_intent") ?? "").trim();
+  const knownTools = getAll(formData, "known_tools");
+  const contentExamples = getAll(formData, "content_examples");
+  const antiGoals = getAll(formData, "anti_goals");
 
-  if (!role || !motivation || !successDefinition || !confidence || !learningMode) {
+  if (
+    !role ||
+    !motivation ||
+    !successDefinition ||
+    !confidence ||
+    !learningMode ||
+    !entryIntent
+  ) {
     return { status: "error", message: messages.onboardingRequired };
   }
 
@@ -98,7 +134,13 @@ export async function saveOnboarding(
     !isAllowed(motivation, allowedSingleSelects.motivation) ||
     !isAllowed(successDefinition, allowedSingleSelects.successDefinition) ||
     !isAllowed(confidence, allowedSingleSelects.confidence) ||
-    !isAllowed(learningMode, allowedSingleSelects.learningMode)
+    !isAllowed(learningMode, allowedSingleSelects.learningMode) ||
+    !isAllowed(entryIntent, allowedSingleSelects.entryIntent) ||
+    knownTools.some((value) => !isAllowed(value, allowedMultiSelects.knownTools)) ||
+    contentExamples.some((value) =>
+      !isAllowed(value, allowedMultiSelects.contentExamples)
+    ) ||
+    antiGoals.some((value) => !isAllowed(value, allowedMultiSelects.antiGoals))
   ) {
     return { status: "error", message: messages.onboardingRequired };
   }
@@ -134,10 +176,13 @@ export async function saveOnboarding(
   const { error } = await adminSupabase.from("learner_profiles").upsert({
     user_id: user.id,
     background: {
+      ...(existingProfile?.background ?? {}),
       role,
-      known_tools: getAll(formData, "known_tools"),
+      known_tools: knownTools,
       confidence,
       motivation,
+      entry_intent: entryIntent,
+      anti_goals: antiGoals,
       calibration: {
         attempted: calibrationAttempted,
         score,
@@ -147,13 +192,14 @@ export async function saveOnboarding(
       },
     },
     preferences: {
+      ...(existingProfile?.preferences ?? {}),
       onboarding: {
         completed: true,
         completed_at: new Date().toISOString(),
         version: 1,
       },
       learning_mode: learningMode,
-      content_examples: getAll(formData, "content_examples"),
+      content_examples: contentExamples,
       daily_learning_minutes: dailyBudgetMinutes,
     },
     success_definition: successDefinition,
@@ -165,6 +211,25 @@ export async function saveOnboarding(
   if (error) {
     return { status: "error", message: messages.profileSaveFailed };
   }
+
+  await recordEvent({
+    eventName: "onboarding_completed",
+    userId: user.id,
+    locale,
+    route: "/onboarding",
+    properties: {
+      role,
+      motivation,
+      success_definition: successDefinition,
+      entry_intent: entryIntent,
+      anti_goals: antiGoals,
+      learning_mode: learningMode,
+      content_examples: contentExamples,
+      daily_budget_minutes: dailyBudgetMinutes,
+      calibration_attempted: calibrationAttempted,
+      calibration_score: score,
+    },
+  });
 
   const cookieStore = await cookies();
   cookieStore.set("locale", langPref, {

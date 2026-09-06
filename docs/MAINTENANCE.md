@@ -159,6 +159,12 @@ failing commit locally before re-deploying.
   ask the agent to run `npm run check:supabase`. This reads `.env.local`,
   checks the expected Data API tables/columns, and verifies signed-out anon
   access is blocked. It does not insert, update, delete, or print secrets.
+- Applying product-learning events migration — Phase 1:
+  open Supabase SQL Editor, paste `supabase/migrations/0007_app_events.sql`,
+  run it, then ask the agent to run `npm run check:supabase`. Until this is
+  applied, product events degrade quietly and do not block login or lessons.
+  Do not put emails, full learner answers, or assistant message text into
+  `app_events.properties`; those belong in their existing private tables.
 - Testing onboarding as a fresh learner — Phase 1:
   use an email or email alias you control. Set it in `TEST_ACCOUNT_EMAILS` in
   `.env.local` and Vercel. In

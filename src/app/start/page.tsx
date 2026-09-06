@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { canEnterLearnerApp, hasRememberedInvite } from "@/lib/access";
+import { canEnterFirstRun, hasRememberedInvite } from "@/lib/access";
 import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { LocaleToggle } from "@/components/locale-toggle";
 import { Seal } from "@/components/seal";
 import { dict, getLocale } from "@/lib/i18n";
-import { getLearnerProfile, hasCompletedOnboarding } from "@/lib/profile";
-import { COURSE_PATH, lessonPath } from "@/lib/routes";
+import { getLearnerProfile } from "@/lib/profile";
+import { COURSE_PATH } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
 import { StartDiagnostic } from "./start-diagnostic";
 
@@ -27,11 +27,14 @@ export default async function StartPage({
 
   const profile = await getLearnerProfile(supabase, user.id);
   const rememberedInvite = await hasRememberedInvite(user.email);
-  const canStart = canEnterLearnerApp(user.email, profile) || rememberedInvite;
+  const canStart =
+    canEnterFirstRun(user.email, profile) ||
+    rememberedInvite ||
+    hasCompletedActivation(profile);
   if (!canStart) redirect("/login?error=not_authorized");
 
   if (again !== "1" && hasCompletedActivation(profile)) {
-    redirect(hasCompletedOnboarding(profile) ? COURSE_PATH : lessonPath("m00-l01"));
+    redirect(COURSE_PATH);
   }
 
   return (

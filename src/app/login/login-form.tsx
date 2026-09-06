@@ -1,7 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
-import { sendMagicLink, type LoginState } from "./actions";
+import {
+  redeemInviteForCurrentUser,
+  sendMagicLink,
+  type InviteRecoveryState,
+  type LoginState,
+} from "./actions";
 
 export type LoginCopy = {
   email: string;
@@ -11,6 +16,13 @@ export type LoginCopy = {
   sending: string;
   linkInvalid: string;
   notAuthorizedLogin: string;
+};
+
+export type InviteRecoveryCopy = {
+  firstSignupInvite: string;
+  inviteRecoveryBody: string;
+  inviteRecoverySubmit: string;
+  savingProfile: string;
 };
 
 const initialState: LoginState = {
@@ -104,5 +116,46 @@ export function LoginForm({
         </div>
       </form>
     </div>
+  );
+}
+
+const initialInviteRecoveryState: InviteRecoveryState = {
+  status: "idle",
+  message: "",
+};
+
+export function InviteRecoveryForm({ t }: { t: InviteRecoveryCopy }) {
+  const [state, formAction, pending] = useActionState(
+    redeemInviteForCurrentUser,
+    initialInviteRecoveryState
+  );
+
+  return (
+    <form action={formAction} className="rounded-lg border border-warn bg-warn-soft p-3">
+      <p className="text-sm leading-6 text-warn">{t.inviteRecoveryBody}</p>
+      <label htmlFor="recover-invite" className="mt-3 block text-sm font-medium text-ink">
+        {t.firstSignupInvite}
+      </label>
+      <input
+        id="recover-invite"
+        name="invite"
+        type="text"
+        required
+        autoComplete="off"
+        className="mt-1 min-h-11 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm outline-none shadow-sm transition-colors focus:border-primary"
+      />
+      <button
+        type="submit"
+        disabled={pending}
+        className="mt-3 min-h-11 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary shadow-sm transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover active:translate-y-0 disabled:translate-y-0 disabled:opacity-50"
+      >
+        {pending ? t.savingProfile : t.inviteRecoverySubmit}
+      </button>
+      {state.status === "error" && (
+        <p className="mt-3 rounded-lg bg-surface p-3 text-sm text-warn">
+          {state.message}
+        </p>
+      )}
+    </form>
   );
 }

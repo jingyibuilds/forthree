@@ -7,6 +7,7 @@ import type { Block, Exercise, Lesson, VisualKind } from "@/lib/content";
 import { COURSE_PATH, lessonPath } from "@/lib/routes";
 import { Seal } from "@/components/seal";
 import { estimateMinuteRange, formatActiveMinutes } from "@/lib/study-time";
+import { trackEvent } from "@/lib/analytics-client";
 
 // Minimal markdown: **bold**, `code`, and fenced code blocks used by lessons.
 function Inline({ text }: { text: string }) {
@@ -138,6 +139,8 @@ function ExerciseCard({
   anchorHint,
   onDone,
   onAskAssistant,
+  onAttempt,
+  onHint,
 }: {
   exercise: Exercise;
   locale: Locale;
@@ -147,6 +150,8 @@ function ExerciseCard({
   anchorHint?: string;
   onDone: (r: ExerciseResult) => void;
   onAskAssistant: (seed?: AssistantSeed) => void;
+  onAttempt: (r: ExerciseResult) => void;
+  onHint: (exerciseId: string) => void;
 }) {
   const [selected, setSelected] = useState<number | null>(null);
   const [text, setText] = useState("");
@@ -184,6 +189,12 @@ function ExerciseCard({
     setLastResponse(response);
     setTries(nextTries);
     setVerdict(correct ? "correct" : "wrong");
+    onAttempt({
+      exerciseId: exercise.id,
+      response,
+      correct,
+      firstTry: nextTries === 1,
+    });
     if (correct) {
       onDone({
         exerciseId: exercise.id,
@@ -295,13 +306,14 @@ function ExerciseCard({
           {assistantEnabled && (
             <button
               type="button"
-              onClick={() =>
+              onClick={() => {
+                onHint(exercise.id);
                 onAskAssistant({
                   exerciseId: exercise.id,
                   response: lastResponse,
                   question: t.assistantWrongQuestion,
-                })
-              }
+                });
+              }}
               className="min-h-11 rounded-lg border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink shadow-sm transition-colors hover:border-muted disabled:text-muted"
             >
               {t.assistantHint}
@@ -1167,6 +1179,7 @@ export function LessonPlayer({
   const [assistantThreadId, setAssistantThreadId] = useState<string | null>(null);
   const historyReady = useRef(false);
   const restoringHistory = useRef(false);
+  const trackedStart = useRef(false);
   const activeTime = useActiveLessonTime({
     lessonId: lesson.id,
     blockIndex: index,
@@ -1226,6 +1239,17 @@ export function LessonPlayer({
   }, [index, lesson.id]);
 
   useEffect(() => {
+    trackEvent({
+      eventName: trackedStart.current ? "lesson_step_viewed" : "lesson_started",
+      lessonId: lesson.id,
+      blockIndex: index,
+      blockType: block.type,
+      locale,
+    });
+    trackedStart.current = true;
+  }, [block.type, index, lesson.id, locale]);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
     const onPopState = () => {
       const url = new URL(window.location.href);
@@ -1254,8 +1278,29 @@ export function LessonPlayer({
         body: JSON.stringify({ lessonId: lesson.id, results: all }),
         keepalive,
       });
+      if (!res.ok) {
+        trackEvent(
+          {
+            eventName: "progress_save_failed",
+            lessonId: lesson.id,
+            locale,
+            properties: { status: res.status, result_count: all.length },
+          },
+          keepalive
+        );
+        return;
+      }
       await res.json();
     } catch {
+      trackEvent(
+        {
+          eventName: "progress_save_failed",
+          lessonId: lesson.id,
+          locale,
+          properties: { reason: "network_or_json", result_count: all.length },
+        },
+        keepalive
+      );
       // Progress failure should not block the learner from continuing.
     }
   }
@@ -1281,6 +1326,18 @@ export function LessonPlayer({
     setFinishedLessonSeconds(lessonSeconds);
     setFinishedTodaySeconds(Math.max(time?.todayActiveSeconds ?? 0, lessonSeconds));
     setFinished(true);
+    trackEvent(
+      {
+        eventName: "lesson_completed",
+        lessonId: lesson.id,
+        locale,
+        properties: {
+          result_count: all.length,
+          active_seconds: lessonSeconds,
+        },
+      },
+      true
+    );
     void persistProgress(all);
   }
 
@@ -1293,6 +1350,15 @@ export function LessonPlayer({
   }
 
   function openAssistant(seed?: AssistantSeed) {
+    trackEvent({
+      eventName: "assistant_opened",
+      lessonId: lesson.id,
+      blockIndex: index,
+      blockType: block.type,
+      exerciseId: seed?.exerciseId ?? (isExercise ? block.ref : undefined),
+      locale,
+      properties: { seeded: Boolean(seed?.question) },
+    });
     setAssistantOpen(true);
     setAssistantSeed(seed ?? null);
     setAssistantDraft("");
@@ -1317,6 +1383,18 @@ export function LessonPlayer({
 
     setAssistantLoading(true);
     setAssistantDraft("");
+    trackEvent({
+      eventName: "assistant_message_sent",
+      lessonId: lesson.id,
+      blockIndex: index,
+      blockType: block.type,
+      exerciseId: seed?.exerciseId ?? (isExercise ? block.ref : undefined),
+      locale,
+      properties: {
+        seeded: Boolean(seed?.question),
+        response_present: Boolean(seed?.response),
+      },
+    });
     setAssistantMessages((prev) => [...prev, { role: "user", text: trimmed }]);
     try {
       const res = await fetch("/api/llm", {
@@ -1443,12 +1521,13 @@ export function LessonPlayer({
         <button
           type="button"
           onClick={() => openAssistant()}
-          className="fixed bottom-24 right-4 z-40 flex min-h-16 items-center gap-3 rounded-lg border border-primary/30 bg-surface px-4 py-3 text-left shadow-xl transition-[border-color,transform,box-shadow] hover:-translate-y-px hover:border-primary sm:bottom-8 sm:right-8"
+          aria-label={t.assistantLabel}
+          className="fixed bottom-8 right-8 z-40 hidden min-h-16 items-center gap-3 rounded-lg border border-primary/30 bg-surface px-4 py-3 text-left shadow-xl transition-[border-color,transform,box-shadow] hover:-translate-y-px hover:border-primary sm:flex"
         >
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-accent-soft">
             <Seal size={24} />
           </span>
-          <span>
+          <span className="hidden sm:block">
             <span className="block text-xs font-medium uppercase text-primary">
               {t.assistantCtaTitle}
             </span>
@@ -1543,6 +1622,30 @@ export function LessonPlayer({
               anchorHint={currentAnchorHint}
               onAskAssistant={openAssistant}
               onDone={recordCorrectResult}
+              onAttempt={(result) =>
+                trackEvent({
+                  eventName: "exercise_submitted",
+                  lessonId: lesson.id,
+                  blockIndex: index,
+                  blockType: block.type,
+                  exerciseId: result.exerciseId,
+                  locale,
+                  properties: {
+                    correct: result.correct,
+                    first_try: result.firstTry,
+                  },
+                })
+              }
+              onHint={(exerciseId) =>
+                trackEvent({
+                  eventName: "hint_requested",
+                  lessonId: lesson.id,
+                  blockIndex: index,
+                  blockType: block.type,
+                  exerciseId,
+                  locale,
+                })
+              }
             />
           </>
         ) : (
@@ -1551,6 +1654,16 @@ export function LessonPlayer({
       </div>
 
       <div className="sticky bottom-0 z-30 -mx-5 flex gap-3 border-t border-line/70 bg-background/95 px-5 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-3 backdrop-blur sm:-mx-8 sm:px-8">
+        {assistantEnabled && (
+          <button
+            type="button"
+            onClick={() => openAssistant()}
+            aria-label={t.assistantLabel}
+            className="grid h-12 w-12 shrink-0 place-items-center rounded-lg border border-line bg-surface shadow-sm transition-[border-color,transform] hover:-translate-y-px hover:border-primary sm:hidden"
+          >
+            <Seal size={24} />
+          </button>
+        )}
         {index > 0 && (
           <button
             type="button"

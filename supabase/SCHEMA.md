@@ -15,6 +15,8 @@ glance.
 | `0004_explicit_data_api_grants.sql` | Makes Supabase Data API grants explicit for the 2026 default-grant change. |
 | `0005_server_owned_learner_profiles.sql` | Removes direct authenticated profile writes; onboarding profile writes now go through trusted server code after invite checks. |
 | `0006_active_lesson_time.sql` | Adds learner-owned active lesson time events for real study-minute feedback. |
+| `0007_app_events.sql` | Adds sparse product-learning events for attraction, activation, friction, language, assistant, and lesson-loop signals. |
+| `0008_default_language_fallbacks_en.sql` | Changes database language fallbacks for new learner profiles and assistant threads from Chinese to English. |
 
 Apply migrations in order through the Supabase SQL Editor until the CLI is
 adopted for this project.
@@ -30,6 +32,7 @@ adopted for this project.
 | `llm_usage` | Learner-owned LLM cost ledger | `select`, `insert` by authenticated user. |
 | `lesson_assistant_threads` | Learner-owned assistant conversation thread | `select`, `insert`, `update` by authenticated user. |
 | `lesson_assistant_messages` | Learner-owned assistant messages and compact learning signals | `select`, `insert`, `update` by authenticated user. |
+| `app_events` | Sparse product analytics events | `select` by authenticated user for own rows; inserts only from trusted server code. |
 
 The app currently reads lesson/module/exercise content from `/content`, not from
 the database. The original content tables remain in the schema so the design can
@@ -47,6 +50,8 @@ grow into seeded content later.
 - `lesson_assistant_messages.body` is private learner data. Bodies are retained
   for 30 days by default; `learning_signal` stays as the compact long-term
   record.
+- `app_events.properties` is for compact structured labels only. Do not store
+  emails, free-form assistant text, or full learner answers there.
 - `service_role` may access all tables only from trusted server-side scripts or
   maintenance tasks. Never expose it to browser code.
 

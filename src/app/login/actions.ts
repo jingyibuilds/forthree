@@ -1,7 +1,13 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { actionMessages, getLocale } from "@/lib/i18n";
+import { getLearnerProfile, hasCompletedOnboarding } from "@/lib/profile";
+import { COURSE_PATH, START_PATH } from "@/lib/routes";
+import { recordEvent } from "@/lib/analytics-server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   isInviteCookieSigningConfigured,
   rememberInviteForEmail,
@@ -12,6 +18,11 @@ export type LoginState = {
   message: string;
   email: string;
   needsInvite: boolean;
+};
+
+export type InviteRecoveryState = {
+  status: "idle" | "error";
+  message: string;
 };
 
 export async function sendMagicLink(
@@ -64,4 +75,76 @@ export async function sendMagicLink(
   }
 
   return { status: "sent", message: m.sent(email), email, needsInvite: false };
+}
+
+export async function redeemInviteForCurrentUser(
+  _prev: InviteRecoveryState,
+  formData: FormData
+): Promise<InviteRecoveryState> {
+  const locale = await getLocale();
+  const m = actionMessages[locale];
+  const invite = String(formData.get("invite") ?? "").trim();
+  const configuredInvite = process.env.INVITE_CODE?.trim();
+
+  if (!configuredInvite || invite !== configuredInvite) {
+    await recordEvent({
+      eventName: "auth_friction_detected",
+      locale,
+      route: "/login",
+      properties: { reason: "bad_invite_recovery" },
+    });
+    return { status: "error", message: m.inviteRequired };
+  }
+
+  if (!isInviteCookieSigningConfigured()) {
+    return { status: "error", message: m.sendFailed };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.email) {
+    return { status: "error", message: m.loginRequired };
+  }
+
+  await rememberInviteForEmail(user.email);
+  let profile = await getLearnerProfile(supabase, user.id);
+  try {
+    const admin = createAdminClient();
+    const now = new Date().toISOString();
+    const { error } = await admin.from("learner_profiles").upsert({
+      user_id: user.id,
+      background: {
+        ...(profile?.background ?? {}),
+        invite: {
+          redeemed: true,
+          redeemed_at: now,
+          version: 1,
+        },
+      },
+      preferences: profile?.preferences ?? {},
+      lang_pref: profile?.lang_pref ?? locale,
+      success_definition: profile?.success_definition ?? null,
+      weekly_budget_hours: profile?.weekly_budget_hours ?? null,
+      updated_at: now,
+    });
+    if (error) {
+      return { status: "error", message: m.profileSaveFailed };
+    }
+  } catch {
+    return { status: "error", message: m.profileSaveFailed };
+  }
+  profile = await getLearnerProfile(supabase, user.id);
+  await recordEvent({
+    eventName: "invite_redeemed",
+    userId: user.id,
+    locale,
+    route: "/login",
+    properties: { surface: "signed_in_recovery" },
+  });
+
+  if (hasCompletedOnboarding(profile)) redirect(COURSE_PATH);
+  redirect(hasCompletedActivation(profile) ? COURSE_PATH : START_PATH);
 }

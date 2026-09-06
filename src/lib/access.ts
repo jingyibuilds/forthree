@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import type { LearnerProfile } from "@/lib/profile";
 import { hasCompletedOnboarding } from "@/lib/profile";
 import { canResetTestAccount } from "@/lib/test-account";
@@ -85,9 +86,30 @@ export async function hasRememberedInvite(email?: string | null) {
   return readInviteEmail(token) === normalizeEmail(email);
 }
 
+export function hasRedeemedInvite(profile?: LearnerProfile | null) {
+  const invite = profile?.background?.invite;
+  return (
+    typeof invite === "object" &&
+    invite !== null &&
+    "redeemed" in invite &&
+    invite.redeemed === true
+  );
+}
+
 export function canEnterLearnerApp(
   email: string | null | undefined,
   profile: LearnerProfile | null
 ) {
-  return hasCompletedOnboarding(profile) || canResetTestAccount(email);
+  return (
+    hasCompletedOnboarding(profile) ||
+    hasCompletedActivation(profile) ||
+    canResetTestAccount(email)
+  );
+}
+
+export function canEnterFirstRun(
+  email: string | null | undefined,
+  profile: LearnerProfile | null
+) {
+  return canEnterLearnerApp(email, profile) || hasRedeemedInvite(profile);
 }

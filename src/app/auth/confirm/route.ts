@@ -1,10 +1,12 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
-import { hasRememberedInvite } from "@/lib/access";
+import { hasRedeemedInvite, hasRememberedInvite } from "@/lib/access";
 import { hasCompletedActivation } from "@/lib/activation-diagnostic";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { getLearnerProfile, hasCompletedOnboarding, ONBOARDING_PATH } from "@/lib/profile";
-import { lessonPath, START_PATH } from "@/lib/routes";
+import { getLearnerProfile, hasCompletedOnboarding } from "@/lib/profile";
+import { START_PATH } from "@/lib/routes";
+import { recordEvent } from "@/lib/analytics-server";
 
 // Magic-link landing. Supports both Supabase email flows:
 // 1. Default template ({{ .ConfirmationURL }}): arrives with ?code=..., exchanged
@@ -45,13 +47,59 @@ async function redirectAfterAuth(
     return NextResponse.redirect(new URL("/login?error=invalid_link", requestUrl));
   }
 
-  const profile = await getLearnerProfile(supabase, user.id);
+  let profile = await getLearnerProfile(supabase, user.id);
+  const hasInvite = await hasRememberedInvite(user.email);
+  if (hasInvite && !hasCompletedOnboarding(profile)) {
+    try {
+      const admin = createAdminClient();
+      const now = new Date().toISOString();
+      await admin.from("learner_profiles").upsert({
+        user_id: user.id,
+        background: {
+          ...(profile?.background ?? {}),
+          invite: {
+            redeemed: true,
+            redeemed_at: now,
+            version: 1,
+          },
+        },
+        preferences: profile?.preferences ?? {},
+        lang_pref: profile?.lang_pref ?? "en",
+        success_definition: profile?.success_definition ?? null,
+        weekly_budget_hours: profile?.weekly_budget_hours ?? null,
+        updated_at: now,
+      });
+      profile = await getLearnerProfile(supabase, user.id);
+    } catch {
+      // The remembered invite still lets this first run continue; the durable
+      // marker is best-effort if local admin env is missing during development.
+    }
+  }
+  const hasDurableInvite = hasRedeemedInvite(profile);
+  await recordEvent({
+    eventName:
+      hasInvite ||
+      hasDurableInvite ||
+      hasCompletedOnboarding(profile) ||
+      hasCompletedActivation(profile)
+        ? "auth_completed"
+        : "auth_friction_detected",
+    userId: user.id,
+    route: "/auth/confirm",
+    properties: {
+      has_profile: Boolean(profile),
+      onboarded: hasCompletedOnboarding(profile),
+      activation_completed: hasCompletedActivation(profile),
+      invite_cookie_present: hasInvite,
+      invite_redeemed: hasDurableInvite,
+    },
+  });
   const nextPath = hasCompletedOnboarding(profile)
     ? "/"
-    : (await hasRememberedInvite(user.email))
-      ? hasCompletedActivation(profile)
-        ? lessonPath("m00-l01")
-        : START_PATH
-      : ONBOARDING_PATH;
+    : hasCompletedActivation(profile)
+      ? "/"
+      : hasInvite || hasDurableInvite
+        ? START_PATH
+        : "/login?error=not_authorized";
   return NextResponse.redirect(new URL(nextPath, requestUrl));
 }

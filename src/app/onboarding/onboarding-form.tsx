@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { type Dict } from "@/lib/i18n-shared";
+import { trackEvent } from "@/lib/analytics-client";
 import { saveOnboarding, type OnboardingState } from "./actions";
 
 const initialState: OnboardingState = {
@@ -52,6 +53,7 @@ export function OnboardingForm({ t }: { t: Dict }) {
 
   return (
     <form action={formAction} className="space-y-8">
+      <TrackOnboardingStart />
       <section className="rounded-lg border border-line bg-surface p-5 shadow-sm">
         <h2 className="font-serif text-2xl font-semibold">{t.onboardingProfileTitle}</h2>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
@@ -126,6 +128,21 @@ export function OnboardingForm({ t }: { t: Dict }) {
 
       <section className="rounded-lg border border-line bg-surface p-5 shadow-sm">
         <h2 className="font-serif text-2xl font-semibold">{t.onboardingGoalTitle}</h2>
+        <fieldset className="mt-5">
+          <legend className="text-sm font-medium">{t.entryIntent}</legend>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {t.entryIntentOptions.map((option) => (
+              <ChoiceCard
+                key={option.value}
+                name="entry_intent"
+                type="radio"
+                value={option.value}
+                label={option.label}
+                required
+              />
+            ))}
+          </div>
+        </fieldset>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <fieldset>
             <legend className="text-sm font-medium">{t.motivation}</legend>
@@ -189,6 +206,21 @@ export function OnboardingForm({ t }: { t: Dict }) {
             ))}
           </div>
         </fieldset>
+
+        <fieldset className="mt-5">
+          <legend className="text-sm font-medium">{t.antiGoals}</legend>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {t.antiGoalOptions.map((option) => (
+              <ChoiceCard
+                key={option.value}
+                name="anti_goals"
+                type="checkbox"
+                value={option.value}
+                label={option.label}
+              />
+            ))}
+          </div>
+        </fieldset>
       </section>
 
       <section className="rounded-lg border border-primary/30 bg-surface p-5 shadow-sm">
@@ -203,7 +235,7 @@ export function OnboardingForm({ t }: { t: Dict }) {
                 value={option.value}
                 label={option.label}
                 required
-                defaultChecked={option.value === "zh"}
+                defaultChecked={option.value === "en"}
               />
             ))}
           </div>
@@ -226,4 +258,11 @@ export function OnboardingForm({ t }: { t: Dict }) {
       </section>
     </form>
   );
+}
+
+function TrackOnboardingStart() {
+  useEffect(() => {
+    trackEvent({ eventName: "onboarding_started" });
+  }, []);
+  return null;
 }

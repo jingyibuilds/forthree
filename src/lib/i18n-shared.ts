@@ -22,6 +22,9 @@ export const dict = {
     linkInvalid:
       "That login link expired. Request a new one on this device.",
     notAuthorizedLogin: "Use a valid invite code on first sign-in.",
+    inviteRecoveryBody:
+      "This browser is signed in, but the first-entry invite was not saved here. Add the invite code once to continue.",
+    inviteRecoverySubmit: "Continue with invite",
     toggleLabel: "中文",
     loginPitchTitle: "Not a coding bootcamp.\nA course for closing the gap around code and AI.",
     loginAdaptiveNote:
@@ -29,7 +32,8 @@ export const dict = {
     loginValueLine: "Invitation only. Invite code required.",
     loginInviteNote:
       "No password. Request the link on the device you are using. Progress syncs after sign-in.",
-    landingTitle: "You do not need to write code.\nYou just need to know if AI is capable.",
+    landingTitle:
+      "You do not need to write code.\n\nYou just need to know\nwhether AI actually\ndid the work.",
     landingBody:
       "A 10-minute-a-day site for learning just enough computer science to use AI better and know when to trust it.",
     landingAudience: "Designed for people who are not trying to become coding experts.",
@@ -39,9 +43,9 @@ export const dict = {
     landingSources: ["CS50P", "CS50x", "MIT 6.100L", "Missing Semester", "Python docs", "MDN"],
     landingFooter: "Open source on GitHub",
     continueLearning: "Continue learning",
-    startDiagnostic: "Start the 90-second check",
-    startOrientation: "Start the first incident",
-    beginOnboarding: "Create learning profile",
+    startDiagnostic: "See if this course fits you",
+    startOrientation: "Start the first lesson",
+    beginOnboarding: "Set learning profile",
     currentCourse: "Current course",
     sourceSignal: "Public CS course roots",
     sourceMore: "and more",
@@ -157,7 +161,6 @@ export const dict = {
       { value: "github", label: "GitHub" },
       { value: "terminal", label: "Terminal" },
       { value: "ai_agents", label: "AI coding agents" },
-      { value: "none", label: "Mostly new" },
     ],
     confidenceNow: "Current confidence reading technical work",
     confidenceOptions: [
@@ -166,6 +169,14 @@ export const dict = {
       { value: "high", label: "I can review basics" },
     ],
     onboardingGoalTitle: "Personal Target",
+    entryIntent: "What made you open For Three today?",
+    entryIntentOptions: [
+      { value: "use_ai_better", label: "Use AI better at work" },
+      { value: "understand_engineers", label: "Understand technical collaborators" },
+      { value: "build_small_tool", label: "Make a small useful tool" },
+      { value: "read_code_errors", label: "Stop guessing at code and errors" },
+      { value: "explore_fit", label: "Curious, trying it out" },
+    ],
     motivation: "Why are you taking this course now?",
     motivationPlaceholder: "Example: judge AI output earlier.",
     motivationOptions: [
@@ -194,6 +205,14 @@ export const dict = {
       { value: "product_specs", label: "Product specs" },
       { value: "ai_agent_logs", label: "AI agent logs" },
       { value: "debugging", label: "Debugging" },
+    ],
+    antiGoals: "What should this not become for you?",
+    antiGoalOptions: [
+      { value: "no_bootcamp", label: "A coding bootcamp" },
+      { value: "no_interview_prep", label: "Interview problem practice" },
+      { value: "no_long_video", label: "Long video lessons" },
+      { value: "no_big_code", label: "Large engineering projects" },
+      { value: "no_deep_theory", label: "Heavy theory first" },
     ],
     calibrationTitle: "Five-Minute Calibration",
     calibrationNote:
@@ -271,6 +290,9 @@ export const dict = {
     linkInvalid:
       "登录链接已失效。请在这台设备上重新发送。",
     notAuthorizedLogin: "首次登录需要正确的邀请码。",
+    inviteRecoveryBody:
+      "你已经登录了，但这台浏览器没有保存首次进入的邀请码。补填一次邀请码，就可以继续。",
+    inviteRecoverySubmit: "用邀请码继续",
     toggleLabel: "EN",
     loginPitchTitle: "不是转码课，\n是减少代码和 AI 信息差的入门课。",
     loginAdaptiveNote:
@@ -278,7 +300,7 @@ export const dict = {
     loginValueLine: "邀请制。需邀请码。",
     loginInviteNote:
       "暂时不用密码。在哪台设备学习，就在哪台设备发送链接；登录后进度会同步。",
-    landingTitle: "你不必会写代码，\n但要能验收 AI 交出的东西。",
+    landingTitle: "你不必会写代码。\n\n你只需要能验收 AI 交出的东西。",
     landingBody:
       "这是一个让你每天学习十分钟的小网站：不用成为码农，也能看懂 AI 在做什么、做得对不对、有没有按要求来。",
     landingAudience: "专为非专业码农设计。",
@@ -288,8 +310,8 @@ export const dict = {
     landingSources: ["CS50P", "CS50x", "MIT 6.100L", "Missing Semester", "Python 文档", "MDN"],
     landingFooter: "开源 · GitHub",
     continueLearning: "继续学习",
-    startDiagnostic: "先做 90 秒判断",
-    startOrientation: "先看第一场小事故",
+    startDiagnostic: "看看这门课适不适合你",
+    startOrientation: "进入第一课",
     beginOnboarding: "建立学习档案",
     currentCourse: "当前课程",
     sourceSignal: "参考公开 CS 课程脉络",
@@ -400,7 +422,6 @@ export const dict = {
       { value: "github", label: "GitHub（代码托管平台）" },
       { value: "terminal", label: "terminal（终端命令行）" },
       { value: "ai_agents", label: "AI coding agents（AI 编程代理）" },
-      { value: "none", label: "基本都不熟" },
     ],
     confidenceNow: "现在读技术内容的信心",
     confidenceOptions: [
@@ -409,6 +430,14 @@ export const dict = {
       { value: "high", label: "能做基础判断" },
     ],
     onboardingGoalTitle: "个人目标",
+    entryIntent: "今天是什么让你想打开举一反三？",
+    entryIntentOptions: [
+      { value: "use_ai_better", label: "想在工作里更会用 AI" },
+      { value: "understand_engineers", label: "想听懂技术协作者在说什么" },
+      { value: "build_small_tool", label: "想做一个自己用得上的小工具" },
+      { value: "read_code_errors", label: "看到代码和报错时不想全靠猜" },
+      { value: "explore_fit", label: "只是好奇，先看看合不合适" },
+    ],
     motivation: "你现在为什么想学这门课？",
     motivationPlaceholder: "例如：更早判断 AI 输出。",
     motivationOptions: [
@@ -437,6 +466,14 @@ export const dict = {
       { value: "product_specs", label: "产品需求" },
       { value: "ai_agent_logs", label: "AI agent（AI 代理）工作记录" },
       { value: "debugging", label: "排查错误" },
+    ],
+    antiGoals: "你不希望它变成什么？",
+    antiGoalOptions: [
+      { value: "no_bootcamp", label: "转码训练营" },
+      { value: "no_interview_prep", label: "技术面试刷题" },
+      { value: "no_long_video", label: "很长的视频课" },
+      { value: "no_big_code", label: "大型复杂工程项目" },
+      { value: "no_deep_theory", label: "一上来就讲很重的理论" },
     ],
     calibrationTitle: "五分钟校准",
     calibrationNote: "这些题只记录起点，不会卡住课程。",

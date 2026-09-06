@@ -7,6 +7,7 @@ const USER_SCOPED_TABLES = [
   "lesson_assistant_messages",
   "lesson_assistant_threads",
   "lesson_time_events",
+  "app_events",
   "attempts",
   "xp_events",
   "user_achievements",

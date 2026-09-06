@@ -133,6 +133,25 @@ const tables = [
       "created_at",
     ],
   },
+  {
+    name: "app_events",
+    columns: [
+      "id",
+      "user_id",
+      "session_id",
+      "client_event_id",
+      "event_name",
+      "route",
+      "locale",
+      "device_class",
+      "lesson_id",
+      "block_index",
+      "block_type",
+      "exercise_id",
+      "properties",
+      "created_at",
+    ],
+  },
 ];
 
 function tableUrl(table) {

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { canEnterLearnerApp, hasRememberedInvite } from "@/lib/access";
+import { canEnterFirstRun, hasRememberedInvite } from "@/lib/access";
 import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { FreshStartCleanup } from "@/components/fresh-start-cleanup";
 import { LocaleToggle } from "@/components/locale-toggle";
@@ -28,7 +28,7 @@ export default async function OnboardingPage({
 
   const profile = await getLearnerProfile(supabase, user.id);
   const canCreateProfile =
-    canEnterLearnerApp(user.email, profile) ||
+    canEnterFirstRun(user.email, profile) ||
     hasCompletedActivation(profile) ||
     (await hasRememberedInvite(user.email));
   if (!canCreateProfile) redirect("/login?error=not_authorized");

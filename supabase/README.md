@@ -36,6 +36,8 @@ can take over when migration volume justifies it. Apply them in order:
 4. `migrations/0004_explicit_data_api_grants.sql`
 5. `migrations/0005_server_owned_learner_profiles.sql`
 6. `migrations/0006_active_lesson_time.sql`
+7. `migrations/0007_app_events.sql`
+8. `migrations/0008_default_language_fallbacks_en.sql`
 
 After applying migrations, run the non-destructive preview check:
 

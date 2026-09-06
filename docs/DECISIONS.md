@@ -6,6 +6,167 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-06 — Activation evaluation ends with a named result
+
+Second-round testing showed that the activation flow now succeeds at reminding
+learners of real AI pain, but the result screen still failed its job: learners
+could feel the pain and still not know "what was measured." A result screen
+that mostly explains the underlying mechanism is too easy to miss in a
+three-minute onboarding flow.
+
+Resolution: after the three diagnostic questions, Step 7 must begin with a
+plain result sentence. The visible conclusion is one of three deterministic
+practice signals: verification, context setup, or change control. The learner's
+chosen pain is replayed as supporting context, not as the conclusion. Route
+A/B/C remains internal and does not appear as a learner-facing result.
+
+The final expectation check is also reframed from correction to boundary
+confirmation. If the learner selects the correct answer, the feedback says so
+directly (`Correct. Answer: No.` / `你判断对了。答案：不对。`). If they select the
+wrong answer, the feedback shows the correct answer and explains the course
+boundary in neutral language. Correct answers must not use a visual treatment
+that feels like an error state.
+
+---
+
+## 2026-09-06 — Default first-run language is English
+
+New visitors with no `locale` cookie should see English first. Chinese remains
+available through the locale toggle and is still a fully authored product
+surface, but fallback language now defaults to `en` instead of `zh`.
+
+This applies to `getLocale()`, auth-created first-run profile defaults, database
+fallbacks for new learner profiles and assistant threads, and the optional
+onboarding form's default language preference. Existing browsers with a
+`locale=zh` cookie keep Chinese until the learner changes the toggle.
+
+---
+
+## 2026-09-06 — Activation starts from pain mechanism, not an open sentence
+
+Owner reconsidered the v2 activation spec after friend testing and planning:
+the prompt "最近一次我想让 AI 帮我做的事,是..." could collect a noun, but it is a
+weak first signal. Many people would answer with low-stakes toy tasks such as
+recipes or casual search, which says little about whether the course can hit a
+real pain. The entrance needs to infer motivation before it tries to collect
+surface nouns.
+
+Resolution: Step 0 is now one single-choice question with exactly five pain
+mechanisms: rules it forgets, claims of completion that cannot be verified,
+one fix breaking another thing, overwriting the original, and not knowing what
+can be handed to AI. These are not occupations or borrowed nouns; they are the
+engineering failure modes the course later names as context, verification,
+regression, overwrite, and trust/risk boundaries. No first-run multiple-choice
+group, including the optional profile form, may exceed five options.
+Free-form noun capture and LLM slot filling are deferred.
+
+Also remove learner-facing Exit C. Route A/B/C/skip is still recorded as a
+product-learning signal, but it no longer blocks or discourages the learner.
+This is a small invite beta, and a false negative is more expensive than
+letting a weak-fit learner try one lesson. After activation, the profile form
+is optional: a learner can continue into the course without completing the
+full onboarding form. Bilingual activation copy must remain authored, concise,
+and native in each language; Chinese should not preserve English syntax when a
+natural Chinese sentence carries the same meaning better.
+
+---
+
+## 2026-09-05 — Activation entry is a mutual fit check, not a diagnosis
+
+Two non-programmer testers (a counselling trainee, a UX designer) both reported
+that `/start` felt abstract and far from their lives. The decisive evidence
+against blaming recruitment: asked separately what makes AI feel dumb, the UX
+designer spontaneously restated this course's core concept — "I tell it every
+time to do A and not B, in detail, and it still can't" — and still said the
+product wasn't for them. A tester who independently produces the curriculum and
+still bounces means the door is wrong, not the audience.
+
+Diagnosis: the entry surface was built out of agent logs (`checkout.py`,
+`python scripts/lint.py`, "tests pass"). Agent logs are where this skill pays
+off most, which is exactly why they sit after the threshold the course exists
+to help people cross — a circular entry requirement. The hook copy also
+presumed shipping, and the result screen handed out a personality-quiz label
+instead of naming a mechanism.
+
+Rejected: rewriting the examples with "more relatable" nouns. The first attempt
+picked 用户访谈 and 术语表, which is not neutral — it is UX-research-shaped and
+content-design-shaped, i.e. overfitting to a sample of two. There is no neutral
+noun; concreteness and reach trade off directly. Also rejected: widening the
+curriculum (turns this into a saturated "use AI better" product and discards
+the only moat), scenario tiles (a category set is still categories, and tiles
+cost ~36 bilingual variants), and letting an LLM judge learner fit (asymmetric
+error cost, unreviewable, violates determinism-first).
+
+Adopted: the problem is wide, the explanation stays narrow and engineering.
+Examples carry no borrowed context — a noun may only come from the learner's
+own sentence, from a low-occupational-load everyday task, or from something the
+course already taught. Segment by how load-bearing AI is in the learner's work,
+not by code knowledge. Sentences are always authored; an LLM may fill at most
+two length-capped nouns and classify a pain type, never write prose or decide
+routing. The flow becomes: one optional sentence, two routing questions
+(stakes, friction — the two preconditions inside the course's own philosophy),
+the existing three-axis diagnostic in blank-slot costume, a result screen that
+replays the learner's own words then names the mechanism, and a four-item
+expectation screen before M0. Three exits, and the poor-fit exit gives
+something rather than a verdict, admitting the product's boundary rather than
+the learner's.
+
+The promise moves from 90 seconds to 3 minutes, and from "see what you can
+inspect" to "see whether you actually need this" — which converts the poor-fit
+exit from a rejection into the promise being kept.
+
+Stage 2 adds one micro LLM call at `/start`, forking the 2026-09-03 decision
+that `/start` makes no LLM request. Stage 1 must ship and stand alone first,
+because the no-LLM path is literally the fallback.
+
+Full spec, copy in both languages, and the rationale behind each rule:
+[ACTIVATION_ENTRY.md](./ACTIVATION_ENTRY.md). Still open there: whether to
+widen the course endpoint for learners who will never touch code (wait for
+exit-C data), verbatim retention, and voice input.
+
+---
+
+## 2026-09-05 — Invite activation is durable; product events test real value fit
+
+The first external tester exposed a confusing auth state: the app could know a
+browser had requested a magic link with an invite code, but it did not always
+leave a durable server-side record that the email identity had been invited.
+That made the short-lived invite cookie too load-bearing. If the learner opened
+the link through a different browser/webview, or reached an auth-created state
+before creating a learner profile, they could see "signed in" while the app
+still redirected them around the first-run route.
+
+Resolution: invite codes are still required only once. On successful invited
+auth confirmation, the app writes `learner_profiles.background.invite.redeemed`
+as the durable activation marker. Future email magic-link logins use that
+server-side marker and do not ask for the invite again. A signed-in invite
+recovery form remains only for the old/edge state where an auth user exists
+but no durable invite/profile marker was ever saved; it is not the normal
+returning-learner path.
+
+Also add a sparse `app_events` stream for early product learning. Its purpose
+is not to prove the founder's ideal value proposition, but to detect value-fit
+mismatch: what attracted a learner, what they say they do not want, where they
+stall, whether language support helps, and whether the assistant helps learning
+or behaves like a support escape hatch. Existing `attempts`,
+`lesson_time_events`, `lesson_assistant_messages`, and `llm_usage` remain the
+deeper domain-specific records; `app_events` connects the funnel and friction
+signals across surfaces.
+
+The first event set is intentionally small: landing CTA, auth completion or
+friction, invite redemption, activation diagnostic start/completion,
+onboarding start/completion, lesson start/step/completion, exercise submit,
+hint request, assistant open/message, progress save failure, and locale
+change. Event properties must stay compact and structured; do not store emails,
+free-form assistant text, or full learner answers there.
+
+Mobile lesson assistant entry also changes from an always-floating large CTA to
+a desktop-only floating card plus a small mobile toolbar icon. On phones, the
+primary learning action is the bottom `Next` bar; assistant access must not
+cover or compete with it.
+
+---
+
 ## 2026-09-03 — Activation starts with a deterministic diagnostic
 
 Owner brought in an activation action plan arguing that the course should not

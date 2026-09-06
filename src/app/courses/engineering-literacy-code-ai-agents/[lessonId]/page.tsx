@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { canEnterLearnerApp, hasRememberedInvite } from "@/lib/access";
+import { canEnterFirstRun, canEnterLearnerApp, hasRememberedInvite } from "@/lib/access";
 import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { createClient } from "@/lib/supabase/server";
 import { dict, getLocale } from "@/lib/i18n";
@@ -34,7 +34,11 @@ export default async function LessonPage({
   const profile = await getLearnerProfile(supabase, user.id);
   const hasFullAccess = canEnterLearnerApp(user.email, profile);
   const hasOrientationAccess =
-    !hasFullAccess && lesson.module_id === "m00" && (await hasRememberedInvite(user.email));
+    !hasFullAccess &&
+    lesson.module_id === "m00" &&
+    (canEnterFirstRun(user.email, profile) ||
+      hasCompletedActivation(profile) ||
+      (await hasRememberedInvite(user.email)));
   if (!hasFullAccess && !hasOrientationAccess) {
     redirect(ONBOARDING_PATH);
   }
