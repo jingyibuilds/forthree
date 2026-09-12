@@ -179,12 +179,12 @@ export default async function Home({
                       </span>
                     ))}
                   </h1>
-                  <div className="max-w-[34rem] space-y-3 sm:space-y-4">
-                    <p className="text-base leading-6 text-muted sm:text-lg sm:leading-8">
+                  <div className="max-w-[34rem] space-y-3">
+                    <p className="text-base leading-7 text-muted">
                       {t.landingBody}
                     </p>
                     {t.landingAudience && (
-                      <p className="text-base italic leading-6 text-muted sm:leading-7">
+                      <p className="text-base italic leading-7 text-muted">
                         {t.landingAudience}
                       </p>
                     )}
