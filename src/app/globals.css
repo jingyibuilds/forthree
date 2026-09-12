@@ -96,7 +96,7 @@ textarea {
 }
 
 .landing-login-headline {
-  max-width: min(20ch, 100%);
+  max-width: min(24ch, 100%);
   font-size: clamp(1.45rem, 6.2vw, 2.55rem);
 }
 
@@ -136,8 +136,8 @@ textarea {
 
 @media (max-width: 420px) {
   .landing-home-headline {
-    max-width: min(18ch, 100%);
-    font-size: 1.72rem;
+    max-width: min(22ch, 100%);
+    font-size: 1.56rem;
     text-wrap: wrap;
   }
 
@@ -150,7 +150,8 @@ textarea {
   }
 
   :lang(zh) .landing-home-headline {
-    font-size: 1.68rem;
+    max-width: min(18ch, 100%);
+    font-size: 1.6rem;
   }
 }
 

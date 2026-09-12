@@ -131,7 +131,7 @@ export default async function Home({
         </div>
       ) : (
         <>
-          <div className="mx-auto flex min-h-[calc(100dvh-5rem)] w-full max-w-6xl flex-col justify-center gap-8 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-6 sm:gap-12 sm:pt-20 lg:gap-16">
+          <div className="mx-auto flex min-h-[calc(100dvh-5rem)] w-full max-w-6xl flex-col justify-start gap-8 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-20 sm:justify-center sm:gap-12 sm:pt-20 lg:gap-16">
             <div className="grid min-w-0 items-end gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,26rem)] lg:gap-20">
               <section className="min-w-0 space-y-5 sm:space-y-10">
                 <div className="flex items-center gap-4">
@@ -184,7 +184,13 @@ export default async function Home({
                       {t.landingBody}
                     </p>
                     {t.landingAudience && (
-                      <p className="text-base italic leading-7 text-muted">
+                      <p
+                        className={
+                          locale === "en"
+                            ? "hidden text-base italic leading-7 text-muted sm:block"
+                            : "text-base italic leading-7 text-muted"
+                        }
+                      >
                         {t.landingAudience}
                       </p>
                     )}
@@ -192,20 +198,7 @@ export default async function Home({
                 </div>
               </section>
 
-              <aside className="min-w-0 space-y-5 border-t border-line pt-4 lg:border-t-0 lg:pt-0">
-                <div className="space-y-3">
-                  <p className="text-xs font-semibold uppercase text-muted">
-                    {t.landingProof}
-                  </p>
-                  <div className="flex min-w-0 flex-wrap gap-x-4 gap-y-1.5 text-xs font-semibold leading-5 text-primary sm:text-base sm:leading-7">
-                    {t.landingSources.map((source) => (
-                      <span key={source} className="min-w-0 max-w-full break-words">
-                        {source}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
+              <aside className="min-w-0 space-y-5 lg:pt-0">
                 <div className="space-y-3 sm:space-y-4">
                   <TrackedLink
                     href="/login"
@@ -229,6 +222,15 @@ export default async function Home({
                   >
                     {t.landingSecondary}
                   </TrackedLink>
+                </div>
+
+                <div className="border-t border-line pt-4 lg:border-t-0 lg:pt-0">
+                  <p className="text-[0.7rem] font-medium leading-5 text-muted">
+                    {t.landingProof}
+                  </p>
+                  <p className="mt-1.5 max-w-full text-[0.7rem] leading-5 text-muted">
+                    {t.landingSources.join(" · ")}
+                  </p>
                 </div>
               </aside>
             </div>

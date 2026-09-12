@@ -27,6 +27,10 @@ section so future reviews become sharper.
 - Learner-facing changes should also get the relevant learning/product
   reviewers. If tool limits prevent all reviewers from running, say which ones
   ran, which ones did not, and why.
+- For learner-facing UI, review is operational, not decorative: reviewers must
+  judge the same acceptance gates used during build, cite the rendered surfaces
+  or files inspected, and withhold approval when a required viewport, language,
+  action state, or copy-density gate has not been checked.
 - Do not merge all perspectives into one fake voice when separate agents are
   available.
 
@@ -34,6 +38,7 @@ section so future reviews become sharper.
 
 Each reviewer returns:
 
+- Evidence checked
 - Blockers
 - Non-blocking concerns
 - Approval status: `FINAL APPROVAL`, `APPROVED WITH NOTES`, or `NOT APPROVED`

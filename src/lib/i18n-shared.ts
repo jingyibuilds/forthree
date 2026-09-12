@@ -33,10 +33,10 @@ export const dict = {
     loginInviteNote:
       "No password. Request the link on the device you are using. Progress syncs after sign-in.",
     landingTitle:
-      "You do not need to write code.\n\nYou just need to know\nwhether AI actually\ndid the work.",
+      "You don't need to code.\n\nJust need to know\nwhether AI did the work.",
     landingBody:
-      "A 10-minute-a-day site for learning just enough computer science to use AI better and know when to trust it.",
-    landingAudience: "Designed for people who are not trying to become coding experts.",
+      "10 min a day to learn just enough CS stuff to use AI better.",
+    landingAudience: "",
     landingProof: "Grounded in public courses and official docs",
     landingPrimary: "Enter with invite",
     landingSecondary: "Already started? Continue learning",

@@ -21,6 +21,31 @@ screens whenever possible. Taste matters, but taste must serve the task.
    No purple-blue glow defaults, no glass blobs, no emoji-as-design, no dead
    grey template austerity.
 
+## Operational Acceptance Gates
+
+Treat these as review gates, not taste notes. The UI is not decorative; it is
+operational. A screen passes only when the learner can complete the intended
+job in the actual viewport and language being reviewed.
+
+1. Viewport evidence: inspect the relevant surface at 375x667, 390x844,
+   430x932, 1280x720, and 1440x900, or state why a size is irrelevant.
+2. First-viewport action: on signed-out landing surfaces, the first viewport
+   must show the brand, the core promise, and the primary action or its clear
+   start. Trust/source proof cannot push the action below the fold on mobile.
+3. Bilingual fit: English and Chinese must each pass. Do not infer one language
+   from the other; English line length and Chinese phrasing fail differently.
+4. Copy budget: before the primary action, show only the copy needed to decide
+   the next move. On mobile landing screens, the pre-CTA budget is brand,
+   promise, and one support paragraph unless an exception is explicitly argued.
+5. Line integrity: no orphan words, awkward manual wraps, split key terms, text
+   overlap, clipped controls, or horizontal scroll. Long source labels and
+   buttons must wrap without resizing the layout.
+6. Action hierarchy: the screen has one obvious primary action in the first
+   action group. Secondary actions are visually quieter and cannot compete with
+   the next step.
+7. State continuity: loading, error, sent, empty, completed, authenticated, and
+   signed-out states keep the same product logic and visual language.
+
 ## Required Inputs
 
 Read the relevant TSX/CSS diff, then inspect desktop and mobile renderings for
@@ -28,6 +53,7 @@ significant learner-facing changes.
 
 ## Output
 
+- Evidence checked
 - Blockers
 - Non-blocking concerns
 - Approval status: `FINAL APPROVAL`, `APPROVED WITH NOTES`, or `NOT APPROVED`
@@ -50,3 +76,7 @@ significant learner-facing changes.
 - 2026-09-02: If a visual element has a card shell, border, shadow, number, and
   sits near the primary CTA, first-time visitors read it as navigation. Either
   make it interactive or downgrade it to clearly informational typography.
+- 2026-09-11: Reviewers must not approve a landing or onboarding UI from a
+  desktop-only impression. The owner caught a mobile landing where the English
+  headline wrapped into an orphan word and source proof appeared before the
+  CTA; this is an operational failure, not a polish note.

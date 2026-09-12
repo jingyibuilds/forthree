@@ -96,18 +96,18 @@ export default async function LoginPage({
             <p className="mt-4 max-w-lg text-sm leading-6 text-muted sm:text-base sm:leading-7">
               {t.landingBody}
             </p>
-            <p className="mt-3 hidden max-w-lg text-sm italic leading-6 text-muted sm:mt-4 sm:block">
-              {t.landingAudience}
-            </p>
+            {t.landingAudience && (
+              <p className="mt-3 hidden max-w-lg text-sm italic leading-6 text-muted sm:mt-4 sm:block">
+                {t.landingAudience}
+              </p>
+            )}
           </div>
 
-          <div className="hidden max-w-xl border-y border-line py-4 sm:block">
-            <p className="text-xs font-medium uppercase text-muted">{t.landingProof}</p>
-            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs font-medium text-primary sm:text-sm">
-              {t.landingSources.map((source) => (
-                <span key={source}>{source}</span>
-              ))}
-            </div>
+          <div className="hidden max-w-xl border-y border-line py-3 sm:block">
+            <p className="text-xs font-medium leading-5 text-muted">{t.landingProof}</p>
+            <p className="mt-1.5 text-xs leading-5 text-muted">
+              {t.landingSources.join(" · ")}
+            </p>
           </div>
         </section>
 

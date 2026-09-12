@@ -6,6 +6,27 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-11 — UI review gates are operational, not decorative
+
+Owner review of the mobile landing page found that the previous UI review
+standard was too aesthetic and too easy to satisfy from a desktop impression:
+the English headline created an orphan word on phone, the proof/source block
+appeared before the CTA, and the English copy felt heavier than the Chinese
+surface. The deeper failure was process: build principles and reviewer
+criteria were not the same executable checklist.
+
+Resolution: learner-facing UI now uses an operational build/fix loop. When the
+owner says "开始build" or "开始fix", the agent first decides whether new feedback
+should update reviewer cards, product goals, or principles; then plans; checks
+the plan against the product standards; executes; runs the review panel;
+accepts or rejects each review note with rationale; implements accepted
+improvements; and repeats until there are no blocking to-dos. Interaction
+review must cite viewport evidence, separately pass English and Chinese, and
+treat first-viewport action, copy budget, line integrity, and action hierarchy
+as hard gates rather than decorative preferences.
+
+---
+
 ## 2026-09-06 — Activation evaluation ends with a named result
 
 Second-round testing showed that the activation flow now succeeds at reminding

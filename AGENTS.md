@@ -31,6 +31,14 @@ maintenance crew; the owner is a data scientist, not a software engineer.
   `$forthree-product-design` if available; otherwise read
   `docs/agent-skills/forthree-product-design/SKILL.md` and the relevant
   reference file under that folder.
+- **Build/fix operating loop:** when the owner says "开始build",
+  "开始fix", or an equivalent start signal, run the operational loop instead
+  of jumping straight to code: first decide whether the new feedback should
+  update reviewer cards, product/project goals, or design principles; then
+  plan; review the plan against the product style, principles, and acceptance
+  gates; execute; run the review panel; accept or reject each review note with
+  rationale; implement accepted improvements; repeat review and improvement
+  until there are no blocking to-dos; then final-deliver with validation.
 - **Phases:** work phase by phase (`docs/DESIGN.md` §7, as amended). Do not
   start phase N+1 before phase N acceptance passes.
 - **Commits:** granular, descriptive; history is part of the deliverable.
