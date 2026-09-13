@@ -16,7 +16,7 @@ export default async function DevStartPreview() {
   const t = dict[locale];
 
   return (
-    <main className="relative min-h-dvh px-5 py-8 sm:px-8 sm:py-10">
+    <main className="relative min-h-dvh overflow-x-hidden px-5 py-8 sm:px-8 sm:py-10">
       <LocaleToggle locale={locale} />
       <Link
         href="/"

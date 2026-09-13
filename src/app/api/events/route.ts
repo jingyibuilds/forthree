@@ -5,7 +5,9 @@ import {
   type DeviceClass,
   type EventPayload,
 } from "@/lib/analytics";
+import { getDevLocalUser } from "@/lib/dev-local-account";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { hasSupabaseAuthCookieInList } from "@/lib/supabase/session-cookies";
 import { createClient } from "@/lib/supabase/server";
 
 const deviceClasses: DeviceClass[] = ["desktop", "mobile", "tablet", "unknown"];
@@ -24,15 +26,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "bad request" }, { status: 400 });
   }
 
+  if ((await getDevLocalUser()) || !hasSupabaseAuthCookieInList(request.cookies.getAll())) {
+    return NextResponse.json({ ok: true, persisted: false });
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ ok: true, persisted: false });
+  }
 
   try {
     const admin = createAdminClient();
     const { error } = await admin.from("app_events").insert({
-      user_id: user?.id ?? null,
+      user_id: user.id,
       session_id: stringOrNull(body.sessionId, 160),
       client_event_id:
         stringOrNull(body.clientEventId, 180) ??

@@ -5,6 +5,8 @@ export const eventNames = [
   "auth_completed",
   "auth_friction_detected",
   "invite_redeemed",
+  "activation_scenario_submitted",
+  "activation_routing_answered",
   "activation_diagnostic_started",
   "activation_diagnostic_completed",
   "activation_route_assigned",

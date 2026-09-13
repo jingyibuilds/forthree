@@ -4,29 +4,37 @@ import { canEnterFirstRun, hasRememberedInvite } from "@/lib/access";
 import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { LocaleToggle } from "@/components/locale-toggle";
 import { Seal } from "@/components/seal";
+import { FreshStartCleanup } from "@/components/fresh-start-cleanup";
+import { getDevLocalProfile, getDevLocalUser } from "@/lib/dev-local-account";
 import { dict, getLocale } from "@/lib/i18n";
 import { getLearnerProfile } from "@/lib/profile";
-import { COURSE_PATH } from "@/lib/routes";
+import { COURSE_PATH, START_PATH } from "@/lib/routes";
 import { createClient } from "@/lib/supabase/server";
 import { StartDiagnostic } from "./start-diagnostic";
 
 export default async function StartPage({
   searchParams,
 }: {
-  searchParams: Promise<{ again?: string }>;
+  searchParams: Promise<{ again?: string; fresh?: string }>;
 }) {
   const locale = await getLocale();
   const t = dict[locale];
-  const { again } = await searchParams;
-  const supabase = await createClient();
+  const { again, fresh } = await searchParams;
+  const devUser = await getDevLocalUser();
+  const supabase = devUser ? null : await createClient();
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { user: supabaseUser },
+  } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
+  const user = devUser ?? supabaseUser;
 
   if (!user) redirect("/login");
 
-  const profile = await getLearnerProfile(supabase, user.id);
-  const rememberedInvite = await hasRememberedInvite(user.email);
+  const profile = devUser
+    ? await getDevLocalProfile()
+    : supabase
+      ? await getLearnerProfile(supabase, user.id)
+      : null;
+  const rememberedInvite = devUser ? true : await hasRememberedInvite(user.email);
   const canStart =
     canEnterFirstRun(user.email, profile) ||
     rememberedInvite ||
@@ -38,7 +46,8 @@ export default async function StartPage({
   }
 
   return (
-    <main className="relative min-h-dvh px-5 py-8 sm:px-8 sm:py-10">
+    <main className="relative min-h-dvh overflow-x-hidden px-5 py-8 sm:px-8 sm:py-10">
+      {fresh === "1" && <FreshStartCleanup target={START_PATH} />}
       <LocaleToggle locale={locale} />
       <Link
         href="/"

@@ -20,6 +20,9 @@ explanations.
 5. Checkpoints: module-level value is proven through realistic scenarios.
 6. Density: do not inflate lessons with prose; add retrieval, transfer, or
    scenario friction when learning is too thin.
+7. Reading load: do not teach by exposition when a choice, ordering task,
+   annotated example, small visual, or reveal state can create the same
+   understanding with less text.
 
 ## Required Inputs
 
@@ -43,3 +46,6 @@ entries, and any rendered lesson screenshots when visuals matter.
   in lesson `resources`, and no raw link lists in module metadata.
 - 2026-09-02: Language quality means rigorous, vivid, concise, and clear.
   Timing drift should be solved through better practice, not longer prose.
+- 2026-09-13: Text density is an education risk. Fewer words should usually come
+  from better interaction or representation, not from hiding the same lecture
+  behind too many screens.

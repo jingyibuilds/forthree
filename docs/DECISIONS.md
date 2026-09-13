@@ -6,6 +6,189 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-13 — Activation result personalization stays bounded
+
+Owner testing found that the result page could still feel formulaic even after
+the scenario sentence was replayed. Phrases such as "everyday use," "next
+jump," or "when tasks get messy" created small context gaps, and the same bridge
+sentence felt too generic across examples like writing a novel scene versus a
+small code task.
+
+Resolution: the result page now uses clearer readiness language and a
+deterministic scenario-family bridge. Code, research, organizing, writing, and
+summary examples each receive a short tailored result sentence. This improves
+continuity without letting the LLM decide the diagnosis, route, score, or
+course handoff.
+
+LLM personalization remains a possible future layer, but only as optional
+micro-copy: one short sentence that connects the learner's own words to the
+already-determined result. It must have strict JSON/schema validation, a short
+timeout, cost logging, local fallback, and no authority to change the result or
+write broad coaching prose.
+
+## 2026-09-13 — Education flow uses interaction before prose
+
+Owner review found that even accurate activation copy can become too text-heavy
+for an education product. Learners often do not read long explanatory blocks,
+especially in short daily-learning or check-in style products. Reducing text by
+splitting it into many more screens is not automatically better; too many steps
+can make a three-minute flow feel endless.
+
+Resolution: learner-facing education surfaces now need a text budget. Before
+adding prose, use interaction, choices, examples, compact visual rhythm,
+symbols, and progressive reveal where they can carry the same meaning. If a
+screen needs many sentences, ask whether the idea should be practiced,
+represented visually, delayed, or removed. Reviewers now check reading load and
+must not approve a flow that is clear only because the learner read several
+paragraphs.
+
+## 2026-09-13 — Expectation checks preserve motivating ambition
+
+Owner review found that answering "No" to "By the end, I should be able to
+build a product" lowered the activation energy too much. The intent of the
+expectation screen is not to tell learners they will get nothing; it is to set
+honest boundaries while preserving the motivating promise that they can use AI
+to achieve more.
+
+Resolution: the product-building expectation is now a positive, narrower claim:
+by the end, the learner should have a stronger foundation for using AI to build
+something real. The answer is true, with copy clarifying that AI may still do
+much of the hands-on building while the course improves the learner's judgment:
+what to hand off, how to check it, and which steps cannot be taken back.
+
+## 2026-09-13 — First-run work centers using AI better and signature taste
+
+Owner review reframed the activation problem as larger than a dangling phrase
+on `/start`. The target learner is not primarily buying "learn CS"; many arrive
+because they want to use AI better and only later discover that a little
+computer/engineering structure is the durable way to judge AI work. The funnel
+must therefore lead with AI-use improvement, then introduce CS as the method,
+not the assumed desire.
+
+The same review identified "AI-template taste" as an activation cost. UI and
+copy that look like common Codex/Claude-generated SaaS patterns cause users to
+skim before they engage. For Three should seek a stable, memorable 20% outside
+mainstream defaults: not quirky for its own sake, but specific enough to become
+a durable product signature.
+
+Resolution: add three durable review roles: New User Activation Reviewer,
+Taste Signature Reviewer, and PM Synthesis Reviewer. First-run funnel work now
+requires a cold-start psychological map, subtle repeated signals instead of
+repeated slogans, an anti-template taste check, and PM synthesis of reviewer
+conflicts before final delivery. The operating loop is captured in
+`docs/PRODUCT_WORKFLOW.md`, and the review board now treats these gates as
+operational rather than decorative.
+
+## 2026-09-12 — Activation result must return a diagnosis
+
+Owner testing found that the activation checks were successfully reminding
+learners of real AI pain, but the result still under-delivered on the testing
+promise. After several choices, learners expected to know what had been
+measured. A pure mechanism handoff made the flow feel like a template attached
+after a quiz.
+
+Resolution: the result screen now starts with a deterministic, non-personality
+diagnosis of `AI task judgment`: `starting`, `everyday`, or `mature`, based on
+the three diagnostic axes. It also shows three compact signals from the
+preceding answers: consequence if wrong, friction frequency, and the practice
+focus. The result must stay modest and operational; do not call learners "AI
+experts" or imply credentialed skill. The mechanism/CS bridge remains, but it
+supports the diagnosis instead of replacing it.
+
+## 2026-09-12 — Scenario chips are structured task presets
+
+Owner review of the scenario sentence step found that the chip interaction
+works well, but the example set was too thin and too random. Because many
+learners will choose a chip instead of typing from scratch, the chips should
+serve two jobs: lower input friction and provide an early, event-safe signal of
+what kind of AI work the learner is trying to hand off.
+
+Resolution: the scenario chips are now a five-item task-preset set, capped at
+five options: `code_task`, `research`, `organize`, `rewrite`, and `summarize`.
+They are examples, not occupational categories. Clicking a chip still fills an
+editable sentence, but it also records `scenario_preset` in
+`activation_v2` and event properties. Free-form learner text remains excluded
+from `app_events`.
+
+## 2026-09-12 — Activation result screen is an operational handoff
+
+Owner review of the restored scenario-first `/start` found that the result
+screen still felt scattered: it mixed the result, the learner's sentence,
+engineering vocabulary, course philosophy, and a reusable prompt without making
+the connection to the preceding questions obvious. The Chinese copy also read
+too translated.
+
+Resolution: the result screen has one job. It is the activation turn, not a
+test report. It should make the learner feel that the course starts from a
+failure they recognize: not being able to inspect, set boundaries, or see what
+changed when AI hands work back. It replays the learner's own sentence as the
+original line, gives one short bridge sentence, and connects the needed
+inspection ability to why learning a little CS is useful. Broad philosophy
+paragraphs belong in lessons, not this transition screen. A copyable prompt or
+"try this today" block makes the flow feel finished and should not appear here.
+The mechanism sentence must be aligned to the scored diagnostic axis; extracted
+`pain_type` can remain an internal signal, but it cannot personalize the result
+into a different mechanism.
+
+## 2026-09-12 — Activation returns to learner-scenario slot filling
+
+Owner review found that the 2026-09-06 implementation over-corrected the
+activation entry. It removed the earlier sentence-first version that let a
+learner bring in their own AI-use scene, leaving only a fixed five-option pain
+mechanism page. That made the diagnostic deterministic, but it also recreated
+the original relevance failure: the examples could still feel like someone
+else's work before the learner had a chance to recognize their own.
+
+Resolution: `/start` starts from one skippable sentence completion again:
+"The last thing I wanted AI to do for me was..." / "最近一次我想让 AI 帮我做的事，是..."
+The sentence is replayed on the result screen and used to fill at most two
+short slots in the diagnostic examples: `task` and `artifact`. The app first
+uses a local deterministic fallback so the flow never waits on a model. When
+available, `/api/llm` supports `feature: "activation_scenario"` and may extract
+`task`, `artifact`, `role_context`, and `pain_type` as strict JSON. The LLM
+must not write learner-facing sentences, grade answers, route the learner, or
+decide whether the learner should continue.
+
+Routes A/B/C remain internal product signals, preserving the 2026-09-06 choice
+to remove learner-facing Exit C. Every route can continue into Lesson 0. The
+main record stays in `learner_profiles.background.activation_v2`, now with
+`version: 3`, `verbatim`, `slots`, optional `role_context`, optional
+`pain_type`, deterministic stakes/friction route, diagnostic axes, answers,
+and expectations. Free-form learner text must not enter `app_events`.
+
+## 2026-09-11 — Authenticated learning routes must stay findable and actionable
+
+Owner testing found three connected navigation failures after login: test
+accounts did not reliably restart from the new-user path on each login,
+onboarding/profile inputs disappeared after authentication, and the course map
+split an unclickable "course arc" from the actual lesson list. That made the
+authenticated app feel like a dead-end dashboard instead of a learning path.
+
+Resolution: `/start` remains an authenticated first-run route, not a public
+landing-page destination. Public landing should send visitors to login; after
+magic-link confirmation, allowlisted test accounts reset learner-owned app
+state server-side and land on `/start?fresh=1`. Manual test reset uses the same
+server helper. The course page exposes the onboarding/profile surface as a
+normal signed-in action, and the full route folds course arc and lessons into
+one actionable map: released modules show clickable lesson rows; unreleased
+stages show `Coming soon` / `敬请期待` in the same route structure.
+
+Local UI review of authenticated surfaces must not require live Supabase auth.
+For the course overview, `/dev/course` exists in development only and redirects
+to the real course page with `?preview=1`; production ignores the preview flag
+and keeps the normal auth gate. Use this for visual review, and reserve
+Supabase-backed sessions for validating the real auth/data path.
+
+Local fresh-account testing should also avoid live Supabase when the goal is
+product flow, not auth verification. `/dev/test-account` now exists in
+development only; it sets a local dev session cookie, resets the local learner
+state to `fresh`, and enters `/start?fresh=1` without sending email or calling
+Supabase. The local session can advance through activation, onboarding, course
+overview, lessons, and a no-op `/api/progress` response; production ignores
+these cookies and keeps the Supabase path as the only real auth path.
+
+---
+
 ## 2026-09-11 — UI review gates are operational, not decorative
 
 Owner review of the mobile landing page found that the previous UI review
@@ -211,6 +394,9 @@ learners are not forced back through `/start`; test accounts can reset and
 rerun the new-user path. `/learn` stays available for full learners, but its
 first screen is now one decision: resume/start today's lesson, with the full
 route folded below.
+
+This activation-result copyable sentence was later removed by the 2026-09-12
+activation-handoff decision. Lesson-level `takeaway_move` remains separate.
 
 Also adopt the action plan's "portable move" requirement for lessons:
 `takeaway_move_en` / `takeaway_move_zh` are now required content fields and

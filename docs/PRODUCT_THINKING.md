@@ -18,6 +18,29 @@ product sensibility without relying on chat history.
 - Do not merely obey every suggested implementation literally. Extract the
   product principle, state your interpretation, then implement the version that
   best fits the repo and learning goal.
+- The learner's ultimate goal is to use AI better. Computer science is not the
+  initial product desire for many users; it is the method For Three earns
+  permission to introduce.
+- Important product signals should appear two or three times in different forms
+  across a flow. Repeating the same explanatory sentence is not emphasis; it is
+  noise.
+- Expectation-setting should be honest without becoming avoidant. If a learner
+  hopes the course will help them use AI to build more real things, preserve the
+  motivating truth and narrow the promise instead of answering with a flat no.
+- As an education product, For Three should spend words carefully. Use
+  interaction, visual rhythm, examples, small symbols, and reveal states to
+  carry meaning before adding more prose. If a screen needs many sentences, ask
+  whether the concept should be practiced, pictured, or delayed.
+- Fewer words cannot simply mean more screens. A short flow can be split into
+  two or three purposeful beats; too many beats feels endless and weakens
+  activation.
+- Personalization should feel earned, not pasted on. First use deterministic
+  scenario families and sharper local copy. Use runtime LLMs only as bounded
+  micro-personalization when the result already knows what it wants to say.
+- Remove AI-template taste as an activation risk. If the UI or copy feels like
+  a common LLM-generated app, users will skim before the product earns trust.
+- Seek the stable 20% outside mainstream defaults: not weird, not ugly, not
+  hype, but more specific and more durable than the average safe pattern.
 
 ## Teaching Product Principles
 
@@ -88,3 +111,15 @@ product sensibility without relying on chat history.
   information only.
 - The lesson player should keep enough context visible that a learner knows why
   the current card exists.
+
+## Team Operating Principles
+
+- Treat owner feedback as signal about the product system, not only the named
+  screen. Decide whether to update product principles, reviewer cards, decision
+  logs, or code.
+- Reviewers have different jobs, but the final product needs one brain. Use PM
+  synthesis to accept, reject, or defer reviewer notes with product rationale.
+- A local step can pass while the full journey fails. Always check the complete
+  psychological path after step-level edits.
+- Invite a human taste decision when a choice affects For Three's signature and
+  the agent is defaulting to safe mainstream patterns.

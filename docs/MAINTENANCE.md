@@ -56,6 +56,22 @@ future polish, or when token/time budget is near the limit. If stopping early,
 record the remaining risks in the handoff.
 ```
 
+For landing, login, `/start`, onboarding, Lesson 0, course-map, or other
+first-impression changes, use [PRODUCT_WORKFLOW.md](./PRODUCT_WORKFLOW.md).
+These surfaces need the New User Activation Reviewer, Taste Signature Reviewer
+when taste/signature is affected, and PM Synthesis Reviewer after specialist
+review. The PM synthesis step is where conflicting reviewer notes are accepted,
+rejected, or deferred with explicit product rationale.
+
+Current first-run watch items from the 2026-09-13 PM synthesis:
+
+- Lesson 0 still starts from a code-agent flavored artifact. This is acceptable
+  for the current bridge, but if testers who came for general AI use bounce at
+  Lesson 0, add a second non-code handoff variant before expanding later modules.
+- Login and activation persistence are acceptable for this slice, but beta
+  testing should check whether returning invited users naturally land in the
+  right place without feeling reset, lost, or forced through a repeated funnel.
+
 For course content, also check:
 
 - Micro-lessons may be short, but a module must still feel like skill training:
@@ -161,13 +177,20 @@ failing commit locally before re-deploying.
   access is blocked. It does not insert, update, delete, or print secrets.
 - Applying product-learning events migration — Phase 1:
   open Supabase SQL Editor, paste `supabase/migrations/0007_app_events.sql`,
-  run it, then ask the agent to run `npm run check:supabase`. Until this is
-  applied, product events degrade quietly and do not block login or lessons.
+  run it, then paste and run any later app-events constraint migrations such as
+  `supabase/migrations/0009_activation_scenario_events.sql`. Ask the agent to
+  run `npm run check:supabase`. Until this is applied, product events degrade
+  quietly and do not block login or lessons.
   Do not put emails, full learner answers, or assistant message text into
   `app_events.properties`; those belong in their existing private tables.
 - Testing onboarding as a fresh learner — Phase 1:
-  use an email or email alias you control. Set it in `TEST_ACCOUNT_EMAILS` in
-  `.env.local` and Vercel. In
+  for pure local product-flow review, open `/dev/test-account` while running
+  `next dev`. This uses a development-only local cookie, sends no email, calls
+  no Supabase auth endpoint, and resets to `/start?fresh=1` every time. Do not
+  expose `next dev` publicly while using development-only auth bypasses.
+
+  For hosted or real-auth testing, use an email or email alias you control. Set
+  it in `TEST_ACCOUNT_EMAILS` in `.env.local` and Vercel. In
   production, also set `TEST_ACCOUNT_RESET_ENABLED=true`. Sign in once with
   the invite code, then use `重置测试进度` / `Reset test progress`. This clears
   only learner-owned rows for that test user, redirects to onboarding, and

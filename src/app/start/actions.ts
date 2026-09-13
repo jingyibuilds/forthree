@@ -1,21 +1,30 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { canEnterFirstRun, hasRememberedInvite } from "@/lib/access";
 import { recordEvent } from "@/lib/analytics-server";
 import {
+  cleanScenarioText,
   describeDiagnostic,
   diagnosticQuestions,
   expectationItems,
+  getActivationReadiness,
   getDiagnosticResult,
-  isPainType,
+  isScenarioPresetId,
+  isScenarioPainType,
   routeActivation,
   scoreDiagnostic,
   type AxisLevel,
   type DiagnosticAnswer,
-  type PainType,
+  type ScenarioPainType,
 } from "@/lib/activation-diagnostic";
 import { getLocale } from "@/lib/i18n";
+import {
+  getDevLocalProfile,
+  getDevLocalUser,
+  setDevLocalCookies,
+} from "@/lib/dev-local-account";
 import { getLearnerProfile, hasCompletedOnboarding } from "@/lib/profile";
 import { lessonPath } from "@/lib/routes";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -47,10 +56,12 @@ export async function saveActivationDiagnostic(
   formData: FormData
 ): Promise<StartState> {
   const locale = await getLocale();
-  const supabase = await createClient();
+  const devUser = await getDevLocalUser();
+  const supabase = devUser ? null : await createClient();
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { user: supabaseUser },
+  } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
+  const user = devUser ?? supabaseUser;
 
   if (!user) {
     return {
@@ -59,9 +70,15 @@ export async function saveActivationDiagnostic(
     };
   }
 
-  const profile = await getLearnerProfile(supabase, user.id);
+  const profile = devUser
+    ? await getDevLocalProfile()
+    : supabase
+      ? await getLearnerProfile(supabase, user.id)
+      : null;
   const canSave =
-    canEnterFirstRun(user.email, profile) || (await hasRememberedInvite(user.email));
+    canEnterFirstRun(user.email, profile) ||
+    Boolean(devUser) ||
+    (await hasRememberedInvite(user.email));
   if (!canSave) {
     return {
       status: "error",
@@ -74,8 +91,28 @@ export async function saveActivationDiagnostic(
 
   const now = new Date().toISOString();
   const skipped = formData.get("skip_activation") === "1";
-  const painValue = String(formData.get("pain_type") ?? "");
-  const painType: PainType | null = isPainType(painValue) ? painValue : null;
+  const scenarioVerbatim = cleanScenarioText(
+    String(formData.get("scenario_verbatim") ?? "")
+  );
+  const scenarioTask = cleanScenarioText(
+    String(formData.get("scenario_task") ?? ""),
+    locale === "zh" ? 12 : 40
+  );
+  const scenarioArtifact = cleanScenarioText(
+    String(formData.get("scenario_artifact") ?? ""),
+    locale === "zh" ? 6 : 20
+  );
+  const presetValue = String(formData.get("scenario_preset") ?? "");
+  const scenarioPreset =
+    scenarioVerbatim && isScenarioPresetId(presetValue) ? presetValue : null;
+  const roleContext = cleanScenarioText(
+    String(formData.get("scenario_role_context") ?? ""),
+    locale === "zh" ? 8 : 24
+  );
+  const painValue = String(formData.get("scenario_pain_type") ?? "");
+  const scenarioPainType: ScenarioPainType | null = isScenarioPainType(painValue)
+    ? painValue
+    : null;
   const stakes = parseLevel(formData.get("stakes"));
   const friction = parseLevel(formData.get("friction"));
 
@@ -86,7 +123,7 @@ export async function saveActivationDiagnostic(
         optionId: String(formData.get(question.id) ?? ""),
       }));
   const axes = skipped ? null : scoreDiagnostic(answers);
-  if (!skipped && (!painType || stakes === null || friction === null || !axes)) {
+  if (!skipped && (stakes === null || friction === null || !axes)) {
     return {
       status: "error",
       message:
@@ -96,7 +133,8 @@ export async function saveActivationDiagnostic(
     };
   }
 
-  const route = skipped ? "skip" : routeActivation(stakes, friction);
+  const route = skipped ? "skip" : routeActivation(stakes, friction, scenarioPainType);
+  const readinessResult = axes ? getActivationReadiness(axes, locale) : null;
   const diagnosticResult = axes ? getDiagnosticResult(axes, locale) : null;
   const expectations = Object.fromEntries(
     expectationItems.map((item) => [
@@ -106,6 +144,11 @@ export async function saveActivationDiagnostic(
   );
   const hasExpectations = Object.values(expectations).some((value) => value !== null);
 
+  if (devUser) {
+    setDevLocalCookies(await cookies(), "activated");
+    redirect(lessonPath("m00-l01"));
+  }
+
   const adminSupabase = createAdminClient();
   const { error } = await adminSupabase.from("learner_profiles").upsert({
     user_id: user.id,
@@ -114,18 +157,30 @@ export async function saveActivationDiagnostic(
       activation_v2: {
         completed: true,
         completed_at: now,
-        version: 2,
+        version: 3,
         skipped,
-        pain_type: painType,
+        verbatim: scenarioVerbatim || null,
+        slots:
+          scenarioTask || scenarioArtifact
+            ? {
+                task: scenarioTask || null,
+                artifact: scenarioArtifact || null,
+              }
+            : null,
+        role_context: roleContext || null,
+        scenario_preset: scenarioPreset,
+        pain_type: scenarioPainType,
         stakes,
         friction,
         route,
         axes,
         answers,
-        mechanism_line: axes ? describeDiagnostic(axes, locale, painType) : null,
+        mechanism_line: axes ? describeDiagnostic(axes, locale) : null,
+        readiness_level: readinessResult?.level ?? null,
+        readiness_score: readinessResult?.score ?? null,
+        readiness_title: readinessResult?.title ?? null,
         result_axis: diagnosticResult?.axis ?? null,
         result_title: diagnosticResult?.title ?? null,
-        result_move: diagnosticResult?.move ?? null,
         expectations: hasExpectations ? expectations : null,
       },
       activation_diagnostic: {
@@ -134,7 +189,7 @@ export async function saveActivationDiagnostic(
         version: 1,
         axes: axes ?? { evidence: 0, precheck: 0, diff: 0 },
         answers,
-        profile_line: axes ? describeDiagnostic(axes, locale, painType) : "",
+        profile_line: axes ? describeDiagnostic(axes, locale) : "",
       },
     },
     preferences: {
@@ -178,9 +233,11 @@ export async function saveActivationDiagnostic(
     route: "/start",
     properties: {
       assigned_route: route,
-      pain_type: painType,
+      pain_type: scenarioPainType,
+      scenario_preset: scenarioPreset,
       stakes,
       friction,
+      has_scenario: Boolean(scenarioVerbatim),
     },
   });
 
@@ -201,11 +258,15 @@ export async function saveActivationDiagnostic(
     route: "/start",
     properties: {
       assigned_route: route,
-      pain_type: painType,
+      pain_type: scenarioPainType,
+      scenario_preset: scenarioPreset,
       weakest_axis: diagnosticResult?.axis ?? null,
+      readiness_level: readinessResult?.level ?? null,
+      readiness_score: readinessResult?.score ?? null,
       evidence: axes?.evidence,
       precheck: axes?.precheck,
       diff: axes?.diff,
+      has_scenario: Boolean(scenarioVerbatim),
     },
   });
 
