@@ -6,6 +6,20 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-13 — Done includes a housekeeper pass
+
+Owner review identified a workflow risk: fast, fine-grained iteration can leave
+many dirty files, duplicate helpers, stale preview routes, or half-integrated
+changes behind. Passing product review is not enough if the repo becomes harder
+for the next agent to understand.
+
+Resolution: multi-file or long-running work now ends with a housekeeper pass.
+The pass maps dirty files by ownership, removes scraps introduced during the
+current task, checks docs/code consistency, runs validation and
+`git diff --check`, and stages only a coherent commit slice. It must not revert
+unrelated owner/user changes merely to make the tree clean. A dedicated
+Housekeeper Reviewer card now lives in `docs/reviewers/`.
+
 ## 2026-09-13 — Activation result personalization stays bounded
 
 Owner testing found that the result page could still feel formulaic even after

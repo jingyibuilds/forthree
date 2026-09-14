@@ -22,6 +22,7 @@ section so future reviews become sharper.
 | New User Activation Reviewer | `docs/reviewers/new-user-activation-reviewer.md` | First-run funnels: landing, login, email-return handoff, `/start`, onboarding, Lesson 0 entry. |
 | Taste Signature Reviewer | `docs/reviewers/taste-signature-reviewer.md` | Flagship learner-facing UI/copy where generic AI-template taste would reduce attention or trust. |
 | PM Synthesis Reviewer | `docs/reviewers/pm-synthesis-reviewer.md` | After specialist review on learner-facing work, especially when reviewers disagree or owner feedback changes principles. |
+| Housekeeper Reviewer | `docs/reviewers/housekeeper-reviewer.md` | Before final delivery or commit after multi-file work, long-running iterations, preview/dev helpers, or any dirty worktree. |
 
 ## Approval Rule
 
@@ -37,6 +38,9 @@ section so future reviews become sharper.
   judge the same acceptance gates used during build, cite the rendered surfaces
   or files inspected, and withhold approval when a required viewport, language,
   action state, or copy-density gate has not been checked.
+- After multi-file work, run the Housekeeper Reviewer or perform the same
+  checklist locally: categorize dirty files, remove scraps you introduced, run
+  validation, and stage only a coherent commit slice.
 - Do not merge all perspectives into one fake voice when separate agents are
   available.
 

@@ -90,6 +90,16 @@ or other meaningful learner-facing changes.
    - Reviewer corrections go in the relevant reviewer card.
    - Product philosophy goes in `docs/PRODUCT_THINKING.md`.
 
+10. Run the housekeeper pass.
+   - Map changed files into: belongs in this change, pre-existing unrelated
+     dirty work, generated artifact, or temporary scratch.
+   - Remove duplicate helpers, stale copy, abandoned preview routes, and dead
+     TODOs introduced during the iteration.
+   - Check that docs and code describe the same behavior.
+   - Run the relevant validation and `git diff --check`.
+   - Before committing, stage only the coherent slice and report any dirty files
+     deliberately left outside the commit.
+
 ## Human Decision Triggers
 
 Ask the owner for direction instead of polishing the default when:

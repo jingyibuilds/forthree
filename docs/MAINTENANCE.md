@@ -27,6 +27,14 @@ environment constraints prevent a separate reviewer, name the skipped reviewer
 and the reason in the handoff. A simulated self-review can be included as a
 fallback note, but it is not equivalent to independent approval.
 
+Before final delivery after multi-file work, run a housekeeper pass using
+`docs/reviewers/housekeeper-reviewer.md` or the same checklist locally. The goal
+is a tidy handoff, not a forced clean tree. Categorize dirty files, remove
+temporary scraps introduced by the current task, confirm docs and code match,
+run relevant validation plus `git diff --check`, and stage only a coherent
+commit slice. Never delete or revert unrelated owner/user changes just to make
+the status clean.
+
 ```
 Review this learner-facing change from four perspectives:
 
