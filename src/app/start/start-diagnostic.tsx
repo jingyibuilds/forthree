@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useActionState } from "react";
+import { useEffect, useMemo, useState, useActionState } from "react";
 import type { Locale } from "@/lib/i18n-shared";
 import { trackEvent } from "@/lib/analytics-client";
 import {
-  cleanScenarioText,
   describeDiagnostic,
   describeFrictionSignal,
   describeScenarioBridge,
@@ -13,17 +12,15 @@ import {
   expectationItems,
   getActivationReadiness,
   getDiagnosticResult,
-  inferLocalActivationScenario,
+  isScenarioPresetId,
   labelFor,
   routingQuestions,
   scenarioPresetChoices,
+  scenarioDetailsForPreset,
   scoreDiagnostic,
-  truncateSlot,
-  type ActivationScenarioSlots,
   type AxisLevel,
   type DiagnosticAnswer,
   type ScenarioPresetId,
-  type ScenarioPainType,
 } from "@/lib/activation-diagnostic";
 import { saveActivationDiagnostic, type StartState } from "./actions";
 
@@ -39,24 +36,22 @@ const copy = {
     subtitle:
       "It sounded like it understood. Then the handoff still made you check, redo, or guess.",
     start: "Try the 3-minute check",
-    scenarioKicker: "Start with one real AI task",
-    scenarioTitle: "The last thing I wanted AI to do for me was",
-    scenarioPlaceholder: "A fragment is enough.",
+    scenarioKicker: "Start from how you use AI",
+    scenarioTitle: "Choose the task closest to what you usually ask AI to do.",
     scenarioNote:
-      "We'll reuse one or two words in the next examples. Leave private details out.",
-    continue: "Continue",
-    scenarioSkip: "Use the general example",
+      "It does not need to be exact. This only keeps the examples close enough to your day.",
+    scenarioSkip: "Use a general example",
     quickCheck: "One small check",
-    resultKicker: "What this shows",
-    resultSignalsTitle: "Signals from your answers",
+    resultKicker: "Your result",
+    resultSignalsTitle: "Your answers point to",
     resultStakesLabel: "If wrong",
     resultFrictionLabel: "Friction",
-    resultFocusLabel: "Practice focus",
+    resultFocusLabel: "First practice",
     resultArea: "Why computer basics help",
-    scenarioReplay: "Your original line",
+    scenarioReplay: "Closest task",
     scenarioGeneric: "General example",
     scenarioFallback:
-      "You skipped the sentence, so this used a general AI task.",
+      "This used a general AI task, so the checks stay reusable.",
     resultNext: "Continue",
     startLesson: "Start the first lesson",
     saving: "Saving...",
@@ -70,7 +65,7 @@ const copy = {
     answerLabel: "Answer",
     answerTrue: "Yes",
     answerFalse: "No",
-    correctAnswer: "Correct. Answer",
+    correctAnswer: "Yes. The answer",
     summaryTitle: "In short",
     summaryLines: [
       "Learn: inspect AI work.",
@@ -83,22 +78,20 @@ const copy = {
     title: "我不是已经跟AI说清楚了吗？",
     subtitle: "它听起来像懂了，交回来的东西却还得你判断、返工，或者硬着头皮猜。",
     start: "用 3 分钟试一下",
-    scenarioKicker: "先拿一件真实用过 AI 的事",
-    scenarioTitle: "最近一次我想让 AI 帮我做的事，是",
-    scenarioPlaceholder: "半句也可以。",
-    scenarioNote: "接下来会借里面的一两个词，放进后面的小例子里。别写隐私内容。",
-    continue: "继续",
-    scenarioSkip: "用通用例子继续",
+    scenarioKicker: "先从你的日常用法开始",
+    scenarioTitle: "选一个最接近你平常会让 AI 做的事。",
+    scenarioNote: "不需要完全一样。只是让后面的小例子别离你太远。",
+    scenarioSkip: "用通用例子",
     quickCheck: "一个小判断",
-    resultKicker: "这说明什么",
-    resultSignalsTitle: "为什么是这个结果",
+    resultKicker: "你的结果",
+    resultSignalsTitle: "刚才的几个判断指向",
     resultStakesLabel: "如果做错",
     resultFrictionLabel: "卡住频率",
-    resultFocusLabel: "先补一块",
-    resultArea: "为什么要学一点计算机基础",
-    scenarioReplay: "你写的原句",
-    scenarioGeneric: "通用场景",
-    scenarioFallback: "你刚才跳过了原句，所以这里用了一个通用 AI 场景。",
+    resultFocusLabel: "先练哪一步",
+    resultArea: "为什么这里会讲一点计算机基础",
+    scenarioReplay: "刚才选择的任务",
+    scenarioGeneric: "通用例子",
+    scenarioFallback: "这次先用通用任务，后面的判断仍然成立。",
     resultNext: "继续",
     startLesson: "进入第一课",
     saving: "保存中...",
@@ -112,7 +105,7 @@ const copy = {
     answerLabel: "答案",
     answerTrue: "对",
     answerFalse: "不对",
-    correctAnswer: "你判断对了。答案",
+    correctAnswer: "对，这里的答案是",
     summaryTitle: "简单说",
     summaryLines: [
       "学什么：看清 AI 交付。",
@@ -133,6 +126,79 @@ const screenOrder = [
 
 type ScreenKey = (typeof screenOrder)[number];
 type Screen = "hook" | ScreenKey | "result" | "expectations";
+type PersistedStartState = {
+  version: 1;
+  screen: Screen;
+  scenarioPreset: ScenarioPresetId | null;
+  routing: {
+    stakes: AxisLevel | null;
+    friction: AxisLevel | null;
+  };
+  answers: Record<string, string>;
+  expectations: Record<string, boolean | null>;
+};
+
+const storageKey = "forthree:start:v4";
+
+function isScreen(value: unknown): value is Screen {
+  return (
+    value === "hook" ||
+    value === "result" ||
+    value === "expectations" ||
+    screenOrder.includes(value as ScreenKey)
+  );
+}
+
+function parseStoredLevel(value: unknown): AxisLevel | null {
+  return value === 0 || value === 1 || value === 2 || value === 3
+    ? value
+    : null;
+}
+
+function parsePersistedStartState(value: string | null): PersistedStartState | null {
+  if (!value) return null;
+  try {
+    const parsed = JSON.parse(value) as Partial<PersistedStartState>;
+    const preset =
+      typeof parsed.scenarioPreset === "string" &&
+      isScenarioPresetId(parsed.scenarioPreset)
+        ? parsed.scenarioPreset
+        : null;
+    return {
+      version: 1,
+      screen: isScreen(parsed.screen) ? parsed.screen : "hook",
+      scenarioPreset: preset,
+      routing: {
+        stakes: parseStoredLevel(parsed.routing?.stakes),
+        friction: parseStoredLevel(parsed.routing?.friction),
+      },
+      answers:
+        parsed.answers && typeof parsed.answers === "object"
+          ? Object.fromEntries(
+              Object.entries(parsed.answers).filter(
+                ([key, answer]) =>
+                  diagnosticQuestions.some((question) => question.id === key) &&
+                  typeof answer === "string"
+              )
+            )
+          : {},
+      expectations:
+        parsed.expectations && typeof parsed.expectations === "object"
+          ? Object.fromEntries(
+              expectationItems.map((item) => {
+                const stored = parsed.expectations?.[item.id];
+                return [
+                  item.id,
+                  typeof stored === "boolean" ? stored : null,
+                ];
+              })
+            )
+          : Object.fromEntries(expectationItems.map((item) => [item.id, null])),
+    };
+  } catch {
+    return null;
+  }
+}
 
 function Artifact({ text }: { text: string }) {
   return (
@@ -160,40 +226,18 @@ function correctAnswerLine(locale: Locale, answer: boolean) {
     : `${t.correctAnswer}: ${value}.`;
 }
 
-function clippedTask(
-  verbatim: string,
-  slots: ActivationScenarioSlots,
-  locale: Locale
-) {
-  if (slots.task) return slots.task;
-  const inferred = inferLocalActivationScenario(verbatim, locale);
-  return inferred.task;
-}
-
-function clippedArtifact(
-  verbatim: string,
-  slots: ActivationScenarioSlots,
-  locale: Locale
-) {
-  if (slots.artifact) return slots.artifact;
-  const inferred = inferLocalActivationScenario(verbatim, locale);
-  return inferred.artifact;
-}
-
 function diagnosticArtifact(
   questionId: string,
   locale: Locale,
-  verbatim: string,
-  slots: ActivationScenarioSlots
+  preset: ScenarioPresetId | null
 ) {
-  const task = clippedTask(verbatim, slots, locale);
-  const artifact = clippedArtifact(verbatim, slots, locale);
+  const scenario = scenarioDetailsForPreset(preset, locale);
 
   if (questionId === "d1") {
     if (locale === "zh") {
-      return `你：请处理这件事：${task ?? "你上次让它做的那件事"}。\nAI：已经处理好了，都检查过，没问题。`;
+      return `你：请帮我${scenario?.task ?? "处理这件事"}。\nAI：好了，我都检查过了，没问题。`;
     }
-    return `You: Please handle this: ${task ?? "the thing I asked you to do"}.\nAI: All done — I went through it and it checks out.`;
+    return `You: Please ${scenario?.task ?? "handle this"}.\nAI: All done — I checked it and it looks good.`;
   }
 
   if (questionId === "d3") {
@@ -201,23 +245,19 @@ function diagnosticArtifact(
       return [
         "- 统一了格式",
         "- 删掉了重复的部分",
-        `- 把结果覆盖保存回原来那份${artifact ?? "东西"}`,
+        `- ${scenario?.overwriteLine ?? "保存新版本时，覆盖了原文件"}`,
         "- 显示「已完成」",
       ].join("\n");
     }
     return [
       "- Normalized the formatting",
       "- Removed the duplicated parts",
-      `- Saved the result back over the original ${artifact ?? "file"}`,
+      `- ${scenario?.overwriteLine ?? "Saved the new version over the original file"}`,
       '- Printed "Done"',
     ].join("\n");
   }
 
   return null;
-}
-
-function safeRoleContext(value: string | null) {
-  return value ? truncateSlot(value, 24) : "";
 }
 
 function Progress({ screen, locale }: { screen: ScreenKey; locale: Locale }) {
@@ -329,18 +369,8 @@ export function StartDiagnostic({
     initialState
   );
   const [screen, setScreen] = useState<Screen>("hook");
-  const screenRef = useRef<Screen>("hook");
-  const [scenarioText, setScenarioText] = useState("");
-  const [scenarioSkipped, setScenarioSkipped] = useState(false);
   const [scenarioPreset, setScenarioPreset] =
     useState<ScenarioPresetId | null>(null);
-  const [scenarioSlots, setScenarioSlots] = useState<ActivationScenarioSlots>({
-    task: null,
-    artifact: null,
-  });
-  const [scenarioPainType, setScenarioPainType] =
-    useState<ScenarioPainType | null>(null);
-  const [roleContext, setRoleContext] = useState<string | null>(null);
   const [routing, setRouting] = useState<{
     stakes: AxisLevel | null;
     friction: AxisLevel | null;
@@ -349,11 +379,58 @@ export function StartDiagnostic({
   const [expectations, setExpectations] = useState<Record<string, boolean | null>>(
     () => Object.fromEntries(expectationItems.map((item) => [item.id, null]))
   );
+  const [restored, setRestored] = useState(false);
 
   useEffect(() => {
-    screenRef.current = screen;
     window.scrollTo({ top: 0 });
   }, [screen]);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("fresh") === "1") {
+          window.sessionStorage.removeItem(storageKey);
+          setRestored(true);
+          return;
+        }
+        const persisted = parsePersistedStartState(
+          window.sessionStorage.getItem(storageKey)
+        );
+        if (persisted) {
+          setScenarioPreset(persisted.scenarioPreset);
+          setRouting(persisted.routing);
+          setAnswers(persisted.answers);
+          setExpectations(persisted.expectations);
+          setScreen(persisted.screen);
+        }
+      } catch {
+        // Language switching should never block the activation flow.
+      }
+      setRestored(true);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      const payload: PersistedStartState = {
+        version: 1,
+        screen,
+        scenarioPreset,
+        routing,
+        answers,
+        expectations,
+      };
+      window.sessionStorage.setItem(storageKey, JSON.stringify(payload));
+    } catch {
+      // Best-effort only; Supabase/profile persistence happens on completion.
+    }
+  }, [answers, expectations, restored, routing, scenarioPreset, screen]);
 
   const answerList = useMemo<DiagnosticAnswer[]>(
     () =>
@@ -372,12 +449,12 @@ export function StartDiagnostic({
   const readinessResult = axes ? getActivationReadiness(axes, locale) : null;
   const diagnosticResult = axes ? getDiagnosticResult(axes, locale) : null;
   const mechanismLine = axes ? describeDiagnostic(axes, locale) : "";
-  const normalizedScenario = cleanScenarioText(scenarioText);
+  const selectedScenario = scenarioDetailsForPreset(scenarioPreset, locale);
+  const normalizedScenario = selectedScenario?.label ?? "";
   const resultBridge = diagnosticResult
     ? describeScenarioBridge({
         axis: diagnosticResult.axis,
         locale,
-        scenarioText: normalizedScenario,
         preset: scenarioPreset,
       })
     : "";
@@ -417,6 +494,10 @@ export function StartDiagnostic({
   }
 
   function startDiagnostic() {
+    setScenarioPreset(null);
+    setRouting({ stakes: null, friction: null });
+    setAnswers({});
+    setExpectations(Object.fromEntries(expectationItems.map((item) => [item.id, null])));
     if (!preview) {
       trackEvent({
         eventName: "activation_diagnostic_started",
@@ -427,64 +508,19 @@ export function StartDiagnostic({
     go("scenario");
   }
 
-  function requestScenarioExtraction(verbatim: string) {
-    if (preview || !verbatim) return;
-    void fetch("/api/llm", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        feature: "activation_scenario",
-        locale,
-        verbatim,
-      }),
-    })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data: null | {
-        slots?: ActivationScenarioSlots;
-        roleContext?: string | null;
-        painType?: ScenarioPainType | null;
-      }) => {
-        if (!data) return;
-        const hasEnteredVisibleDiagnostic = ["d1", "d2", "d3", "result", "expectations"].includes(
-          screenRef.current
-        );
-        if (data.slots && !hasEnteredVisibleDiagnostic) {
-          setScenarioSlots({
-            task: data.slots.task ?? null,
-            artifact: data.slots.artifact ?? null,
-          });
-        }
-        setRoleContext(data.roleContext ?? null);
-        setScenarioPainType(data.painType ?? null);
-      })
-      .catch(() => {
-        // The authored fallback is a complete flow; extraction only narrows nouns.
-      });
-  }
-
-  function submitScenario(skip = false) {
-    const cleaned = skip ? "" : cleanScenarioText(scenarioText);
-    const fallback = inferLocalActivationScenario(cleaned, locale);
-    setScenarioSkipped(skip || !cleaned);
-    setScenarioText(cleaned);
-    if (skip || !cleaned) setScenarioPreset(null);
-    setScenarioSlots({ task: fallback.task, artifact: fallback.artifact });
-    setRoleContext(fallback.roleContext);
-    setScenarioPainType(fallback.painType);
+  function chooseScenario(preset: ScenarioPresetId | null) {
+    setScenarioPreset(preset);
     if (!preview) {
       trackEvent({
         eventName: "activation_scenario_submitted",
         locale,
         route: "/start",
         properties: {
-          skipped: skip || !cleaned,
-          has_text: Boolean(cleaned),
-          scenario_preset: skip || !cleaned ? null : scenarioPreset,
-          used_preset: Boolean(!skip && cleaned && scenarioPreset),
+          used_general_example: preset === null,
+          scenario_preset: preset,
         },
       });
     }
-    requestScenarioExtraction(cleaned);
     go("stakes");
   }
 
@@ -516,29 +552,7 @@ export function StartDiagnostic({
 
   const hiddenFields = (
     <>
-      <input type="hidden" name="scenario_verbatim" value={normalizedScenario} />
-      <input
-        type="hidden"
-        name="scenario_skipped"
-        value={String(scenarioSkipped)}
-      />
       <input type="hidden" name="scenario_preset" value={scenarioPreset ?? ""} />
-      <input type="hidden" name="scenario_task" value={scenarioSlots.task ?? ""} />
-      <input
-        type="hidden"
-        name="scenario_artifact"
-        value={scenarioSlots.artifact ?? ""}
-      />
-      <input
-        type="hidden"
-        name="scenario_role_context"
-        value={safeRoleContext(roleContext)}
-      />
-      <input
-        type="hidden"
-        name="scenario_pain_type"
-        value={scenarioPainType ?? ""}
-      />
       <input type="hidden" name="stakes" value={routing.stakes ?? ""} />
       <input type="hidden" name="friction" value={routing.friction ?? ""} />
       {diagnosticQuestions.map((question) => (
@@ -607,7 +621,13 @@ export function StartDiagnostic({
         <form
           action={preview ? undefined : formAction}
           className="space-y-5 pb-20 sm:pb-0"
-          onSubmit={preview ? (event) => event.preventDefault() : undefined}
+          onSubmit={
+            preview
+              ? (event) => event.preventDefault()
+              : () => {
+                  window.sessionStorage.removeItem(storageKey);
+                }
+          }
         >
           {hiddenFields}
           {screenOrder.includes(screen as ScreenKey) && (
@@ -624,50 +644,23 @@ export function StartDiagnostic({
                   {t.scenarioTitle}
                 </h1>
               </div>
-              <textarea
-                value={scenarioText}
-                onChange={(event) => {
-                  setScenarioText(event.target.value);
-                  setScenarioPreset(null);
-                }}
-                aria-label={t.scenarioTitle}
-                placeholder={t.scenarioPlaceholder}
-                rows={3}
-                className="min-h-24 w-full resize-none rounded-lg border border-line bg-surface px-4 py-3 text-base leading-7 text-ink shadow-sm outline-none transition-[border-color,box-shadow] placeholder:text-muted focus:border-primary focus:shadow-md"
-              />
-              <div className="flex flex-wrap gap-2">
+              <div className="grid gap-3">
                 {scenarioPresetChoices.map((preset) => {
                   const selected = scenarioPreset === preset.id;
                   const label = labelFor(preset, locale);
                   return (
-                    <button
+                    <OptionButton
                       key={preset.id}
-                      type="button"
-                      aria-pressed={selected}
-                      onClick={() => {
-                        setScenarioText(label);
-                        setScenarioPreset(preset.id);
-                      }}
-                      className={`min-h-11 rounded-full border px-3 py-2 text-left text-xs font-medium leading-5 transition-[border-color,background-color,color] ${
-                        selected
-                          ? "border-primary bg-accent-soft text-primary"
-                          : "border-dashed border-line bg-background text-muted hover:border-primary hover:text-primary"
-                      }`}
+                      selected={selected}
+                      onClick={() => chooseScenario(preset.id)}
                     >
                       {label}
-                    </button>
+                    </OptionButton>
                   );
                 })}
               </div>
               <p className="text-xs leading-5 text-muted">{t.scenarioNote}</p>
               <div className="space-y-3">
-                <button
-                  type="button"
-                  onClick={() => submitScenario(false)}
-                  className="fixed inset-x-5 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-20 min-h-12 rounded-lg bg-primary px-7 py-3 text-base font-semibold text-on-primary shadow-lg transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover active:translate-y-0 sm:static sm:w-full sm:shadow-sm"
-                >
-                  {t.continue}
-                </button>
                 <div className="flex items-center justify-between gap-3">
                   <button
                     type="button"
@@ -678,7 +671,7 @@ export function StartDiagnostic({
                   </button>
                   <button
                     type="button"
-                    onClick={() => submitScenario(true)}
+                    onClick={() => chooseScenario(null)}
                     className="min-h-11 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:text-primary"
                   >
                     {t.scenarioSkip}
@@ -742,8 +735,7 @@ export function StartDiagnostic({
                         diagnosticArtifact(
                           question.id,
                           locale,
-                          normalizedScenario,
-                          scenarioSlots
+                          scenarioPreset
                         ) ??
                         (locale === "zh"
                           ? question.artifact_zh
@@ -786,6 +778,19 @@ export function StartDiagnostic({
                   </p>
                 )}
               </div>
+              <section className="rounded-lg border border-line bg-surface px-4 py-3 shadow-sm">
+                <p className="text-xs font-semibold text-primary">
+                  {normalizedScenario ? t.scenarioReplay : t.scenarioGeneric}
+                </p>
+                <p className="mt-1 text-sm font-medium leading-6 text-muted">
+                  {normalizedScenario ? normalizedScenario : t.scenarioFallback}
+                </p>
+                {diagnosticResult && (
+                  <p className="mt-3 border-t border-line pt-3 text-sm leading-6 text-ink">
+                    {resultBridge}
+                  </p>
+                )}
+              </section>
               {resultSignals.length > 0 && (
                 <section className="rounded-lg border border-line bg-surface px-4 py-3 shadow-sm">
                   <p className="text-xs font-semibold text-primary">
@@ -808,19 +813,6 @@ export function StartDiagnostic({
                   </div>
                 </section>
               )}
-              <section className="rounded-lg border border-line bg-surface px-4 py-3 shadow-sm">
-                <p className="text-xs font-semibold text-primary">
-                  {normalizedScenario ? t.scenarioReplay : t.scenarioGeneric}
-                </p>
-                <p className="mt-1 text-sm font-medium leading-6 text-muted">
-                  {normalizedScenario ? normalizedScenario : t.scenarioFallback}
-                </p>
-                {diagnosticResult && (
-                  <p className="mt-3 border-t border-line pt-3 text-sm leading-6 text-ink">
-                    {resultBridge}
-                  </p>
-                )}
-              </section>
               {diagnosticResult && (
                 <section className="rounded-lg border border-line bg-surface px-4 py-3 shadow-sm">
                   <p className="text-xs font-semibold text-primary">
@@ -840,7 +832,7 @@ export function StartDiagnostic({
                 <button
                   type="button"
                   onClick={() => go("expectations")}
-                  className="fixed inset-x-5 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-20 min-h-12 rounded-lg bg-primary px-7 py-3 text-base font-semibold text-on-primary shadow-lg transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover active:translate-y-0 sm:static sm:inset-auto sm:z-auto sm:shadow-sm"
+                  className="min-h-12 w-full rounded-lg bg-primary px-7 py-3 text-base font-semibold text-on-primary shadow-sm transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover hover:shadow-md active:translate-y-0 sm:w-auto"
                 >
                   {t.resultNext}
                 </button>
@@ -940,7 +932,7 @@ export function StartDiagnostic({
               <button
                 type="submit"
                 disabled={pending}
-                className="fixed inset-x-5 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-20 min-h-12 rounded-lg bg-primary px-7 py-3 text-base font-semibold text-on-primary shadow-lg transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover active:translate-y-0 disabled:translate-y-0 disabled:opacity-60 sm:static sm:w-full sm:shadow-sm"
+                className="min-h-12 w-full rounded-lg bg-primary px-7 py-3 text-base font-semibold text-on-primary shadow-sm transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover hover:shadow-md active:translate-y-0 disabled:translate-y-0 disabled:opacity-60"
               >
                 {pending ? t.saving : t.startLesson}
               </button>

@@ -5,19 +5,17 @@ import { redirect } from "next/navigation";
 import { canEnterFirstRun, hasRememberedInvite } from "@/lib/access";
 import { recordEvent } from "@/lib/analytics-server";
 import {
-  cleanScenarioText,
   describeDiagnostic,
   diagnosticQuestions,
   expectationItems,
   getActivationReadiness,
   getDiagnosticResult,
   isScenarioPresetId,
-  isScenarioPainType,
   routeActivation,
+  scenarioDetailsForPreset,
   scoreDiagnostic,
   type AxisLevel,
   type DiagnosticAnswer,
-  type ScenarioPainType,
 } from "@/lib/activation-diagnostic";
 import { getLocale } from "@/lib/i18n";
 import {
@@ -91,28 +89,9 @@ export async function saveActivationDiagnostic(
 
   const now = new Date().toISOString();
   const skipped = formData.get("skip_activation") === "1";
-  const scenarioVerbatim = cleanScenarioText(
-    String(formData.get("scenario_verbatim") ?? "")
-  );
-  const scenarioTask = cleanScenarioText(
-    String(formData.get("scenario_task") ?? ""),
-    locale === "zh" ? 12 : 40
-  );
-  const scenarioArtifact = cleanScenarioText(
-    String(formData.get("scenario_artifact") ?? ""),
-    locale === "zh" ? 6 : 20
-  );
   const presetValue = String(formData.get("scenario_preset") ?? "");
-  const scenarioPreset =
-    scenarioVerbatim && isScenarioPresetId(presetValue) ? presetValue : null;
-  const roleContext = cleanScenarioText(
-    String(formData.get("scenario_role_context") ?? ""),
-    locale === "zh" ? 8 : 24
-  );
-  const painValue = String(formData.get("scenario_pain_type") ?? "");
-  const scenarioPainType: ScenarioPainType | null = isScenarioPainType(painValue)
-    ? painValue
-    : null;
+  const scenarioPreset = isScenarioPresetId(presetValue) ? presetValue : null;
+  const scenarioDetails = scenarioDetailsForPreset(scenarioPreset, locale);
   const stakes = parseLevel(formData.get("stakes"));
   const friction = parseLevel(formData.get("friction"));
 
@@ -133,7 +112,7 @@ export async function saveActivationDiagnostic(
     };
   }
 
-  const route = skipped ? "skip" : routeActivation(stakes, friction, scenarioPainType);
+  const route = skipped ? "skip" : routeActivation(stakes, friction);
   const readinessResult = axes ? getActivationReadiness(axes, locale) : null;
   const diagnosticResult = axes ? getDiagnosticResult(axes, locale) : null;
   const expectations = Object.fromEntries(
@@ -157,19 +136,16 @@ export async function saveActivationDiagnostic(
       activation_v2: {
         completed: true,
         completed_at: now,
-        version: 3,
+        version: 4,
         skipped,
-        verbatim: scenarioVerbatim || null,
-        slots:
-          scenarioTask || scenarioArtifact
-            ? {
-                task: scenarioTask || null,
-                artifact: scenarioArtifact || null,
-              }
-            : null,
-        role_context: roleContext || null,
+        verbatim: scenarioDetails?.label ?? null,
+        slots: scenarioDetails
+          ? {
+              task: scenarioDetails.task,
+              artifact: scenarioDetails.artifact,
+            }
+          : null,
         scenario_preset: scenarioPreset,
-        pain_type: scenarioPainType,
         stakes,
         friction,
         route,
@@ -233,11 +209,10 @@ export async function saveActivationDiagnostic(
     route: "/start",
     properties: {
       assigned_route: route,
-      pain_type: scenarioPainType,
       scenario_preset: scenarioPreset,
       stakes,
       friction,
-      has_scenario: Boolean(scenarioVerbatim),
+      used_general_example: scenarioPreset === null,
     },
   });
 
@@ -258,7 +233,6 @@ export async function saveActivationDiagnostic(
     route: "/start",
     properties: {
       assigned_route: route,
-      pain_type: scenarioPainType,
       scenario_preset: scenarioPreset,
       weakest_axis: diagnosticResult?.axis ?? null,
       readiness_level: readinessResult?.level ?? null,
@@ -266,7 +240,7 @@ export async function saveActivationDiagnostic(
       evidence: axes?.evidence,
       precheck: axes?.precheck,
       diff: axes?.diff,
-      has_scenario: Boolean(scenarioVerbatim),
+      used_general_example: scenarioPreset === null,
     },
   });
 

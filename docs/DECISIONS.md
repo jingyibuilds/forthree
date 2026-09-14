@@ -6,6 +6,29 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-14 — Activation v4 is preset-first and no-LLM on the main path
+
+Owner review found two activation failures on `/start`: switching language in
+the middle of the flow reset progress, and the free-form scenario sentence
+created a personalization promise the product did not fulfill. The LLM slot
+extraction reused only a few words, making the result feel half-tailored and
+half-template. The Chinese result copy also exposed translated-English wording
+such as "fixed places to look" rendered as unnatural Chinese.
+
+Resolution: `/start` now stores in-progress answers in browser session storage
+so language switching preserves the current step. The first answerable screen
+is no longer an open sentence; it is a preset task choice: code task, research,
+organizing, rewriting, or summarizing, with a generic path still available.
+Diagnostic examples and result bridge copy are authored per preset. The start
+path no longer calls `/api/llm` for activation scenario extraction, and
+`activation_v2.version` advances to 4.
+
+Product rule: first-run personalization must not be a shallow LLM wrapper. If
+the app asks for personal input, the later screen must clearly use it at the
+same specificity. Otherwise prefer authored choices and stronger flow.
+Chinese first-run copy now requires a native Chinese copy gate, not only a
+bilingual translation check.
+
 ## 2026-09-13 — Done includes a housekeeper pass
 
 Owner review identified a workflow risk: fast, fine-grained iteration can leave

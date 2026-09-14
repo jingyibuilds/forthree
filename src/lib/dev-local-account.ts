@@ -51,7 +51,7 @@ export async function getDevLocalProfile(): Promise<LearnerProfile | null> {
             activation_v2: {
               completed: true,
               completed_at: "local-dev",
-              version: 3,
+              version: 4,
               skipped: false,
             },
             activation_diagnostic: {

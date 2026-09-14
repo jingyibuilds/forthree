@@ -3,8 +3,6 @@ import type { LearnerProfile } from "@/lib/profile";
 
 export type ActivationAxis = "evidence" | "precheck" | "diff";
 export type AxisLevel = 0 | 1 | 2 | 3;
-export type PainType = "memory" | "claim" | "regression" | "overwrite" | "trust";
-export type ScenarioPainType = PainType | "none";
 export type ScenarioPresetId =
   | "code_task"
   | "research"
@@ -36,23 +34,20 @@ type DiagnosticOption = Localized & {
   axes: Partial<Record<ActivationAxis, AxisLevel>>;
 };
 
-export type PainChoice = Localized & {
-  id: PainType;
-  axis: ActivationAxis;
-};
-
 export type ScenarioPresetChoice = Localized & {
   id: ScenarioPresetId;
 };
 
-export type ActivationScenarioSlots = {
-  task: string | null;
-  artifact: string | null;
-};
-
-export type ActivationScenarioExtraction = ActivationScenarioSlots & {
-  roleContext: string | null;
-  painType: ScenarioPainType | null;
+export type ScenarioPresetDetails = {
+  kind: ScenarioBridgeKind;
+  label_en: string;
+  label_zh: string;
+  task_en: string;
+  task_zh: string;
+  artifact_en: string;
+  artifact_zh: string;
+  overwriteLine_en: string;
+  overwriteLine_zh: string;
 };
 
 export type RoutingQuestion = {
@@ -121,63 +116,91 @@ export type LocalizedReadinessResult = {
 export const scenarioPresetChoices: ScenarioPresetChoice[] = [
   {
     id: "code_task",
-    label_en: "Finish a small code task",
-    label_zh: "完成一个小代码任务",
+    label_en: "Ask AI to finish a small code task",
+    label_zh: "让 AI 做一个小代码任务",
   },
   {
     id: "research",
-    label_en: "Research something and give me an answer",
-    label_zh: "查资料并给我一个结论",
+    label_en: "Ask AI to research and give me a conclusion",
+    label_zh: "让 AI 查资料并给结论",
   },
   {
     id: "organize",
-    label_en: "Organize scattered notes",
-    label_zh: "整理一堆零散信息",
+    label_en: "Ask AI to organize scattered notes",
+    label_zh: "让 AI 整理零散信息",
   },
   {
     id: "rewrite",
-    label_en: "Rewrite something I already wrote",
-    label_zh: "改一段已经写好的话",
+    label_en: "Ask AI to rewrite something I wrote",
+    label_zh: "让 AI 改一段文字",
   },
   {
     id: "summarize",
-    label_en: "Summarize something long",
-    label_zh: "把很长的东西压成摘要",
+    label_en: "Ask AI to summarize something long",
+    label_zh: "让 AI 总结一大段内容",
   },
 ];
 
-export const painChoices: PainChoice[] = [
-  {
-    id: "memory",
-    axis: "precheck",
-    label_en: "It forgets rules I already gave.",
-    label_zh: "说过的规则，它下次还是会忘。",
+export const scenarioPresetDetails: Record<
+  ScenarioPresetId,
+  ScenarioPresetDetails
+> = {
+  code_task: {
+    kind: "code",
+    label_en: "Ask AI to finish a small code task",
+    label_zh: "让 AI 做一个小代码任务",
+    task_en: "finish a small code task",
+    task_zh: "做一个小代码任务",
+    artifact_en: "code file",
+    artifact_zh: "代码文件",
+    overwriteLine_en: "Saved the new version over the original code file",
+    overwriteLine_zh: "保存新版本时，覆盖了原来的代码文件",
   },
-  {
-    id: "claim",
-    axis: "evidence",
-    label_en: "It says done, but I cannot verify it.",
-    label_zh: "它说完成了，但我验不出来。",
+  research: {
+    kind: "research",
+    label_en: "Ask AI to research and give me a conclusion",
+    label_zh: "让 AI 查资料并给结论",
+    task_en: "research this and give me a conclusion",
+    task_zh: "查资料并给结论",
+    artifact_en: "research note",
+    artifact_zh: "资料笔记",
+    overwriteLine_en: "Saved the new version over the original research note",
+    overwriteLine_zh: "保存新版本时，覆盖了原来的资料笔记",
   },
-  {
-    id: "regression",
-    axis: "diff",
-    label_en: "One fix breaks another part.",
-    label_zh: "改好一处，又弄乱另一处。",
+  organize: {
+    kind: "organize",
+    label_en: "Ask AI to organize scattered notes",
+    label_zh: "让 AI 整理零散信息",
+    task_en: "organize these scattered notes",
+    task_zh: "整理零散信息",
+    artifact_en: "notes",
+    artifact_zh: "原始笔记",
+    overwriteLine_en: "Saved the new version over the original notes",
+    overwriteLine_zh: "保存新版本时，覆盖了原始笔记",
   },
-  {
-    id: "overwrite",
-    axis: "diff",
-    label_en: "I worry it will overwrite the original.",
-    label_zh: "我怕它改没原来的东西。",
+  rewrite: {
+    kind: "writing",
+    label_en: "Ask AI to rewrite something I wrote",
+    label_zh: "让 AI 改一段文字",
+    task_en: "rewrite this draft",
+    task_zh: "改一段文字",
+    artifact_en: "draft",
+    artifact_zh: "原稿",
+    overwriteLine_en: "Saved the new version over the original draft",
+    overwriteLine_zh: "保存新版本时，覆盖了原稿",
   },
-  {
-    id: "trust",
-    axis: "evidence",
-    label_en: "I do not know what to hand over.",
-    label_zh: "我不知道什么能交给它。",
+  summarize: {
+    kind: "summarize",
+    label_en: "Ask AI to summarize something long",
+    label_zh: "让 AI 总结一大段内容",
+    task_en: "summarize this long material",
+    task_zh: "总结一大段内容",
+    artifact_en: "source document",
+    artifact_zh: "原文档",
+    overwriteLine_en: "Saved the new version over the original source document",
+    overwriteLine_zh: "保存新版本时，覆盖了原文档",
   },
-];
+};
 
 export const routingQuestions: RoutingQuestion[] = [
   {
@@ -288,35 +311,35 @@ export const diagnosticQuestions: DiagnosticQuestion[] = [
   {
     id: "d2",
     axis: "precheck",
-    title_en: "You already told it this once.",
-    title_zh: "有件事，你上次已经交代过它。",
-    prompt_en: "Now you need the same kind of thing again. Your first message is:",
-    prompt_zh: "这次你又要让它做同一类的事。你的第一句话是：",
+    title_en: "Before AI starts changing things.",
+    title_zh: "在 AI 动手之前。",
+    prompt_en: "Which first message gives you the cleanest handoff?",
+    prompt_zh: "哪一句最容易让后面验得清楚？",
     options: [
       {
         id: "handle",
         label_en: '"Can you handle this?"',
-        label_zh: "「帮我弄一下。」",
+        label_zh: "「帮我处理一下。」",
         axes: { precheck: 0 },
       },
       {
         id: "remind",
-        label_en: '"Handle this, and do not repeat what I flagged last time."',
-        label_zh: "「帮我弄，注意上次说过的别再犯。」",
+        label_en: '"Please be careful with the requirements I mentioned."',
+        label_zh: "「注意我前面说过的要求。」",
         axes: { precheck: 1 },
       },
       {
         id: "list_changes",
-        label_en: '"Handle this, then list everything you changed."',
-        label_zh: "「帮我弄，弄完列出你动过的地方。」",
+        label_en: '"Handle it, then tell me what you changed."',
+        label_zh: "「处理完告诉我你改了哪里。」",
         axes: { precheck: 2 },
       },
       {
         id: "plan_first",
         label_en:
-          '"Do not touch it yet. Tell me what you would change, what is off-limits, and how I should check it."',
+          '"Before changing it, tell me what you will touch, what stays untouched, and how I can check it."',
         label_zh:
-          "「先别动。先说你会改哪几处、哪些不能碰、改完我怎么检查。」",
+          "「先别改。先说你准备动哪里、哪里不动、我怎么验。」",
         axes: { precheck: 3 },
       },
     ],
@@ -394,9 +417,9 @@ export const expectationItems = [
     verdict_en: "No.",
     verdict_zh: "不会。",
     body_en:
-      "Your opening scene sets the hook. The course teaches reusable checks: changed, checked, undo risk.",
+      "The opening uses your task choice for examples. The course teaches reusable checks: changes, evidence, rollback risk.",
     body_zh:
-      "开头借你的场景进入；课程教通用验收：改了什么、验了什么、哪里难撤回。",
+      "开头会按你选的任务换例子；课程教的是通用验收：看改动、看证据、看退路。",
   },
   {
     id: "build_product",
@@ -414,21 +437,21 @@ export const expectationItems = [
 
 const diagnosticResults: Record<ActivationAxis, DiagnosticResultCopy> = {
   evidence: {
-    area_en: "Checking the handoff",
-    area_zh: "看 AI 交接证据",
+    area_en: "Check the evidence",
+    area_zh: "先看证据",
     title_en: "The issue may not be your prompt. It may be the handoff.",
     title_zh: "问题不一定是你没说清，而是交接时缺了证据。",
     body_en:
       '"Done" is only a claim. Using AI well means knowing where evidence should show up.',
-    body_zh: "AI 说“完成了”只是一句话；把 AI 用好，要知道证据应该出现在哪里。",
+    body_zh: "AI 说“完成了”，只是它的说法。你要能看见：它凭什么判断自己完成了。",
     bridge_en:
       "Ask what changed, how it checked, and what may still be wrong.",
     bridge_zh:
-      "别让 AI 再保证一次。问：改了什么、怎么验、哪里还可能不对。",
+      "问它：改了什么、怎么验、哪里还可能不对。",
     bridge_generic_en:
       "Ask what changed, how it checked, and what may still be wrong.",
     bridge_generic_zh:
-      "别让 AI 再保证一次。问：改了什么、怎么验、哪里还可能不对。",
+      "问它：改了什么、怎么验、哪里还可能不对。",
   },
   precheck: {
     area_en: "Setting boundaries before it acts",
@@ -448,21 +471,21 @@ const diagnosticResults: Record<ActivationAxis, DiagnosticResultCopy> = {
       "动手前先问：哪些能动、哪些不能动、改完怎么验。",
   },
   diff: {
-    area_en: "Seeing what changed",
-    area_zh: "看见它到底改了哪里",
+    area_en: "See changes and rollback risk",
+    area_zh: "看改动和退路",
     title_en: "The issue may not be the final output. It may be the hidden change.",
     title_zh: "问题不一定是结果难看，而是你看不见它动了哪里。",
     body_en:
       "A reasonable-looking change can still overwrite the original or break something nearby.",
-    body_zh: "一个看起来合理的改动，可能盖掉原件，或者让别处出问题。",
+    body_zh: "结果看起来顺，不代表改动安全。你要看见它改了哪里，以及还能不能撤回。",
     bridge_en:
       "See exactly what changed and whether you can roll it back.",
     bridge_zh:
-      "别只听改动说明。看它动了哪里，还能不能退回来。",
+      "别只听改动说明。看它动了哪里、有没有牵连、还能不能退回来。",
     bridge_generic_en:
       "See exactly what changed and whether you can roll it back.",
     bridge_generic_zh:
-      "别只听改动说明。看它动了哪里，还能不能退回来。",
+      "别只听改动说明。看它动了哪里、有没有牵连、还能不能退回来。",
   },
 };
 
@@ -470,66 +493,48 @@ const readinessResults: Record<ActivationReadinessLevel, ReadinessResultCopy> = 
   starting: {
     label_en: "Handoff first",
     label_zh: "先看交接",
-    title_en: "First, see what AI handed back.",
-    title_zh: "先看清 AI 交回了什么。",
-    body_en: "Look for changes, evidence, and a way back.",
-    body_zh: "看改动、看证据、看退路。",
+    title_en: "First, do not take “done” at face value.",
+    title_zh: "先别急着相信“完成了”。",
+    body_en:
+      "When AI hands work back, look for three things: what changed, what proves it, and whether you can undo it.",
+    body_zh:
+      "AI 交回结果时，先看三件事：它改了什么、凭什么说对、出错能不能退回。",
   },
   everyday: {
     label_en: "Already using AI",
     label_zh: "能用起来",
-    title_en: "Longer prompts are not the fix. A checking frame is.",
-    title_zh: "不是把提示词写更长，而是先有验收框架。",
+    title_en: "You are using AI. Now make the handoff checkable.",
+    title_zh: "你已经用得起来，下一步是把结果验清楚。",
     body_en:
-      "When AI hands work back, check evidence, changes, and the way back.",
+      "This is less about writing a longer prompt, and more about giving every handoff a checking order.",
     body_zh:
-      "AI 交回来时，看证据、看改动、看退路。",
+      "不是多写几句提示词，而是每次 AI 交回结果时，都按固定顺序检查。",
   },
   mature: {
     label_en: "Strong checks",
     label_zh: "会检查",
-    title_en: "Your checks are strong. Structure makes them sharper.",
-    title_zh: "你已经会检查，结构会让它更准。",
+    title_en: "You already ask good questions. Turn them into a process.",
+    title_zh: "你已经会追问，接下来把检查变成流程。",
     body_en:
-      "You already look for proof, boundaries, and change risk. Give that instinct fixed places to look.",
+      "Put evidence, boundaries, and change risk in a steady order so you do not have to judge from feel each time.",
     body_zh:
-      "你已经会看证据、边界和改动风险。现在让这套直觉有固定落点。",
+      "证据、边界、改动风险，每次按同一个顺序查一遍，就不必临场凭感觉判断。",
   },
 };
 
-const mechanismLines: Record<
-  PainType,
-  {
-    en: string;
-    zh: string;
-  }
-> = {
-  memory: {
+const axisMechanismLines: Record<ActivationAxis, { en: string; zh: string }> = {
+  precheck: {
     en: "To set good boundaries, it helps to know what AI can see, what it cannot see, and what it is about to touch.",
-    zh: "设边界前，先知道 AI 看得见什么、接下来会碰哪里。",
+    zh: "懂一点输入、文件和边界，才更容易在它动手前说清楚：哪些能碰，哪些不能碰。",
   },
-  claim: {
+  evidence: {
     en: "A little task structure tells you where evidence can live.",
-    zh: "懂一点任务结构，才知道证据可能在哪里。",
+    zh: "懂一点任务是怎么拆开的，才知道证据该在哪里出现。",
   },
-  regression: {
+  diff: {
     en: "To judge a change, you need to see what else it may touch.",
-    zh: "验一次改动，要看它还可能碰到哪里。",
+    zh: "懂一点版本和改动范围，才看得出一个小改动会牵动哪里。",
   },
-  overwrite: {
-    en: "Overwrite means the new version replaces the original. The risk is losing the easy way back.",
-    zh: "overwrite（覆盖）就是新版本盖掉原件。风险是回退变难。",
-  },
-  trust: {
-    en: "Hand-off depends on two things: cost of a mistake, and whether you can undo it.",
-    zh: "能不能交给 AI，先看代价和退路。",
-  },
-};
-
-const axisPainFallback: Record<ActivationAxis, PainType> = {
-  evidence: "claim",
-  precheck: "memory",
-  diff: "regression",
 };
 
 const scenarioBridgeCopy: Record<
@@ -539,21 +544,21 @@ const scenarioBridgeCopy: Record<
   code: {
     evidence: {
       en: 'For code, do not stop at "fixed." Ask what ran, what output came back, and what may still break.',
-      zh: "放到代码里，别只听“修好了”。问：跑了什么、输出是什么、哪里还可能坏。",
+      zh: "做小代码任务时，别只听“修好了”。要看它跑了什么、输出是什么、哪里还没验。",
     },
     precheck: {
       en: "Before it edits, ask which files can change, what is off-limits, and how you will check it.",
-      zh: "动手前先问：会改哪些文件、哪些不能碰、改完怎么验。",
+      zh: "让 AI 改代码前，先问会动哪些文件、哪些不能碰、改完怎么检查。",
     },
     diff: {
       en: "After it edits, inspect what changed, what else it may touch, and whether you can roll back.",
-      zh: "改完看：动了哪里、还影响哪里、能不能退回。",
+      zh: "改完代码后，先看改动对照：动了哪里、有没有牵连、还能不能退回。",
     },
   },
   research: {
     evidence: {
       en: "For research, do not stop at the conclusion. Ask for sources, coverage, and uncertainty.",
-      zh: "放到查资料里，别只收结论。问：来源在哪、覆盖多少、哪里不确定。",
+      zh: "查资料时，别只收结论。要看来源、覆盖范围，以及哪些地方还不确定。",
     },
     precheck: {
       en: "Before it researches, set the scope, source quality, and what it should not conclude too fast.",
@@ -561,13 +566,13 @@ const scenarioBridgeCopy: Record<
     },
     diff: {
       en: "When it revises an answer, check what claims changed, what caveats disappeared, and which sources still support it.",
-      zh: "结论改完看：判断变了什么、删了哪些限定、来源还能不能追。",
+      zh: "结论改过之后，看判断变了什么、删了哪些限定、来源还能不能追。",
     },
   },
   organize: {
     evidence: {
       en: "For organizing, ask what got grouped, what got dropped, and what rule it used.",
-      zh: "放到整理任务里，问：哪些被合并、哪些被丢掉、规则是什么。",
+      zh: "整理信息时，要看哪些被合并、哪些被丢掉、它按什么规则整理。",
     },
     precheck: {
       en: "Before it organizes, set the grouping rule, what must stay, and what meaning cannot change.",
@@ -575,13 +580,13 @@ const scenarioBridgeCopy: Record<
     },
     diff: {
       en: "After organizing, check what moved, what is missing, and whether the original can still be found.",
-      zh: "整理完看：哪些位置变了、有没有漏项、原始材料还找不找得到。",
+      zh: "整理完看哪些位置变了、有没有漏项、原始材料还找不找得到。",
     },
   },
   writing: {
     evidence: {
       en: "For writing, do not only ask if it sounds good. Ask what brief it followed and where it may drift.",
-      zh: "放到这段内容里，别只看顺不顺。问：按什么要求写、哪里可能跑偏。",
+      zh: "改文字时，别只看顺不顺。要看它保留了哪些要求，哪里可能跑偏。",
     },
     precheck: {
       en: "Before it writes, set tone, length, must-keep points, and what should stay untouched.",
@@ -595,7 +600,7 @@ const scenarioBridgeCopy: Record<
   summarize: {
     evidence: {
       en: "For summaries, ask what was removed, what rule it used, and whether any key point went missing.",
-      zh: "放到摘要里，问：删了什么、按什么保留、有没有漏掉关键点。",
+      zh: "做摘要时，要看删了什么、按什么保留、有没有漏掉关键点。",
     },
     precheck: {
       en: "Before it summarizes, set the audience, length, and information that cannot be cut.",
@@ -603,7 +608,7 @@ const scenarioBridgeCopy: Record<
     },
     diff: {
       en: "After the summary, compare what disappeared, what changed meaning, and whether it still matches the source.",
-      zh: "摘要完成后，看删了哪些信息、有没有改意思、还能不能对回原文。",
+      zh: "摘要完成后，看哪些信息不见了、意思有没有变、还能不能对回原文。",
     },
   },
   general: {
@@ -623,40 +628,38 @@ const scenarioBridgeCopy: Record<
 };
 
 function classifyScenarioBridge(
-  scenarioText: string,
   preset?: ScenarioPresetId | null
 ): ScenarioBridgeKind {
-  if (preset === "code_task") return "code";
-  if (preset === "research") return "research";
-  if (preset === "organize") return "organize";
-  if (preset === "rewrite") return "writing";
-  if (preset === "summarize") return "summarize";
-
-  const text = scenarioText.toLowerCase();
-  if (/代码|code|script|python|bug|debug|报错|程序/.test(text)) return "code";
-  if (/查资料|找资料|调研|搜索|检索|资料|research|sources?|来源|文献|结论/.test(text)) {
-    return "research";
-  }
-  if (/整理|分类|organize|notes|笔记|表格|归纳/.test(text)) return "organize";
-  if (/摘要|总结|summar|压缩/.test(text)) return "summarize";
-  if (/写|改写|小说|情节|文案|段落|邮件|draft|rewrite|write|story|plot|copy|email/.test(text)) {
-    return "writing";
-  }
+  if (preset) return scenarioPresetDetails[preset].kind;
   return "general";
+}
+
+export function scenarioDetailsForPreset(
+  preset: ScenarioPresetId | null,
+  locale: Locale
+) {
+  if (!preset) return null;
+  const details = scenarioPresetDetails[preset];
+  return {
+    kind: details.kind,
+    label: locale === "zh" ? details.label_zh : details.label_en,
+    task: locale === "zh" ? details.task_zh : details.task_en,
+    artifact: locale === "zh" ? details.artifact_zh : details.artifact_en,
+    overwriteLine:
+      locale === "zh" ? details.overwriteLine_zh : details.overwriteLine_en,
+  };
 }
 
 export function describeScenarioBridge({
   axis,
   locale,
-  scenarioText,
   preset,
 }: {
   axis: ActivationAxis;
   locale: Locale;
-  scenarioText: string;
   preset?: ScenarioPresetId | null;
 }) {
-  const kind = classifyScenarioBridge(cleanScenarioText(scenarioText), preset);
+  const kind = classifyScenarioBridge(preset);
   return scenarioBridgeCopy[kind][axis][locale];
 }
 
@@ -680,154 +683,8 @@ export function hasCompletedActivation(profile?: LearnerProfile | null) {
   );
 }
 
-export function isPainType(value: string): value is PainType {
-  return painChoices.some((choice) => choice.id === value);
-}
-
 export function isScenarioPresetId(value: string): value is ScenarioPresetId {
   return scenarioPresetChoices.some((choice) => choice.id === value);
-}
-
-export function isScenarioPainType(value: string): value is ScenarioPainType {
-  return value === "none" || isPainType(value);
-}
-
-function codepoints(value: string) {
-  return Array.from(value);
-}
-
-export function truncateSlot(value: string, maxLength: number) {
-  const normalized = value.replace(/\s+/g, " ").trim();
-  const chars = codepoints(normalized);
-  if (chars.length <= maxLength) return normalized;
-  return `${chars.slice(0, Math.max(0, maxLength - 1)).join("").trim()}…`;
-}
-
-export function cleanScenarioText(value: string, maxLength = 300) {
-  return truncateSlot(
-    value
-      .replace(/[\u0000-\u001f\u007f]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim(),
-    maxLength
-  );
-}
-
-const zhArtifactHints = [
-  "笔记",
-  "邮件",
-  "文案",
-  "记录",
-  "访谈",
-  "简历",
-  "表格",
-  "文件",
-  "文章",
-  "摘要",
-  "方案",
-  "报告",
-  "材料",
-  "草稿",
-];
-
-const enArtifactHints = [
-  "notes",
-  "email",
-  "paragraph",
-  "draft",
-  "document",
-  "file",
-  "spreadsheet",
-  "presentation",
-  "summary",
-  "resume",
-  "report",
-  "transcript",
-  "copy",
-];
-
-export function inferLocalActivationScenario(
-  verbatim: string,
-  locale: Locale
-): ActivationScenarioExtraction {
-  const text = cleanScenarioText(verbatim);
-  if (!text) {
-    return { task: null, artifact: null, roleContext: null, painType: null };
-  }
-
-  const withoutPreamble =
-    locale === "zh"
-      ? text
-          .replace(/^最近一次我?想让\s*AI\s*帮我/, "")
-          .replace(/^我想让\s*AI\s*帮我/, "")
-          .replace(/^让\s*(它|AI)\s*帮我/, "")
-          .replace(/^帮我/, "")
-          .replace(/^请/, "")
-      : text
-          .replace(/^the last thing i wanted ai to do for me was\s+/i, "")
-          .replace(/^i wanted ai to\s+/i, "")
-          .replace(/^i want ai to\s+/i, "")
-          .replace(/^ai to\s+/i, "")
-          .replace(/^please\s+/i, "");
-  const task = truncateSlot(
-    (withoutPreamble || text).replace(/[。.!?？；;，,]+$/g, ""),
-    locale === "zh" ? 22 : 64
-  );
-  const lower = text.toLowerCase();
-  const artifact =
-    locale === "zh"
-      ? zhArtifactHints.find((hint) => text.includes(hint)) ?? null
-      : enArtifactHints.find((hint) => lower.includes(hint)) ?? null;
-
-  return {
-    task,
-    artifact: artifact ? truncateSlot(artifact, locale === "zh" ? 8 : 24) : null,
-    roleContext: null,
-    painType: null,
-  };
-}
-
-function hasUnsafeGeneratedShape(value: string) {
-  return (
-    /[\n\r]/.test(value) ||
-    /```|[*#<>]/.test(value) ||
-    /https?:\/\//i.test(value)
-  );
-}
-
-export function validateActivationScenarioExtraction(
-  value: unknown,
-  locale: Locale
-): ActivationScenarioExtraction | null {
-  if (!value || typeof value !== "object") return null;
-  const record = value as Record<string, unknown>;
-  const painType = typeof record.pain_type === "string" ? record.pain_type : null;
-  if (painType !== null && !isScenarioPainType(painType)) return null;
-
-  const maxTask = locale === "zh" ? 12 : 40;
-  const maxArtifact = locale === "zh" ? 6 : 20;
-  const maxRole = locale === "zh" ? 8 : 24;
-  const readSlot = (key: string, maxLength: number) => {
-    const slot = record[key];
-    if (slot === null || slot === undefined || slot === "") return null;
-    if (typeof slot !== "string") throw new Error("invalid slot");
-    const cleaned = slot.trim();
-    if (!cleaned) return null;
-    if (hasUnsafeGeneratedShape(cleaned)) throw new Error("invalid slot");
-    if (codepoints(cleaned).length > maxLength) throw new Error("invalid slot");
-    return cleaned;
-  };
-
-  try {
-    return {
-      task: readSlot("task", maxTask),
-      artifact: readSlot("artifact", maxArtifact),
-      roleContext: readSlot("role_context", maxRole),
-      painType: painType,
-    };
-  } catch {
-    return null;
-  }
 }
 
 export function scoreDiagnostic(answers: DiagnosticAnswer[]) {
@@ -859,21 +716,18 @@ export function weakestAxis(axes: Record<ActivationAxis, AxisLevel>) {
 
 export function routeActivation(
   stakes: AxisLevel | null,
-  friction: AxisLevel | null,
-  painType?: ScenarioPainType | null
+  friction: AxisLevel | null
 ): ActivationRoute {
   if (stakes === null || friction === null) return "skip";
-  const route = stakes >= 2 && friction >= 2 ? "A" : stakes <= 1 && friction <= 1 ? "C" : "B";
-  if (route === "B" && painType === "none") return "C";
-  return route;
+  return stakes >= 2 && friction >= 2 ? "A" : stakes <= 1 && friction <= 1 ? "C" : "B";
 }
 
 export function describeDiagnostic(
   axes: Record<ActivationAxis, AxisLevel>,
   locale: Locale
 ) {
-  const selectedPain = axisPainFallback[weakestAxis(axes)];
-  return mechanismLines[selectedPain][locale];
+  const selectedAxis = weakestAxis(axes);
+  return axisMechanismLines[selectedAxis][locale];
 }
 
 export function getDiagnosticResult(
@@ -934,9 +788,4 @@ export function describeFrictionSignal(score: AxisLevel | null, locale: Locale) 
   if (score === 2) return "Sometimes stuck";
   if (score === 1) return "Mostly smooth";
   return "Not a habit yet";
-}
-
-export function describePain(painType: PainType, locale: Locale) {
-  const pain = painChoices.find((choice) => choice.id === painType) ?? painChoices[0];
-  return labelFor(pain, locale);
 }

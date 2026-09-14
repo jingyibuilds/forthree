@@ -1,6 +1,6 @@
-# Activation Entry v3 — UI handoff
+# Activation Entry v4 — UI handoff
 
-Status: implemented on `/start` as of 2026-09-12.
+Status: implemented on `/start` as of 2026-09-14.
 
 This file is the UI companion to
 [ACTIVATION_ENTRY.md](./ACTIVATION_ENTRY.md). That file is binding for product
@@ -38,6 +38,9 @@ No gradients, glass, glow, emoji-as-design, or generic AI visuals.
 - The hook has no progress bar.
 - Answerable screens show a progress rail and `n/6`.
 - Result and expectation screens are closure screens, not scored questions.
+- Result and expectation CTAs should sit in the content flow, not fixed over
+  mobile content. The learner must see the course-value bridge before the exit
+  action competes for attention.
 - Back and skip are text buttons. Skip is available during answerable checks,
   but not on the result or expectation screens.
 - The expectation screen should keep its primary CTA findable on mobile while
@@ -68,32 +71,29 @@ On mobile, the hook title must not create hanging punctuation or single-characte
 quote fragments, and the primary button should read as a button rather than a
 wrapped paragraph.
 
-### 1. Scenario Sentence
+### 1. Task Choice
 
 Progress `1/6`.
 
 ```text
-最近一次我想让 AI 帮我做的事，是
+选一个最接近你平常会让 AI 做的事。
 
-[写一句就行，不用完整。]
+[让 AI 做一个小代码任务]
+[让 AI 查资料并给结论]
+[让 AI 整理零散信息]
+[让 AI 改一段文字]
+[让 AI 总结一大段内容]
 
-(完成一个小代码任务)
-(查资料并给我一个结论)
-(整理一堆零散信息)
-(改一段已经写好的话)
-(把很长的东西压成摘要)
+不需要完全一样。只是让后面的小例子别离你太远。
 
-接下来会借用里面的一两个词，让小例子更像你的场景。别写隐私内容。
-
-[继续]
-返回                         跳过
+返回                         用通用例子
 ```
 
-The chips are examples and structured presets at the same time. They cover
-classic AI work modes: executing a small code task, research, organizing,
-rewriting, and summarizing. They fill the field, remain editable, and save only
-the preset id as an event-safe signal. A skipped sentence must still lead to the
-complete generic flow.
+The choices are structured presets, not a blank question. They cover classic AI
+work modes: executing a small code task, research, organizing, rewriting, and
+summarizing. Tapping a choice moves forward immediately and saves only the
+preset id as an event-safe signal. A generic example path must still lead to
+the complete flow.
 
 ### 2–3. Routing
 
@@ -113,10 +113,10 @@ Progress `4/6` through `6/6`.
 Keep the three axes and option semantics:
 
 - evidence: "It says it's done."
-- precheck: "You already told it this once."
+- precheck: "Before AI starts changing things."
 - diff: "A summary of the changes looks reasonable."
 
-`d1` and `d3` may show learner-derived slots. `d2` stays noun-free.
+`d1` and `d3` may show preset-derived task/artifact words. `d2` stays noun-free.
 
 ### 7. Result
 
@@ -126,18 +126,18 @@ one strong title, compact signals, and short revealed explanations. Do not let
 the result become a report. Order matters:
 
 1. Result kicker: `Your result` / `你的结果`
-2. Small behavior badge for the deterministic level: `Building the frame`,
-   `Everyday use`, or `Strong checks`
+2. Small behavior badge for the deterministic level: `Handoff first`,
+   `Already using AI`, or `Strong checks`
 3. One concrete result title about the learner's next useful AI-checking move
 4. One short paragraph explaining the level without overstating it
-5. Card titled `Signals from your answers` / `为什么是这个结果`, with three
+5. Replay the chosen task family, or name the generic fallback, with one
+   bridge sentence inside the same card
+6. Card titled `Your answers point to` / `刚才的几个判断指向`, with three
    compact signals from previous answers:
    - consequence if wrong
    - friction frequency
    - practice focus
-6. Replay the learner's original line, or name the generic fallback, with one
-   bridge sentence inside the same card
-7. Course-value card: `Why computer basics help` / `为什么要学一点计算机基础`
+7. Course-value card: `Why computer basics help` / `为什么这里会讲一点计算机基础`
 8. Primary action to expectation check
 
 Do not render route A/B/C. Do not label the learner.

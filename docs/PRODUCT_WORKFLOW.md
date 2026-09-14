@@ -75,6 +75,8 @@ or other meaningful learner-facing changes.
    - Architecture Reviewer for meaningful code changes.
    - Interaction, Translation, Zero-Code Learner, Education, and AI-Era
      Engineer reviewers as relevant.
+   - Native Chinese Copy Reviewer for Chinese first-run, onboarding, lesson, or
+     result copy where translated phrasing would damage trust.
    - New User Activation Reviewer for first-run funnels.
    - Taste Signature Reviewer for flagship UI/copy.
    - PM Synthesis Reviewer after specialist reviews.

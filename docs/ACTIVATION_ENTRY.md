@@ -1,11 +1,12 @@
-# Activation Entry v3 — binding spec
+# Activation Entry v4 — binding spec
 
-Status: implemented on `/start` as of 2026-09-12.
+Status: implemented on `/start` as of 2026-09-14.
 
-This document supersedes the 2026-09-06 pain-mechanism-only implementation and
-restores the earlier scenario-first design. The implementation keeps the
-deterministic routing and diagnostic checks, but the examples now start from
-the learner's own sentence when the learner provides one.
+This document supersedes the 2026-09-12 sentence-first implementation. The
+implementation keeps deterministic routing and diagnostic checks, but the first
+answerable screen now asks the learner to choose the AI task closest to their
+usual use. It does not ask for free-form text and does not call an LLM in the
+activation path.
 
 Companion UI handoff: [ACTIVATION_ENTRY_UI.md](./ACTIVATION_ENTRY_UI.md).
 
@@ -13,21 +14,18 @@ Companion UI handoff: [ACTIVATION_ENTRY_UI.md](./ACTIVATION_ENTRY_UI.md).
 
 ## Why This Changed
 
-Two external testers, neither a programmer, said the earlier `/start` felt
-abstract and far from their lives. The issue was not the curriculum. The issue
-was the door: fixed examples can always borrow the wrong noun.
+Owner review found that the free-form sentence created a false promise of
+personalization. The runtime LLM extraction only reused a few words, so the
+flow felt half-tailored and half-template. It also made Chinese copy sound like
+translated product language.
 
-The 2026-09-06 version solved one problem by starting from five general pain
-mechanisms, but it lost the more important property of the earlier local spec:
-the learner could bring in their own scene first. Without that, the first
-diagnostic example can still feel unrelated before the learner understands the
-mechanism.
+The revised rule is:
 
-The restored rule is:
-
-- Let the learner supply the noun if they are willing.
-- If they skip, the generic flow remains complete.
-- Explain with engineering concepts, not occupational categories.
+- Let the learner choose a familiar AI-task family, not write an open sentence.
+- Use authored examples for each family so continuity is deliberate.
+- Treat LLM personalization as a later high-bar layer, not the default first
+  screen.
+- Explain with plain inspection habits, then earn the CS bridge.
 
 ---
 
@@ -51,62 +49,36 @@ AI use. CS is the method the flow earns permission to introduce.
 
 ## Binding Decisions
 
-### Start From One Sentence
+### Start From One Task Choice
 
-The first answerable screen is a skippable sentence completion:
+The first answerable screen is a single-choice task question:
 
-- zh: `最近一次我想让 AI 帮我做的事，是`
-- en: `The last thing I wanted AI to do for me was`
+- zh: `选一个最接近你平常会让 AI 做的事。`
+- en: `Choose the task closest to what you usually ask AI to do.`
 
-This is not a blank form. It has five example chips that fill the field and
-remain editable:
+The choices are structured task presets, not occupation categories. Keep the
+set to five or fewer:
 
-These chips are a structured task-preset set, not random examples. Keep the set
-to five or fewer:
+- `code_task`: zh `让 AI 做一个小代码任务` / en `Ask AI to finish a small code task`
+- `research`: zh `让 AI 查资料并给结论` / en `Ask AI to research and give me a conclusion`
+- `organize`: zh `让 AI 整理零散信息` / en `Ask AI to organize scattered notes`
+- `rewrite`: zh `让 AI 改一段文字` / en `Ask AI to rewrite something I wrote`
+- `summarize`: zh `让 AI 总结一大段内容` / en `Ask AI to summarize something long`
 
-- `code_task`: zh `完成一个小代码任务` / en `Finish a small code task`
-- `research`: zh `查资料并给我一个结论` / en `Research something and give me an answer`
-- `organize`: zh `整理一堆零散信息` / en `Organize scattered notes`
-- `rewrite`: zh `改一段已经写好的话` / en `Rewrite something I already wrote`
-- `summarize`: zh `把很长的东西压成摘要` / en `Summarize something long`
-
-The sentence is saved to the learner profile and replayed on the result screen.
-The chosen preset id, if any, is also saved as `scenario_preset` and may enter
-event properties. The UI promises only that the next examples may borrow one or
-two words from the sentence. The free-form sentence is never written to
-`app_events`.
+The chosen preset id is saved as `scenario_preset` and may enter event
+properties. The chosen label may be saved to the learner profile as a
+non-free-form `verbatim` value for compatibility, but learner-authored text is
+not collected here. A generic example path remains available.
 
 ### Keep Deterministic Rules First
 
 Routing, scoring, result selection, copy, and continuation are deterministic.
 
-The optional LLM layer may extract only:
-
-```ts
-{
-  task: string | null;         // rendered, short verb phrase
-  artifact: string | null;     // rendered, short noun
-  role_context: string | null; // analytics/profile only, never rendered
-  pain_type:
-    | "memory"
-    | "claim"
-    | "regression"
-    | "overwrite"
-    | "trust"
-    | "none";
-}
-```
-
-The LLM must not write on-screen prose, grade answers, route the learner, or
-decide whether the learner should continue. If there is no key, a cost cap,
-invalid output, provider failure, or a skipped sentence, the flow silently uses
-local fallback slots or the blank-slot wording. The UI must not wait on this
-extraction before continuing.
-
-A future result-polish layer may relax "no on-screen prose" only for one
-bounded micro-sentence after a separate review. It cannot change the
-deterministic result, cannot add broad coaching, and must use strict schema
-validation, cost logging, timeout, and local fallback.
+The `/start` flow makes no LLM request. A future personalization layer may add
+one bounded micro-sentence only after a separate review. It cannot change the
+deterministic result, cannot add broad coaching, cannot be the only reason the
+page feels relevant, and must use strict schema validation, cost logging,
+timeout, and local fallback.
 
 ### Keep Routes Internal
 
@@ -121,9 +93,6 @@ stakes >= 2 && friction >= 2  -> "A"
 stakes <= 1 && friction <= 1  -> "C"
 else                          -> "B"
 ```
-
-If `pain_type === "none"` and the route computed to `B`, downgrade to `C`.
-This is a tiebreaker only.
 
 ### Make Profile Onboarding Optional
 
@@ -145,13 +114,13 @@ copy.
 The hook screen has no progress bar. After the hook, show a `1/6` through `6/6`
 progress rail for the answerable screens:
 
-1. Scenario sentence
+1. Task choice
 2. Stakes
 3. Friction
 4. Diagnostic: evidence
 5. Diagnostic: precheck
 6. Diagnostic: diff
-7. Result: replay sentence -> why a little CS helps -> continue
+7. Result: chosen task -> why a little CS helps -> continue
 8. Expectations: four true/false claims -> start Lesson 0
 
 Skip remains available through the answerable diagnostic screens. Skip records
@@ -187,13 +156,13 @@ Keep the existing axes and option semantics:
 
 Only the costume changes:
 
-- `d1` uses `{task}` when available: `请处理这件事：{task}` / `Please handle this: {task}.`
+- `d1` uses preset `{task}` when available: `请帮我{task}` / `Please {task}.`
 - `d2` stays deliberately noun-free.
-- `d3` uses `{artifact}` when available: `覆盖保存回原来那份{artifact}` / `over the original {artifact}`
+- `d3` uses a full authored overwrite line per preset, never string
+  concatenation that can create awkward Chinese such as `原来的原稿`.
 
-A wrong noun is worse than a blank slot. Slots must come only from the learner's
-sentence or a validated extraction of that sentence, never from inferred
-occupation.
+A wrong noun is worse than a generic example. Slots come from the authored
+preset only, never from inferred occupation or shallow text extraction.
 
 ### Result
 
@@ -218,22 +187,20 @@ It should:
 1. Give one visible diagnosis sentence about what the learner needs next to use
    AI well. Prefer concrete result language over repeating `Using AI well...` /
    `把 AI 用好...` as a prefix.
-2. Show three compact signals from previous answers: consequence if wrong,
+2. Replay the chosen task family, or state that the generic version was used.
+3. Add one short bridge sentence that explains why the practice focus matters
+   in that task family. Use deterministic scenario families such as code,
+   research, organizing, writing, and summary. If the learner chose the generic
+   path, use generic bridge copy.
+4. Show three compact signals from previous answers: consequence if wrong,
    friction frequency, and practice focus.
-3. Replay the learner's own sentence as the original line, or state that the
-   generic version was used.
-4. Add one short bridge sentence that explains why the practice focus matters
-   in that scenario. Prefer deterministic scenario families such as code,
-   research, organizing, writing, and summary before using runtime LLM wording.
-   If the learner skipped the sentence, use generic-scenario bridge copy and do
-   not mention an original line.
-5. Connect the ability to inspect, set boundaries, or read changes to why a
+5. Connect the ability to inspect, set boundaries, or read changes to why
    a little computer basics helps them use AI better.
 6. Continue to expectations.
 
 The mechanism explanation must come from the same deterministic axis as the
-result title. `pain_type` from scenario extraction may support internal product
-learning, but it must not rewrite the result-page mechanism.
+result title. The chosen task family may change the example sentence, but it
+must not change the scored result, route, or mechanism.
 
 Do not add a broad philosophy paragraph here. Do not add a copyable prompt or
 "try this today" block; that makes the page feel like a completed takeaway
@@ -263,13 +230,11 @@ Store the result at `learner_profiles.background.activation_v2`:
 
 - `completed`
 - `completed_at`
-- `version: 3`
+- `version: 4`
 - `skipped`
-- `verbatim`
+- `verbatim` (preset label only, not learner-authored text)
 - `scenario_preset`
 - `slots`
-- `role_context`
-- `pain_type`
 - `stakes`
 - `friction`
 - `route`
@@ -303,5 +268,4 @@ event properties.
 ## Deferred
 
 - Voice input
-- Learner-controlled retention/clearing of the scenario sentence
 - Widening the course endpoint for learners whose AI use never touches code

@@ -37,6 +37,9 @@ product sensibility without relying on chat history.
 - Personalization should feel earned, not pasted on. First use deterministic
   scenario families and sharper local copy. Use runtime LLMs only as bounded
   micro-personalization when the result already knows what it wants to say.
+- If a flow asks for personal input, the later screen must use it at roughly
+  the same specificity. Shallow reuse of one or two words feels worse than an
+  honest authored choice.
 - Remove AI-template taste as an activation risk. If the UI or copy feels like
   a common LLM-generated app, users will skim before the product earns trust.
 - Seek the stable 20% outside mainstream defaults: not weird, not ugly, not

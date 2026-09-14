@@ -19,6 +19,7 @@ section so future reviews become sharper.
 | AI-Era Engineer Reviewer | `docs/reviewers/ai-era-engineer-reviewer.md` | Agent workflows, engineering judgment, technical realism, old-vs-new coding emphasis. |
 | Zero-Code Learner Reviewer | `docs/reviewers/zero-code-learner-reviewer.md` | Learner-facing copy, onboarding, explanations, confusion/friction risk. |
 | Translation Reviewer | `docs/reviewers/translation-reviewer.md` | Bilingual landing/login/course copy, especially when Chinese and English should not mirror each other. |
+| Native Chinese Copy Reviewer | `docs/reviewers/native-chinese-copy-reviewer.md` | Chinese first-run, onboarding, lesson, and result copy where translated phrasing would damage trust. |
 | New User Activation Reviewer | `docs/reviewers/new-user-activation-reviewer.md` | First-run funnels: landing, login, email-return handoff, `/start`, onboarding, Lesson 0 entry. |
 | Taste Signature Reviewer | `docs/reviewers/taste-signature-reviewer.md` | Flagship learner-facing UI/copy where generic AI-template taste would reduce attention or trust. |
 | PM Synthesis Reviewer | `docs/reviewers/pm-synthesis-reviewer.md` | After specialist review on learner-facing work, especially when reviewers disagree or owner feedback changes principles. |
@@ -34,6 +35,9 @@ section so future reviews become sharper.
 - First-run funnel changes require the New User Activation Reviewer and PM
   Synthesis Reviewer. Flagship first-impression changes also require the Taste
   Signature Reviewer.
+- Chinese first-run copy requires the Native Chinese Copy Reviewer in addition
+  to the bilingual Translation Reviewer; the Chinese page must read like an
+  original product surface, not a translation of the English.
 - For learner-facing UI, review is operational, not decorative: reviewers must
   judge the same acceptance gates used during build, cite the rendered surfaces
   or files inspected, and withhold approval when a required viewport, language,
