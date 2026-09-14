@@ -22,7 +22,7 @@ section so future reviews become sharper.
 | Native Chinese Copy Reviewer | `docs/reviewers/native-chinese-copy-reviewer.md` | Chinese first-run, onboarding, lesson, and result copy where translated phrasing would damage trust. |
 | New User Activation Reviewer | `docs/reviewers/new-user-activation-reviewer.md` | First-run funnels: landing, login, email-return handoff, `/start`, onboarding, Lesson 0 entry. |
 | Taste Signature Reviewer | `docs/reviewers/taste-signature-reviewer.md` | Flagship learner-facing UI/copy where generic AI-template taste would reduce attention or trust. |
-| PM Synthesis Reviewer | `docs/reviewers/pm-synthesis-reviewer.md` | After specialist review on learner-facing work, especially when reviewers disagree or owner feedback changes principles. |
+| PM Synthesis Reviewer | `docs/reviewers/pm-synthesis-reviewer.md` | After specialist review on learner-facing work, especially when reviewers disagree, owner feedback changes principles, or a feature needs a ship/revise/defer/kill decision. |
 | Housekeeper Reviewer | `docs/reviewers/housekeeper-reviewer.md` | Before final delivery or commit after multi-file work, long-running iterations, preview/dev helpers, or any dirty worktree. |
 
 ## Approval Rule
@@ -35,6 +35,10 @@ section so future reviews become sharper.
 - First-run funnel changes require the New User Activation Reviewer and PM
   Synthesis Reviewer. Flagship first-impression changes also require the Taste
   Signature Reviewer.
+- When a feature feels promising but stiff, generic, hard to personalize well,
+  or expensive relative to its learner gain, PM Synthesis must make an explicit
+  disposition: ship, revise now, keep dev-only, defer with priority, kill from
+  the main path, or ask the owner.
 - Chinese first-run copy requires the Native Chinese Copy Reviewer in addition
   to the bilingual Translation Reviewer; the Chinese page must read like an
   original product surface, not a translation of the English.

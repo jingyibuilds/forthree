@@ -391,6 +391,13 @@ export function StartDiagnostic({
         const params = new URLSearchParams(window.location.search);
         if (params.get("fresh") === "1") {
           window.sessionStorage.removeItem(storageKey);
+          params.delete("fresh");
+          const nextSearch = params.toString();
+          window.history.replaceState(
+            null,
+            "",
+            `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}${window.location.hash}`
+          );
           setRestored(true);
           return;
         }

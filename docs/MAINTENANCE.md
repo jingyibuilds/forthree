@@ -69,7 +69,9 @@ first-impression changes, use [PRODUCT_WORKFLOW.md](./PRODUCT_WORKFLOW.md).
 These surfaces need the New User Activation Reviewer, Taste Signature Reviewer
 when taste/signature is affected, and PM Synthesis Reviewer after specialist
 review. The PM synthesis step is where conflicting reviewer notes are accepted,
-rejected, or deferred with explicit product rationale.
+rejected, or deferred with explicit product rationale. It must also decide the
+fate of risky features: ship, revise now, keep dev-only, defer with priority,
+kill from the main path, or ask the owner for the product fork.
 
 Current first-run watch items from the 2026-09-13 PM synthesis:
 

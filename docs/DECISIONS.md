@@ -6,6 +6,25 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-14 — PM synthesis owns low-ROI kill decisions
+
+Owner review identified a process gap during the activation LLM discussion:
+the agent team can keep improving a feature even after the product signal says
+it is stiff, generic, expensive, or not worth its learner gain. That creates
+polished product debt. A weak runtime personalization layer, for example, can
+feel worse than an honest authored choice if it only partially uses the
+learner's input.
+
+Resolution: For Three's learner-facing workflow now includes an explicit
+capability ROI triage before polish and a PM synthesis disposition before final
+delivery. Risky features must be assigned one path: ship, revise now, keep
+dev-only, defer with priority, kill from the main path, or ask the owner for the
+fork. Removal is an acceptable product decision when the current version weakens
+the flow more than it helps. This does not block future experiments; it prevents
+half-working features from quietly becoming the primary learner experience.
+
+---
+
 ## 2026-09-14 — Activation v4 is preset-first and no-LLM on the main path
 
 Owner review found two activation failures on `/start`: switching language in
@@ -16,12 +35,13 @@ half-template. The Chinese result copy also exposed translated-English wording
 such as "fixed places to look" rendered as unnatural Chinese.
 
 Resolution: `/start` now stores in-progress answers in browser session storage
-so language switching preserves the current step. The first answerable screen
-is no longer an open sentence; it is a preset task choice: code task, research,
-organizing, rewriting, or summarizing, with a generic path still available.
-Diagnostic examples and result bridge copy are authored per preset. The start
-path no longer calls `/api/llm` for activation scenario extraction, and
-`activation_v2.version` advances to 4.
+so language switching preserves the current step. The `fresh=1` reset marker is
+consumed after the initial local cleanup so a later locale bounce cannot replay
+the reset. The first answerable screen is no longer an open sentence; it is a
+preset task choice: code task, research, organizing, rewriting, or summarizing,
+with a generic path still available. Diagnostic examples and result bridge copy
+are authored per preset. The start path no longer calls `/api/llm` for
+activation scenario extraction, and `activation_v2.version` advances to 4.
 
 Product rule: first-run personalization must not be a shallow LLM wrapper. If
 the app asks for personal input, the later screen must clearly use it at the

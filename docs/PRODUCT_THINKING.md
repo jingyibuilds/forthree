@@ -40,6 +40,10 @@ product sensibility without relying on chat history.
 - If a flow asks for personal input, the later screen must use it at roughly
   the same specificity. Shallow reuse of one or two words feels worse than an
   honest authored choice.
+- Low-ROI features are product debt, even when technically interesting. If a
+  feature cannot be made natural with current bandwidth, it should be killed
+  from the main path, kept dev-only, or deferred explicitly instead of polished
+  into a stiff compromise.
 - Remove AI-template taste as an activation risk. If the UI or copy feels like
   a common LLM-generated app, users will skim before the product earns trust.
 - Seek the stable 20% outside mainstream defaults: not weird, not ugly, not
@@ -122,6 +126,9 @@ product sensibility without relying on chat history.
   logs, or code.
 - Reviewers have different jobs, but the final product needs one brain. Use PM
   synthesis to accept, reject, or defer reviewer notes with product rationale.
+- PM synthesis must also choose feature disposition: ship, revise, defer, kill,
+  keep dev-only, or ask the owner. The team should not keep a weak feature just
+  because it was already built.
 - A local step can pass while the full journey fails. Always check the complete
   psychological path after step-level edits.
 - Invite a human taste decision when a choice affects For Three's signature and
