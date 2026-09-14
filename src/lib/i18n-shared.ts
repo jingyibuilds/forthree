@@ -32,6 +32,10 @@ export const dict = {
     loginValueLine: "Invitation only. Invite code required.",
     loginInviteNote:
       "No password. Request the link on the device you are using. Progress syncs after sign-in.",
+    localTestAccount: "Local test account",
+    localTestAccountNote:
+      "For localhost only. No email, no Supabase, resets to the start flow.",
+    localTestAccountCta: "Enter local test account",
     landingTitle:
       "You don't need to code.\n\nJust need to know\nwhether AI did the work.",
     landingBody:
@@ -58,6 +62,8 @@ export const dict = {
     yourPath: "Your path",
     courseArc: "Course arc",
     viewFullRoute: "View full route",
+    learningProfile: "Learning profile",
+    comingSoon: "Coming soon",
     currentModule: "Current module",
     currentModuleCapability: "Current module capability",
     moduleRefusal: "You can pause",
@@ -300,6 +306,10 @@ export const dict = {
     loginValueLine: "邀请制。需邀请码。",
     loginInviteNote:
       "暂时不用密码。在哪台设备学习，就在哪台设备发送链接；登录后进度会同步。",
+    localTestAccount: "本地测试账号",
+    localTestAccountNote:
+      "只用于 localhost。不发邮件，不连接 Supabase，每次都会回到开始流程。",
+    localTestAccountCta: "进入本地测试账号",
     landingTitle: "你不必会写代码。\n\n你只需要能验收 AI 交出的东西。",
     landingBody:
       "这是一个让你每天学习十分钟的小网站：不用成为码农，也能看懂 AI 在做什么、做得对不对、有没有按要求来。",
@@ -325,6 +335,8 @@ export const dict = {
     yourPath: "学习路径",
     courseArc: "课程路线",
     viewFullRoute: "查看完整路线",
+    learningProfile: "学习档案",
+    comingSoon: "敬请期待",
     currentModule: "当前模块",
     currentModuleCapability: "当前模块能力",
     moduleRefusal: "你能先暂停",

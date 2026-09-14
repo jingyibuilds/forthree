@@ -5,6 +5,7 @@ import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { FreshStartCleanup } from "@/components/fresh-start-cleanup";
 import { LocaleToggle } from "@/components/locale-toggle";
 import { Seal } from "@/components/seal";
+import { getDevLocalProfile, getDevLocalUser } from "@/lib/dev-local-account";
 import { dict, getLocale } from "@/lib/i18n";
 import { getLearnerProfile, hasCompletedOnboarding, learningId } from "@/lib/profile";
 import { COURSE_PATH, START_PATH } from "@/lib/routes";
@@ -19,17 +20,24 @@ export default async function OnboardingPage({
   const locale = await getLocale();
   const t = dict[locale];
   const { fresh, edit } = await searchParams;
-  const supabase = await createClient();
+  const devUser = await getDevLocalUser();
+  const supabase = devUser ? null : await createClient();
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { user: supabaseUser },
+  } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
+  const user = devUser ?? supabaseUser;
 
   if (!user) redirect("/login");
 
-  const profile = await getLearnerProfile(supabase, user.id);
+  const profile = devUser
+    ? await getDevLocalProfile()
+    : supabase
+      ? await getLearnerProfile(supabase, user.id)
+      : null;
   const canCreateProfile =
     canEnterFirstRun(user.email, profile) ||
     hasCompletedActivation(profile) ||
+    Boolean(devUser) ||
     (await hasRememberedInvite(user.email));
   if (!canCreateProfile) redirect("/login?error=not_authorized");
 

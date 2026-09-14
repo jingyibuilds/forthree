@@ -80,3 +80,14 @@ significant learner-facing changes.
   desktop-only impression. The owner caught a mobile landing where the English
   headline wrapped into an orphan word and source proof appeared before the
   CTA; this is an operational failure, not a polish note.
+- 2026-09-11: Signed-in learning routes must keep setup/profile actions
+  findable and route maps actionable. A long non-clickable course arc next to a
+  separate lesson list reads as dead navigation; combine them into one map, and
+  mark unreleased stages as coming soon inside the same structure.
+- 2026-09-11: Local review of signed-in UI must not depend on live Supabase
+  auth. Use development-only preview routes for visual evidence, and keep live
+  auth sessions for separate end-to-end path checks.
+- 2026-09-11: Fresh-flow local testing should use the development-only local
+  test account instead of live email auth when the review question is product
+  flow or UI. Only require Supabase when reviewing email delivery, real session
+  persistence, RLS, or database writes.

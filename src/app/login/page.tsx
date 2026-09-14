@@ -6,12 +6,18 @@ import { Seal } from "@/components/seal";
 import { hasRedeemedInvite, hasRememberedInvite } from "@/lib/access";
 import { hasCompletedActivation } from "@/lib/activation-diagnostic";
 import { nextLesson } from "@/lib/content";
+import {
+  getDevLocalProfile,
+  getDevLocalUser,
+  isDevLocalAccountEnabled,
+} from "@/lib/dev-local-account";
 import { createClient } from "@/lib/supabase/server";
 import {
   getLearnerProfile,
   hasCompletedOnboarding,
   ONBOARDING_PATH,
 } from "@/lib/profile";
+import { hasSupabaseAuthCookie } from "@/lib/supabase/session-cookies";
 import { canResetTestAccount } from "@/lib/test-account";
 import { COURSE_PATH, START_PATH, lessonPath } from "@/lib/routes";
 
@@ -24,14 +30,23 @@ export default async function LoginPage({
   const t = dict[locale];
   const landingTitleParts = t.landingTitle.split("\n");
   const { error } = await searchParams;
-  const supabase = await createClient();
+  const devUser = await getDevLocalUser();
+  const hasAuthCookie = devUser ? false : await hasSupabaseAuthCookie();
+  const supabase = devUser || !hasAuthCookie ? null : await createClient();
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const profile = user ? await getLearnerProfile(supabase, user.id) : null;
+    data: { user: supabaseUser },
+  } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
+  const user = devUser ?? supabaseUser;
+  const profile = devUser
+    ? await getDevLocalProfile()
+    : user && supabase
+      ? await getLearnerProfile(supabase, user.id)
+      : null;
   const onboarded = hasCompletedOnboarding(profile);
   const { data: attempts } = user
-    ? await supabase.from("attempts").select("exercise_id").eq("correct", true)
+    ? supabase
+      ? await supabase.from("attempts").select("exercise_id").eq("correct", true)
+      : { data: [] }
     : { data: [] };
   const correct = new Set((attempts ?? []).map((a) => a.exercise_id as string));
   const next = nextLesson(correct);
@@ -159,6 +174,22 @@ export default async function LoginPage({
               <p className="mt-4 border-t border-line pt-4 text-sm leading-6 text-muted">
                 {t.loginInviteNote}
               </p>
+              {isDevLocalAccountEnabled() && (
+                <div className="mt-4 rounded-lg border border-line bg-background p-4">
+                  <p className="text-sm font-medium text-ink">
+                    {t.localTestAccount}
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-muted">
+                    {t.localTestAccountNote}
+                  </p>
+                  <Link
+                    href="/dev/test-account"
+                    className="mt-3 block rounded-lg border border-line bg-surface px-5 py-3 text-center text-sm font-semibold text-primary shadow-sm transition-[border-color,transform] hover:-translate-y-px hover:border-primary active:translate-y-0"
+                  >
+                    {t.localTestAccountCta}
+                  </Link>
+                </div>
+              )}
             </>
           )}
         </aside>

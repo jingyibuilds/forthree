@@ -4,6 +4,11 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { canEnterFirstRun, clearRememberedInvite, hasRememberedInvite } from "@/lib/access";
 import { hasCompletedActivation } from "@/lib/activation-diagnostic";
+import {
+  getDevLocalProfile,
+  getDevLocalUser,
+  setDevLocalCookies,
+} from "@/lib/dev-local-account";
 import { recordEvent } from "@/lib/analytics-server";
 import { actionMessages, getLocale } from "@/lib/i18n";
 import { getLearnerProfile } from "@/lib/profile";
@@ -88,19 +93,26 @@ export async function saveOnboarding(
 ): Promise<OnboardingState> {
   const locale = await getLocale();
   const messages = actionMessages[locale];
-  const supabase = await createClient();
+  const devUser = await getDevLocalUser();
+  const supabase = devUser ? null : await createClient();
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { user: supabaseUser },
+  } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
+  const user = devUser ?? supabaseUser;
 
   if (!user) {
     return { status: "error", message: messages.loginRequired };
   }
 
-  const existingProfile = await getLearnerProfile(supabase, user.id);
+  const existingProfile = devUser
+    ? await getDevLocalProfile()
+    : supabase
+      ? await getLearnerProfile(supabase, user.id)
+      : null;
   const canCreateProfile =
     canEnterFirstRun(user.email, existingProfile) ||
     hasCompletedActivation(existingProfile) ||
+    Boolean(devUser) ||
     (await hasRememberedInvite(user.email));
   if (!canCreateProfile) {
     return { status: "error", message: messages.inviteRequired };
@@ -171,6 +183,17 @@ export async function saveOnboarding(
         ? "standard"
         : "gentle"
     : "gentle";
+
+  if (devUser) {
+    const cookieStore = await cookies();
+    setDevLocalCookies(cookieStore, "onboarded");
+    cookieStore.set("locale", langPref, {
+      path: "/",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 365,
+    });
+    redirect(COURSE_PATH);
+  }
 
   const adminSupabase = createAdminClient();
   const { error } = await adminSupabase.from("learner_profiles").upsert({

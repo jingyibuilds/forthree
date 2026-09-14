@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { canEnterLearnerApp } from "@/lib/access";
 import { hasCompletedActivation } from "@/lib/activation-diagnostic";
+import { getDevLocalProfile, getDevLocalUser } from "@/lib/dev-local-account";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getLesson } from "@/lib/content";
@@ -105,10 +106,12 @@ async function timeSummary(
 // a wrong try = half; already-completed exercises = zero (no grinding).
 // firstTry is client-reported — acceptable while single-user.
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
+  const devUser = await getDevLocalUser();
+  const supabase = devUser ? null : await createClient();
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { user: supabaseUser },
+  } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
+  const user = devUser ?? supabaseUser;
   if (!user) {
     return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
   }
@@ -128,7 +131,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "bad request" }, { status: 400 });
   }
 
-  const profile = await getLearnerProfile(supabase, user.id);
+  const profile = devUser
+    ? await getDevLocalProfile()
+    : supabase
+      ? await getLearnerProfile(supabase, user.id)
+      : null;
   const hasFullAccess = canEnterLearnerApp(user.email, profile);
   const hasOrientationAccess =
     !hasFullAccess &&
@@ -145,6 +152,20 @@ export async function POST(request: NextRequest) {
   }
   if (activeSeconds > 0 && !body.clientEventId) {
     return NextResponse.json({ error: "missing time event id" }, { status: 400 });
+  }
+
+  if (devUser) {
+    return NextResponse.json({
+      awardedXp: 0,
+      xpPersisted: false,
+      timePersisted: true,
+      lessonActiveSeconds: activeSeconds,
+      todayActiveSeconds: activeSeconds,
+    });
+  }
+
+  if (!supabase) {
+    return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
   }
 
   const exercises = new Map(lesson.exercises.map((e) => [e.id, e]));

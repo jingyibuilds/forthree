@@ -2,6 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { canEnterFirstRun, canEnterLearnerApp, hasRememberedInvite } from "@/lib/access";
 import { hasCompletedActivation } from "@/lib/activation-diagnostic";
+import {
+  getDevLocalProfile,
+  getDevLocalUser,
+} from "@/lib/dev-local-account";
 import { createClient } from "@/lib/supabase/server";
 import { dict, getLocale } from "@/lib/i18n";
 import { LocaleToggle } from "@/components/locale-toggle";
@@ -22,31 +26,68 @@ import { estimateMinuteRange, formatActiveMinutes } from "@/lib/study-time";
 
 const TIME_PAGE_SIZE = 1000;
 
-export default async function LearnPage() {
+function devPreviewCorrectExerciseIds() {
+  const orientationExerciseIds = lessons
+    .filter((lesson) => lesson.module_id === "m00")
+    .flatMap((lesson) => lesson.exercises.map((exercise) => exercise.id));
+  const firstStageOneExercise = lessons
+    .find((lesson) => lesson.module_id === "m01")
+    ?.exercises.at(0)?.id;
+
+  return new Set(
+    firstStageOneExercise
+      ? [...orientationExerciseIds, firstStageOneExercise]
+      : orientationExerciseIds
+  );
+}
+
+export default async function LearnPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ preview?: string }>;
+}) {
   const locale = await getLocale();
   const t = dict[locale];
+  const preview = (await searchParams)?.preview === "1";
+  const isDevPreview = process.env.NODE_ENV !== "production" && preview;
+  const devUser = isDevPreview ? null : await getDevLocalUser();
+  const devProfile = devUser ? await getDevLocalProfile() : null;
+  const isDevLocal = Boolean(devUser);
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-  const showTestReset = canResetTestAccount(user.email);
-  const profile = await getLearnerProfile(supabase, user.id);
-  const hasFullAccess = canEnterLearnerApp(user.email, profile);
-  const hasOrientationAccess =
-    !hasFullAccess &&
-    (canEnterFirstRun(user.email, profile) ||
-      hasCompletedActivation(profile) ||
-      (await hasRememberedInvite(user.email)));
-  if (!hasFullAccess && !hasOrientationAccess) redirect(ONBOARDING_PATH);
-  if (hasOrientationAccess && !hasCompletedActivation(profile)) redirect(START_PATH);
+  let showTestReset = false;
+  let correct = isDevPreview ? devPreviewCorrectExerciseIds() : new Set<string>();
+  let activeSeconds = isDevPreview ? 12 * 60 : 0;
+  let hasOrientationAccess = false;
+  let signedInUserId: string | null = null;
+  const supabase = isDevPreview || isDevLocal ? null : await createClient();
 
-  const { data: attempts } = await supabase
-    .from("attempts")
-    .select("exercise_id")
-    .eq("correct", true);
-  const correct = new Set((attempts ?? []).map((a) => a.exercise_id as string));
+  if (devUser) {
+    if (!hasCompletedActivation(devProfile)) redirect(START_PATH);
+    hasOrientationAccess = !canEnterLearnerApp(devUser.email, devProfile);
+  } else if (supabase) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) redirect("/login");
+    signedInUserId = user.id;
+    showTestReset = canResetTestAccount(user.email);
+    const profile = await getLearnerProfile(supabase, user.id);
+    const hasFullAccess = canEnterLearnerApp(user.email, profile);
+    hasOrientationAccess =
+      !hasFullAccess &&
+      (canEnterFirstRun(user.email, profile) ||
+        hasCompletedActivation(profile) ||
+        (await hasRememberedInvite(user.email)));
+    if (!hasFullAccess && !hasOrientationAccess) redirect(ONBOARDING_PATH);
+    if (hasOrientationAccess && !hasCompletedActivation(profile)) redirect(START_PATH);
+
+    const { data: attempts } = await supabase
+      .from("attempts")
+      .select("exercise_id")
+      .eq("correct", true);
+    correct = new Set((attempts ?? []).map((a) => a.exercise_id as string));
+  }
+
   const next = nextLesson(correct);
   if (hasOrientationAccess && next?.module_id !== "m00") redirect(ONBOARDING_PATH);
   const orientationIsOptional = hasProgressAfterOrientation(correct);
@@ -70,15 +111,15 @@ export default async function LearnPage() {
     0
   );
   const lessonIds = currentModuleLessons.map((lesson) => lesson.id);
-  let activeSeconds = 0;
-  if (lessonIds.length > 0) {
+  if (supabase && signedInUserId && lessonIds.length > 0) {
+    activeSeconds = 0;
     for (let page = 0; page < 20; page += 1) {
       const from = page * TIME_PAGE_SIZE;
       const to = from + TIME_PAGE_SIZE - 1;
       const { data, error } = await supabase
         .from("lesson_time_events")
         .select("active_seconds")
-        .eq("user_id", user.id)
+        .eq("user_id", signedInUserId)
         .in("lesson_id", lessonIds)
         .order("id", { ascending: true })
         .range(from, to);
@@ -125,7 +166,13 @@ export default async function LearnPage() {
 
   return (
     <main className="relative mx-auto min-h-dvh w-full max-w-5xl px-5 py-6 sm:px-8 sm:py-10">
-      <div className="mb-4 flex justify-end gap-2">
+      <div className="mb-4 flex flex-wrap justify-end gap-2">
+        <Link
+          href={`${ONBOARDING_PATH}?edit=1`}
+          className="min-h-11 rounded-lg border border-line bg-surface px-3 py-2.5 text-sm font-medium text-muted shadow-sm transition-[background-color,border-color,color,transform] hover:-translate-y-px hover:border-primary hover:bg-primary/5 hover:text-primary"
+        >
+          {t.learningProfile}
+        </Link>
         <LocaleToggle locale={locale} inline />
         <form action="/auth/signout" method="post">
           <button
@@ -219,215 +266,183 @@ export default async function LearnPage() {
           {t.viewFullRoute}
         </summary>
 
-        {currentModule && (
-          <section className="mt-5 border-t border-line pt-5">
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="text-sm font-medium text-primary">{t.currentModule}</p>
-                <h2 className="mt-1 font-serif text-2xl font-semibold">
-                  {locale === "zh" ? currentModule.title_zh : currentModule.title_en}
-                </h2>
-              </div>
+        <section className="mt-5 space-y-3 border-t border-line pt-5">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <p className="text-sm font-medium text-muted">{t.courseArc}</p>
+            {currentModule && (
               <p className="text-sm text-muted">
                 {t.activeLearningTime}: {formatActiveMinutes(activeSeconds, locale)} ·{" "}
                 {t.estimatedPathTime}: {totalMinutes} {t.minutes}
               </p>
-            </div>
+            )}
+          </div>
 
-            <ol className="mt-4 divide-y divide-line overflow-hidden rounded-lg border border-line bg-background">
-              {currentModuleLessons.map((l) => {
-                const complete = l.exercises.every((e) => correct.has(e.id));
-                const isNext = next?.id === l.id;
-                const resourceMinutes = (l.resources ?? []).reduce(
-                  (sum, resource) => sum + resource.est_minutes,
-                  0
-                );
-                return (
-                  <li key={l.id}>
-                    <Link
-                      href={lessonPath(l.id)}
-                      className={`grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-4 px-4 py-4 text-base transition-colors hover:bg-surface sm:px-5 ${
-                        isNext ? "bg-primary/5" : ""
+          {courseMap.stages.map((stage) => {
+            const stageModules = modules.filter((m) => m.stage === stage.stage);
+            const isActiveStage = stage.stage === activeStage;
+            const isPastStage = stage.stage < activeStage;
+
+            if (stageModules.length === 0) {
+              return (
+                <div
+                  key={stage.stage}
+                  className="rounded-lg border border-dashed border-line bg-background px-4 py-4"
+                >
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span
+                      className={`grid h-8 w-8 place-items-center rounded-full text-xs font-semibold ${
+                        isPastStage
+                          ? "bg-success-soft text-success"
+                          : isActiveStage
+                            ? "bg-primary text-on-primary"
+                            : "border border-line bg-surface text-muted"
                       }`}
                     >
-                      <span
-                        className={`grid h-9 w-9 place-items-center rounded-full text-sm font-semibold ${
-                          complete
-                            ? "bg-success-soft text-success"
-                            : isNext
-                              ? "bg-primary text-on-primary"
-                              : "border border-line bg-surface text-muted"
-                        }`}
-                      >
-                        {l.order}
-                      </span>
-                      <span className="min-w-0">
-                        <span className={complete ? "text-muted" : "text-ink"}>
-                          {locale === "zh" ? l.title_zh : l.title_en}
-                        </span>
-                        <span className="mt-1 block text-sm text-muted">
-                          {t.estimatedDuration} {estimateMinuteRange(l.est_minutes)}{" "}
-                          {t.minutes}
-                          {resourceMinutes > 0 &&
-                            ` + ${resourceMinutes} ${t.minutes} ${t.referenceTime}`}
-                        </span>
-                      </span>
-                      <span
-                        className={`shrink-0 text-sm font-medium ${
-                          complete
-                            ? "text-success"
-                            : isNext
-                              ? "text-primary"
-                              : "text-muted"
-                        }`}
-                      >
-                        {complete ? `✓ ${t.done}` : isNext ? t.start : t.review}
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ol>
-          </section>
-        )}
-
-        <section className="mt-6 border-t border-line pt-5">
-          <p className="text-sm font-medium text-muted">{t.courseArc}</p>
-          <ol className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          {courseMap.stages.map((s) => (
-            <li key={s.stage} className="rounded-lg bg-background p-3">
-              <div className="flex items-center gap-2">
-                <span
-                  className={`grid h-8 w-8 place-items-center rounded-full text-xs font-semibold ${
-                    s.stage === activeStage
-                      ? "bg-primary text-on-primary"
-                      : s.stage < activeStage
-                        ? "bg-success-soft text-success"
-                      : "border border-line bg-surface text-muted"
-                  }`}
-                >
-                  {s.stage}
-                </span>
-                <span
-                  className={`text-sm font-medium ${
-                    s.stage === activeStage ? "text-primary" : "text-muted"
-                  }`}
-                >
-                  {locale === "zh" ? s.label_zh : s.label_en}
-                </span>
-              </div>
-              <p className="mt-3 font-serif text-base font-semibold leading-snug">
-                {locale === "zh" ? s.title_zh : s.title_en}
-              </p>
-              <p className="mt-2 text-xs leading-5 text-muted">
-                {locale === "zh" ? s.milestone_zh : s.milestone_en}
-              </p>
-            </li>
-          ))}
-          </ol>
-        </section>
-
-        <section className="mt-6 space-y-3 border-t border-line pt-5">
-          <p className="text-sm font-medium text-muted">{t.lessons}</p>
-          {modules.map((m) => {
-            const stage = courseMap.stages.find((s) => s.stage === m.stage);
-            const moduleLessons = lessons.filter((l) => l.module_id === m.id);
-            const completeCount = moduleLessons.filter((l) =>
-              l.exercises.every((e) => correct.has(e.id))
-            ).length;
-            const isCurrentModule = currentModule?.id === m.id;
-            const isOptionalOrientation = m.id === "m00" && orientationIsOptional;
+                      {stage.stage}
+                    </span>
+                    <span className="text-sm font-medium text-muted">
+                      {locale === "zh" ? stage.label_zh : stage.label_en}
+                    </span>
+                    <span className="h-px min-w-8 flex-1 bg-line" />
+                    <span className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-muted">
+                      {t.comingSoon}
+                    </span>
+                  </div>
+                  <h2 className="mt-3 font-serif text-xl font-semibold leading-tight">
+                    {locale === "zh" ? stage.title_zh : stage.title_en}
+                  </h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+                    {locale === "zh" ? stage.milestone_zh : stage.milestone_en}
+                  </p>
+                </div>
+              );
+            }
 
             return (
-              <details
-                key={m.id}
-                className="rounded-lg border border-line bg-background px-4 py-3"
-              >
-              <summary className="cursor-pointer list-none">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-sm font-medium text-primary">
-                    {stage && (locale === "zh" ? stage.label_zh : stage.label_en)}
-                  </span>
-                  <h2 className="font-serif text-xl font-semibold leading-tight">
-                    {locale === "zh" ? m.title_zh : m.title_en}
-                  </h2>
-                  <span className="h-px min-w-10 flex-1 bg-line" />
-                  <span className="text-sm font-medium text-muted">
-                    {isCurrentModule
-                      ? t.currentModule
-                      : isOptionalOrientation
-                        ? t.optionalBridge
-                      : completeCount === moduleLessons.length
-                        ? t.done
-                        : t.planned}
-                  </span>
-                  <span className="text-sm text-muted">
-                    {completeCount}/{moduleLessons.length}
-                  </span>
-                  <span aria-hidden="true" className="text-lg leading-none text-primary">
-                    +
-                  </span>
-                </div>
-              </summary>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-                {locale === "zh" ? m.description_zh : m.description_en}
-              </p>
+              <div key={stage.stage} className="space-y-3">
+                {stageModules.map((m) => {
+                  const moduleLessons = lessons.filter((l) => l.module_id === m.id);
+                  const completeCount = moduleLessons.filter((l) =>
+                    l.exercises.every((e) => correct.has(e.id))
+                  ).length;
+                  const isCurrentModule = currentModule?.id === m.id;
+                  const isOptionalOrientation =
+                    m.id === "m00" && orientationIsOptional;
 
-              <ol className="mt-4 divide-y divide-line overflow-hidden rounded-lg border border-line bg-background">
-                {moduleLessons.map((l) => {
-                  const complete = l.exercises.every((e) => correct.has(e.id));
-                  const isNext = next?.id === l.id;
-                  const resourceMinutes = (l.resources ?? []).reduce(
-                    (sum, resource) => sum + resource.est_minutes,
-                    0
-                  );
                   return (
-                    <li key={l.id}>
-                      <Link
-                        href={lessonPath(l.id)}
-                        className={`grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-4 px-4 py-4 text-base transition-colors hover:bg-surface ${
-                          isNext ? "bg-primary/5" : ""
-                        }`}
-                      >
-                        <span
-                          className={`grid h-9 w-9 place-items-center rounded-full text-sm font-semibold ${
-                            complete
-                              ? "bg-success-soft text-success"
-                              : isNext
+                    <details
+                      key={m.id}
+                      open={isCurrentModule}
+                      className="rounded-lg border border-line bg-background px-4 py-3"
+                    >
+                      <summary className="cursor-pointer list-none">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span
+                            className={`grid h-8 w-8 place-items-center rounded-full text-xs font-semibold ${
+                              isCurrentModule
                                 ? "bg-primary text-on-primary"
-                                : "border border-line text-muted"
-                          }`}
-                        >
-                          {l.order}
-                        </span>
-                        <span className="min-w-0">
-                          <span className={complete ? "text-muted" : "text-ink"}>
-                            {locale === "zh" ? l.title_zh : l.title_en}
+                                : completeCount === moduleLessons.length
+                                  ? "bg-success-soft text-success"
+                                  : "border border-line bg-surface text-muted"
+                            }`}
+                          >
+                            {stage.stage}
                           </span>
-                          <span className="mt-1 block text-sm text-muted">
-                            {t.estimatedDuration} {estimateMinuteRange(l.est_minutes)}{" "}
-                            {t.minutes}
-                            {resourceMinutes > 0 &&
-                              ` + ${resourceMinutes} ${t.minutes} ${t.referenceTime}`}
+                          <span className="text-sm font-medium text-primary">
+                            {locale === "zh" ? stage.label_zh : stage.label_en}
                           </span>
-                        </span>
-                        <span
-                          className={`shrink-0 text-sm font-medium ${
-                            complete
-                              ? "text-success"
-                              : isNext
-                                ? "text-primary"
-                                : "text-muted"
-                          }`}
-                        >
-                          {complete ? `✓ ${t.done}` : isNext ? t.start : t.review}
-                        </span>
-                  </Link>
-                </li>
-              );
-            })}
-              </ol>
-            </details>
+                          <h2 className="font-serif text-xl font-semibold leading-tight">
+                            {locale === "zh" ? m.title_zh : m.title_en}
+                          </h2>
+                          <span className="h-px min-w-8 flex-1 bg-line" />
+                          <span className="text-sm font-medium text-muted">
+                            {isCurrentModule
+                              ? t.currentModule
+                              : isOptionalOrientation
+                                ? t.optionalBridge
+                              : completeCount === moduleLessons.length
+                                ? t.done
+                                : t.planned}
+                          </span>
+                          <span className="text-sm text-muted">
+                            {completeCount}/{moduleLessons.length}
+                          </span>
+                          <span
+                            aria-hidden="true"
+                            className="text-lg leading-none text-primary"
+                          >
+                            +
+                          </span>
+                        </div>
+                      </summary>
+                      <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
+                        {locale === "zh" ? m.description_zh : m.description_en}
+                      </p>
+
+                      <ol className="mt-4 divide-y divide-line overflow-hidden rounded-lg border border-line bg-background">
+                        {moduleLessons.map((l) => {
+                          const complete = l.exercises.every((e) => correct.has(e.id));
+                          const isNext = next?.id === l.id;
+                          const resourceMinutes = (l.resources ?? []).reduce(
+                            (sum, resource) => sum + resource.est_minutes,
+                            0
+                          );
+                          return (
+                            <li key={l.id}>
+                              <Link
+                                href={lessonPath(l.id)}
+                                className={`grid grid-cols-[2.25rem_minmax(0,1fr)] items-center gap-x-4 gap-y-2 px-4 py-4 text-base transition-colors hover:bg-surface sm:grid-cols-[2.25rem_minmax(0,1fr)_auto] ${
+                                  isNext ? "bg-primary/5" : ""
+                                }`}
+                              >
+                                <span
+                                  className={`grid h-9 w-9 place-items-center rounded-full text-sm font-semibold ${
+                                    complete
+                                      ? "bg-success-soft text-success"
+                                      : isNext
+                                        ? "bg-primary text-on-primary"
+                                        : "border border-line text-muted"
+                                  }`}
+                                >
+                                  {l.order}
+                                </span>
+                                <span className="min-w-0">
+                                  <span
+                                    className={complete ? "text-muted" : "text-ink"}
+                                  >
+                                    {locale === "zh" ? l.title_zh : l.title_en}
+                                  </span>
+                                  <span className="mt-1 block text-sm text-muted">
+                                    {t.estimatedDuration}{" "}
+                                    {estimateMinuteRange(l.est_minutes)} {t.minutes}
+                                    {resourceMinutes > 0 &&
+                                      ` + ${resourceMinutes} ${t.minutes} ${t.referenceTime}`}
+                                  </span>
+                                </span>
+                                <span
+                                  className={`col-start-2 text-sm font-medium sm:col-start-auto ${
+                                    complete
+                                      ? "text-success"
+                                      : isNext
+                                        ? "text-primary"
+                                        : "text-muted"
+                                  }`}
+                                >
+                                  {complete
+                                    ? `✓ ${t.done}`
+                                    : isNext
+                                      ? t.start
+                                      : t.review}
+                                </span>
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ol>
+                    </details>
+                  );
+                })}
+              </div>
             );
           })}
         </section>

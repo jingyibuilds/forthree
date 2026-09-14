@@ -7,6 +7,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getLearnerProfile, hasCompletedOnboarding } from "@/lib/profile";
 import { START_PATH } from "@/lib/routes";
 import { recordEvent } from "@/lib/analytics-server";
+import { canResetTestAccount } from "@/lib/test-account";
+import { resetLearnerOwnedState } from "@/lib/test-account-reset";
 
 // Magic-link landing. Supports both Supabase email flows:
 // 1. Default template ({{ .ConfirmationURL }}): arrives with ?code=..., exchanged
@@ -45,6 +47,11 @@ async function redirectAfterAuth(
 
   if (!user) {
     return NextResponse.redirect(new URL("/login?error=invalid_link", requestUrl));
+  }
+
+  if (canResetTestAccount(user.email)) {
+    await resetLearnerOwnedState(user.id);
+    return NextResponse.redirect(new URL(`${START_PATH}?fresh=1`, requestUrl));
   }
 
   let profile = await getLearnerProfile(supabase, user.id);

@@ -1,24 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { canResetTestAccount } from "@/lib/test-account";
-
-const USER_SCOPED_TABLES = [
-  "lesson_assistant_messages",
-  "lesson_assistant_threads",
-  "lesson_time_events",
-  "app_events",
-  "attempts",
-  "xp_events",
-  "user_achievements",
-  "srs_items",
-  "streaks",
-  "pulse_checks",
-  "skip_debts",
-  "llm_usage",
-  "plans",
-  "learner_profiles",
-] as const;
+import { resetLearnerOwnedState } from "@/lib/test-account-reset";
+import { START_PATH } from "@/lib/routes";
 
 function sameOrigin(request: NextRequest) {
   const origin = request.headers.get("origin");
@@ -44,19 +28,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "not a test account" }, { status: 403 });
   }
 
-  let admin;
   try {
-    admin = createAdminClient();
-  } catch {
-    return NextResponse.json({ error: "test reset is not configured" }, { status: 503 });
+    await resetLearnerOwnedState(user.id);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    return NextResponse.json(
+      { error: message.startsWith("test reset failed") ? message : "test reset is not configured" },
+      { status: message.startsWith("test reset failed") ? 500 : 503 }
+    );
   }
 
-  for (const table of USER_SCOPED_TABLES) {
-    const { error } = await admin.from(table).delete().eq("user_id", user.id);
-    if (error) {
-      return NextResponse.json({ error: `reset failed on ${table}` }, { status: 500 });
-    }
-  }
-
-  return NextResponse.redirect(new URL("/onboarding?fresh=1", request.url));
+  return NextResponse.redirect(new URL(`${START_PATH}?fresh=1`, request.url));
 }
