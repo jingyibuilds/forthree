@@ -6,6 +6,20 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-14 — Start hook typography is an approval gate
+
+Owner review found that the English `/start` hook passed broad taste review but
+still looked weak on mobile because the headline wrapped as browser leftovers:
+`When AI / hands work / back, how do / you judge it`. This is not merely copy; a
+flagship first screen loses trust when typography looks accidental.
+
+Resolution: the English hook now uses a shorter, more lived sentence, "When AI
+says it's done, how do you know?", and is hand-set into three mobile lines. The
+UI spec and Taste Signature Reviewer now require explicit mobile headline
+line-break inspection before approval.
+
+---
+
 ## 2026-09-14 — Activation v5 widens everyday AI task presets
 
 Owner review found that v4's first task choice still overfit text-work

@@ -140,13 +140,24 @@ Chinese:
 English:
 
 - Kicker: `A 3-minute check first`
-- Title: `When AI hands work back, how do you judge it?`
+- Title: `When AI says it's done, how do you know?`
 - Body: `No prep, no score. Pick a few everyday moments and see where this course can help you use AI with steadier judgment.`
 - CTA: `Start the check`
 
 The hook is the second AI-use signal after the homepage. It must stand alone
 after the login/email attention break, but it should not become a paragraph of
 positioning copy.
+
+On mobile, the English hook headline is hand-set as:
+
+```text
+When AI says
+it's done,
+how do you know?
+```
+
+Do not let automatic wrapping split it into helper-word fragments such as
+`how do / you judge it`.
 
 ### Diagnostic Axes
 

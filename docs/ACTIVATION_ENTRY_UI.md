@@ -70,6 +70,9 @@ before the learner knows any product terms.
 On mobile, the hook title must not create hanging punctuation or single-character
 quote fragments, and the primary button should read as a button rather than a
 wrapped paragraph.
+The English hook must also be hand-set. Do not let the browser wrap the headline
+into weak helper-word fragments such as `how do / you judge it`; inspect the
+375px mobile viewport before approval.
 
 ### 1. Task Choice
 

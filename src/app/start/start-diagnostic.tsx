@@ -32,7 +32,7 @@ const initialState: StartState = {
 const copy = {
   en: {
     kicker: "A 3-minute check first",
-    title: "When AI hands work back, how do you judge it?",
+    title: "When AI says it's done, how do you know?",
     subtitle:
       "No prep, no score. Pick a few everyday moments and see where this course can help you use AI with steadier judgment.",
     start: "Start the check",
@@ -584,10 +584,11 @@ export function StartDiagnostic({
           <div className="space-y-3">
             <p className="text-sm font-medium text-primary">{t.kicker}</p>
             <h1
+              aria-label={isZh ? undefined : t.title}
               className={`max-w-full font-serif font-semibold text-ink text-balance ${
                 isZh
                   ? "text-[clamp(2.15rem,7.4vw,3.35rem)] leading-[1.12]"
-                  : "break-words text-[clamp(2rem,7.4vw,3.8rem)] leading-[1.08]"
+                  : "text-[clamp(1.8rem,8vw,3.8rem)] leading-[1.05]"
               }`}
             >
               {isZh ? (
@@ -598,7 +599,13 @@ export function StartDiagnostic({
                   </span>
                 </>
               ) : (
-                t.title
+                <span aria-hidden="true">
+                  <span className="block whitespace-nowrap">When AI says</span>
+                  <span className="block whitespace-nowrap">{"it's done,"}</span>
+                  <span className="block whitespace-nowrap">
+                    how do you know?
+                  </span>
+                </span>
               )}
             </h1>
             <p className="max-w-xl break-words text-base leading-7 text-muted sm:text-lg sm:leading-8">

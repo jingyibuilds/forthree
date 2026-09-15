@@ -43,7 +43,9 @@ even when it is technically clean if it smells like a generic AI/SaaS template.
 4. Durability pass: the page should not feel tied to a current AI-product fad.
 5. Restraint pass: the signature choice must not harm clarity, accessibility,
    mobile ergonomics, or bilingual fit.
-6. Escalation pass: if the reviewer can only say "this is fine" or "make it
+6. Typography pass: flagship screens must be inspected at mobile width for
+   authored line breaks, bad orphans, and helper-word fragments.
+7. Escalation pass: if the reviewer can only say "this is fine" or "make it
    more branded," they must request a human taste fork with two or three
    concrete directions.
 
@@ -68,3 +70,8 @@ Inspect the rendered UI whenever possible. Also read `src/app/globals.css`,
   wording or UI patterns will skim before the product earns trust.
 - 2026-09-13: The goal is not the mainstream-safe 80% and not forced weirdness.
   Seek the durable 20%: still usable, still accessible, but more owned.
+- 2026-09-14: Passing "not an AI template" is not enough for a flagship first
+  screen. Mobile typography must be inspected for authored line breaks, bad
+  orphans, and helper-word fragments. A headline that wraps as `how do / you
+  judge it` is not taste-approved even if the color system and structure are
+  otherwise on brand.
