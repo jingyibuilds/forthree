@@ -1,4 +1,4 @@
-# Activation Entry v4 — UI handoff
+# Activation Entry v5 — UI handoff
 
 Status: implemented on `/start` as of 2026-09-14.
 
@@ -55,14 +55,14 @@ No gradients, glass, glow, emoji-as-design, or generic AI visuals.
 No progress bar. Use the cinnabar left rail.
 
 ```text
-想把 AI 用顺一点
+先做个 3 分钟小检查
 
-我不是已经
-跟 AI 说清楚了吗？
+AI 交回来的东西
+你通常怎么判断？
 
-它听起来像懂了，交回来的东西却还得你判断、返工，或者硬着头皮猜。
+不用准备，也不打分。选几个日常情境，看看这门课会在哪一步帮你把 AI 用得更稳。
 
-[用 3 分钟试一下]
+[开始小检查]
 ```
 
 Purpose: re-establish the AI-use promise after login, then recall a frustration
@@ -76,24 +76,23 @@ wrapped paragraph.
 Progress `1/6`.
 
 ```text
-选一个最接近你平常会让 AI 做的事。
+先从日常用法开始
+选一个最接近的任务。
 
-[让 AI 做一个小代码任务]
-[让 AI 查资料并给结论]
-[让 AI 整理零散信息]
-[让 AI 改一段文字]
-[让 AI 总结一大段内容]
+[写一段小代码，或改个 bug]
+[查资料、找论文，整理结论]
+[做一张图或一页展示稿]
+[安排提醒，或处理一件重复的小事]
+[把零散想法整理成文字]
 
-不需要完全一样。只是让后面的小例子别离你太远。
-
-返回                         用通用例子
+返回
 ```
 
 The choices are structured presets, not a blank question. They cover classic AI
-work modes: executing a small code task, research, organizing, rewriting, and
-summarizing. Tapping a choice moves forward immediately and saves only the
-preset id as an event-safe signal. A generic example path must still lead to
-the complete flow.
+work modes: a small code task, research/sources, visual generation, reminders
+or small automation, and turning messy thoughts/material into writing. Tapping
+a choice moves forward immediately and saves only the preset id as an
+event-safe signal. There is no generic-example button on this screen.
 
 ### 2–3. Routing
 
@@ -113,7 +112,7 @@ Progress `4/6` through `6/6`.
 Keep the three axes and option semantics:
 
 - evidence: "It says it's done."
-- precheck: "Before AI starts changing things."
+- precheck: "Before AI starts."
 - diff: "A summary of the changes looks reasonable."
 
 `d1` and `d3` may show preset-derived task/artifact words. `d2` stays noun-free.

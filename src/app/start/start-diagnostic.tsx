@@ -31,16 +31,13 @@ const initialState: StartState = {
 
 const copy = {
   en: {
-    kicker: "To use AI better",
-    title: '"I told AI exactly what I wanted."',
+    kicker: "A 3-minute check first",
+    title: "When AI hands work back, how do you judge it?",
     subtitle:
-      "It sounded like it understood. Then the handoff still made you check, redo, or guess.",
-    start: "Try the 3-minute check",
-    scenarioKicker: "Start from how you use AI",
-    scenarioTitle: "Choose the task closest to what you usually ask AI to do.",
-    scenarioNote:
-      "It does not need to be exact. This only keeps the examples close enough to your day.",
-    scenarioSkip: "Use a general example",
+      "No prep, no score. Pick a few everyday moments and see where this course can help you use AI with steadier judgment.",
+    start: "Start the check",
+    scenarioKicker: "Start with how you use AI",
+    scenarioTitle: "Choose the closest kind of task.",
     quickCheck: "One small check",
     resultKicker: "Your result",
     resultSignalsTitle: "Your answers point to",
@@ -49,9 +46,8 @@ const copy = {
     resultFocusLabel: "First practice",
     resultArea: "Why computer basics help",
     scenarioReplay: "Closest task",
-    scenarioGeneric: "General example",
-    scenarioFallback:
-      "This used a general AI task, so the checks stay reusable.",
+    scenarioMissing: "Task not recorded",
+    scenarioFallback: "The check still works, but the task choice was not saved.",
     resultNext: "Continue",
     startLesson: "Start the first lesson",
     saving: "Saving...",
@@ -62,10 +58,10 @@ const copy = {
     expectationsSub: "No score. Just the shape of the course.",
     yes: "True",
     no: "Not true",
-    answerLabel: "Answer",
-    answerTrue: "Yes",
-    answerFalse: "No",
-    correctAnswer: "Yes. The answer",
+    rightTrue: "Right. This is true.",
+    rightFalse: "Right. This is not true.",
+    actualTrue: "This is true.",
+    actualFalse: "This is not true.",
     summaryTitle: "In short",
     summaryLines: [
       "Learn: inspect AI work.",
@@ -74,14 +70,12 @@ const copy = {
     ],
   },
   zh: {
-    kicker: "想把 AI 用顺一点",
-    title: "我不是已经跟AI说清楚了吗？",
-    subtitle: "它听起来像懂了，交回来的东西却还得你判断、返工，或者硬着头皮猜。",
-    start: "用 3 分钟试一下",
-    scenarioKicker: "先从你的日常用法开始",
-    scenarioTitle: "选一个最接近你平常会让 AI 做的事。",
-    scenarioNote: "不需要完全一样。只是让后面的小例子别离你太远。",
-    scenarioSkip: "用通用例子",
+    kicker: "先做个 3 分钟小检查",
+    title: "AI 交回来的东西，你通常怎么判断？",
+    subtitle: "不用准备，也不打分。选几个日常情境，看看这门课会在哪一步帮你把 AI 用得更稳。",
+    start: "开始小检查",
+    scenarioKicker: "先从日常用法开始",
+    scenarioTitle: "选一个最接近的任务。",
     quickCheck: "一个小判断",
     resultKicker: "你的结果",
     resultSignalsTitle: "刚才的几个判断指向",
@@ -90,8 +84,8 @@ const copy = {
     resultFocusLabel: "先练哪一步",
     resultArea: "为什么这里会讲一点计算机基础",
     scenarioReplay: "刚才选择的任务",
-    scenarioGeneric: "通用例子",
-    scenarioFallback: "这次先用通用任务，后面的判断仍然成立。",
+    scenarioMissing: "任务未记录",
+    scenarioFallback: "这次小检查仍然有效，只是没有保存任务类型。",
     resultNext: "继续",
     startLesson: "进入第一课",
     saving: "保存中...",
@@ -102,10 +96,10 @@ const copy = {
     expectationsSub: "不打分，只先说清边界。",
     yes: "对",
     no: "不对",
-    answerLabel: "答案",
-    answerTrue: "对",
-    answerFalse: "不对",
-    correctAnswer: "对，这里的答案是",
+    rightTrue: "对，这句话成立。",
+    rightFalse: "对，这句话不成立。",
+    actualTrue: "这里其实成立。",
+    actualFalse: "这里其实不成立。",
     summaryTitle: "简单说",
     summaryLines: [
       "学什么：看清 AI 交付。",
@@ -138,7 +132,7 @@ type PersistedStartState = {
   expectations: Record<string, boolean | null>;
 };
 
-const storageKey = "forthree:start:v4";
+const storageKey = "forthree:start:v5";
 
 function isScreen(value: unknown): value is Screen {
   return (
@@ -214,16 +208,12 @@ function screenIndex(screen: ScreenKey) {
 
 function answerLine(locale: Locale, answer: boolean) {
   const t = copy[locale];
-  const value = answer ? t.answerTrue : t.answerFalse;
-  return locale === "zh" ? `${t.answerLabel}：${value}` : `${t.answerLabel}: ${value}`;
+  return answer ? t.actualTrue : t.actualFalse;
 }
 
 function correctAnswerLine(locale: Locale, answer: boolean) {
   const t = copy[locale];
-  const value = answer ? t.answerTrue : t.answerFalse;
-  return locale === "zh"
-    ? `${t.correctAnswer}：${value}。`
-    : `${t.correctAnswer}: ${value}.`;
+  return answer ? t.rightTrue : t.rightFalse;
 }
 
 function diagnosticArtifact(
@@ -523,7 +513,6 @@ export function StartDiagnostic({
         locale,
         route: "/start",
         properties: {
-          used_general_example: preset === null,
           scenario_preset: preset,
         },
       });
@@ -603,9 +592,9 @@ export function StartDiagnostic({
             >
               {isZh ? (
                 <>
-                  <span className="block whitespace-nowrap">我不是已经</span>
+                  <span className="block whitespace-nowrap">AI 交回来的东西</span>
                   <span className="block whitespace-nowrap">
-                    跟<span className="font-sans text-[0.9em] tracking-normal">AI</span>说清楚了吗？
+                    你通常怎么判断？
                   </span>
                 </>
               ) : (
@@ -666,25 +655,11 @@ export function StartDiagnostic({
                   );
                 })}
               </div>
-              <p className="text-xs leading-5 text-muted">{t.scenarioNote}</p>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setScreen("hook")}
-                    className="min-h-11 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:text-ink"
-                  >
-                    {t.back}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => chooseScenario(null)}
-                    className="min-h-11 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:text-primary"
-                  >
-                    {t.scenarioSkip}
-                  </button>
-                </div>
-              </div>
+              <NavRow
+                locale={locale}
+                onBack={() => setScreen("hook")}
+                showSkip={false}
+              />
             </section>
           )}
 
@@ -787,7 +762,7 @@ export function StartDiagnostic({
               </div>
               <section className="rounded-lg border border-line bg-surface px-4 py-3 shadow-sm">
                 <p className="text-xs font-semibold text-primary">
-                  {normalizedScenario ? t.scenarioReplay : t.scenarioGeneric}
+                  {normalizedScenario ? t.scenarioReplay : t.scenarioMissing}
                 </p>
                 <p className="mt-1 text-sm font-medium leading-6 text-muted">
                   {normalizedScenario ? normalizedScenario : t.scenarioFallback}

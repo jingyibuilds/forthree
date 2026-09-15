@@ -6,6 +6,32 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-14 — Activation v5 widens everyday AI task presets
+
+Owner review found that v4's first task choice still overfit text-work
+categories: research, organizing, rewriting, and summarizing felt like several
+versions of homework rather than genuinely different everyday AI uses. The hook
+also moved too abruptly from "use AI better" to a CTA without making clear that
+the learner was about to take a small, low-pressure check.
+
+Resolution: `/start` now opens with an explicit three-minute check frame: no
+prep, no score, a few everyday situations, and a first signal of where the
+course can help the learner use AI with steadier judgment. The first answerable
+screen keeps five options, but they now cover broader AI task families: small
+code work, research/sources or papers, visual generation, reminders or small
+automation, and turning messy notes into writing. The generic-example escape
+hatch is removed because the five choices should be broad enough to choose from
+without extra explanation. Do not repeat "Ask AI to..." / "让 AI..." in every
+option; the question already names AI, and option labels should read like lived
+tasks. The precheck diagnostic copy now says "Before AI starts" rather than
+"Before AI starts changing things," so non-editing tasks still fit.
+
+Chinese copy rule: distinguish "I can notice immediately and do it myself" from
+"I only notice several steps later and must redo a larger chunk." Do not
+collapse both into "重做/返工"; the timing difference is the learner signal.
+
+---
+
 ## 2026-09-14 — PM synthesis owns low-ROI kill decisions
 
 Owner review identified a process gap during the activation LLM discussion:

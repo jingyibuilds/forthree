@@ -1,12 +1,12 @@
-# Activation Entry v4 — binding spec
+# Activation Entry v5 — binding spec
 
 Status: implemented on `/start` as of 2026-09-14.
 
-This document supersedes the 2026-09-12 sentence-first implementation. The
-implementation keeps deterministic routing and diagnostic checks, but the first
-answerable screen now asks the learner to choose the AI task closest to their
-usual use. It does not ask for free-form text and does not call an LLM in the
-activation path.
+This document supersedes the 2026-09-12 sentence-first implementation and the
+2026-09-14 v4 task set. The implementation keeps deterministic routing and
+diagnostic checks, but the first answerable screen now asks the learner to
+choose a broad everyday AI-task family. It does not ask for free-form text and
+does not call an LLM in the activation path.
 
 Companion UI handoff: [ACTIVATION_ENTRY_UI.md](./ACTIVATION_ENTRY_UI.md).
 
@@ -53,22 +53,24 @@ AI use. CS is the method the flow earns permission to introduce.
 
 The first answerable screen is a single-choice task question:
 
-- zh: `选一个最接近你平常会让 AI 做的事。`
-- en: `Choose the task closest to what you usually ask AI to do.`
+- zh: `选一个最接近的任务。`
+- en: `Choose the closest kind of task.`
 
-The choices are structured task presets, not occupation categories. Keep the
-set to five or fewer:
+The choices are structured task presets, not occupation categories and not five
+near-duplicate text chores. Keep the set to five or fewer:
 
-- `code_task`: zh `让 AI 做一个小代码任务` / en `Ask AI to finish a small code task`
-- `research`: zh `让 AI 查资料并给结论` / en `Ask AI to research and give me a conclusion`
-- `organize`: zh `让 AI 整理零散信息` / en `Ask AI to organize scattered notes`
-- `rewrite`: zh `让 AI 改一段文字` / en `Ask AI to rewrite something I wrote`
-- `summarize`: zh `让 AI 总结一大段内容` / en `Ask AI to summarize something long`
+- `code_task`: zh `写一段小代码，或改个 bug` / en `Finish a small code task`
+- `research`: zh `查资料、找论文，整理结论` / en `Research sources or papers`
+- `visual`: zh `做一张图或一页展示稿` / en `Make an image or one-page visual`
+- `automation`: zh `安排提醒，或处理一件重复的小事` / en `Set up a reminder or small workflow`
+- `writing`: zh `把零散想法整理成文字` / en `Turn messy notes into clear writing`
 
 The chosen preset id is saved as `scenario_preset` and may enter event
 properties. The chosen label may be saved to the learner profile as a
 non-free-form `verbatim` value for compatibility, but learner-authored text is
-not collected here. A generic example path remains available.
+not collected here. There is no generic example button on this screen; the five
+choices are broad enough that forcing a choice is lower friction than adding a
+vague escape hatch.
 
 ### Keep Deterministic Rules First
 
@@ -130,17 +132,17 @@ activation as completed/skipped and sends the learner to Lesson 0.
 
 Chinese:
 
-- Kicker: `想把 AI 用顺一点`
-- Title: `我不是已经` / `跟 AI 说清楚了吗？`
-- Body: `它听起来像懂了，交回来的东西却还得你判断、返工，或者硬着头皮猜。`
-- CTA: `用 3 分钟试一下`
+- Kicker: `先做个 3 分钟小检查`
+- Title: `AI 交回来的东西` / `你通常怎么判断？`
+- Body: `不用准备，也不打分。选几个日常情境，看看这门课会在哪一步帮你把 AI 用得更稳。`
+- CTA: `开始小检查`
 
 English:
 
-- Kicker: `To use AI better`
-- Title: `"I told AI exactly what I wanted."`
-- Body: `It sounded like it understood. The handoff still made you check, redo, or guess.`
-- CTA: `Try the 3-minute check`
+- Kicker: `A 3-minute check first`
+- Title: `When AI hands work back, how do you judge it?`
+- Body: `No prep, no score. Pick a few everyday moments and see where this course can help you use AI with steadier judgment.`
+- CTA: `Start the check`
 
 The hook is the second AI-use signal after the homepage. It must stand alone
 after the login/email attention break, but it should not become a paragraph of
@@ -157,11 +159,13 @@ Keep the existing axes and option semantics:
 Only the costume changes:
 
 - `d1` uses preset `{task}` when available: `请帮我{task}` / `Please {task}.`
-- `d2` stays deliberately noun-free.
+- `d2` stays deliberately noun-free and uses `Before AI starts` rather than
+  `Before AI starts changing things`, so non-editing tasks such as research,
+  image generation, and reminders still fit.
 - `d3` uses a full authored overwrite line per preset, never string
   concatenation that can create awkward Chinese such as `原来的原稿`.
 
-A wrong noun is worse than a generic example. Slots come from the authored
+A wrong noun is worse than a forced scenario. Slots come from the authored
 preset only, never from inferred occupation or shallow text extraction.
 
 ### Result
@@ -187,11 +191,12 @@ It should:
 1. Give one visible diagnosis sentence about what the learner needs next to use
    AI well. Prefer concrete result language over repeating `Using AI well...` /
    `把 AI 用好...` as a prefix.
-2. Replay the chosen task family, or state that the generic version was used.
+2. Replay the chosen task family. If older stored state or malformed input lacks
+   a preset, show a quiet "task not recorded" fallback rather than presenting it
+   as a product path.
 3. Add one short bridge sentence that explains why the practice focus matters
    in that task family. Use deterministic scenario families such as code,
-   research, organizing, writing, and summary. If the learner chose the generic
-   path, use generic bridge copy.
+   research/sources, visual generation, reminders/workflows, and writing.
 4. Show three compact signals from previous answers: consequence if wrong,
    friction frequency, and practice focus.
 5. Connect the ability to inspect, set boundaries, or read changes to why
@@ -230,7 +235,7 @@ Store the result at `learner_profiles.background.activation_v2`:
 
 - `completed`
 - `completed_at`
-- `version: 4`
+- `version: 5`
 - `skipped`
 - `verbatim` (preset label only, not learner-authored text)
 - `scenario_preset`

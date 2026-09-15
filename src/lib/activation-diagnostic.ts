@@ -6,15 +6,15 @@ export type AxisLevel = 0 | 1 | 2 | 3;
 export type ScenarioPresetId =
   | "code_task"
   | "research"
-  | "organize"
-  | "rewrite"
-  | "summarize";
+  | "visual"
+  | "automation"
+  | "writing";
 type ScenarioBridgeKind =
   | "code"
   | "research"
-  | "organize"
+  | "visual"
+  | "automation"
   | "writing"
-  | "summarize"
   | "general";
 export type ActivationRoute = "A" | "B" | "C" | "skip";
 export type ActivationReadinessLevel = "starting" | "everyday" | "mature";
@@ -83,8 +83,6 @@ type DiagnosticResultCopy = {
   body_zh: string;
   bridge_en: string;
   bridge_zh: string;
-  bridge_generic_en: string;
-  bridge_generic_zh: string;
 };
 
 export type LocalizedDiagnosticResult = {
@@ -93,7 +91,6 @@ export type LocalizedDiagnosticResult = {
   title: string;
   body: string;
   bridge: string;
-  genericBridge: string;
 };
 
 type ReadinessResultCopy = {
@@ -116,28 +113,28 @@ export type LocalizedReadinessResult = {
 export const scenarioPresetChoices: ScenarioPresetChoice[] = [
   {
     id: "code_task",
-    label_en: "Ask AI to finish a small code task",
-    label_zh: "让 AI 做一个小代码任务",
+    label_en: "Finish a small code task",
+    label_zh: "写一段小代码，或改个 bug",
   },
   {
     id: "research",
-    label_en: "Ask AI to research and give me a conclusion",
-    label_zh: "让 AI 查资料并给结论",
+    label_en: "Research sources or papers",
+    label_zh: "查资料、找论文，整理结论",
   },
   {
-    id: "organize",
-    label_en: "Ask AI to organize scattered notes",
-    label_zh: "让 AI 整理零散信息",
+    id: "visual",
+    label_en: "Make an image or one-page visual",
+    label_zh: "做一张图或一页展示稿",
   },
   {
-    id: "rewrite",
-    label_en: "Ask AI to rewrite something I wrote",
-    label_zh: "让 AI 改一段文字",
+    id: "automation",
+    label_en: "Set up a reminder or small workflow",
+    label_zh: "安排提醒，或处理一件重复的小事",
   },
   {
-    id: "summarize",
-    label_en: "Ask AI to summarize something long",
-    label_zh: "让 AI 总结一大段内容",
+    id: "writing",
+    label_en: "Turn messy notes into clear writing",
+    label_zh: "把零散想法整理成文字",
   },
 ];
 
@@ -147,10 +144,10 @@ export const scenarioPresetDetails: Record<
 > = {
   code_task: {
     kind: "code",
-    label_en: "Ask AI to finish a small code task",
-    label_zh: "让 AI 做一个小代码任务",
+    label_en: "Finish a small code task",
+    label_zh: "写一段小代码，或改个 bug",
     task_en: "finish a small code task",
-    task_zh: "做一个小代码任务",
+    task_zh: "写一段小代码，或改个 bug",
     artifact_en: "code file",
     artifact_zh: "代码文件",
     overwriteLine_en: "Saved the new version over the original code file",
@@ -158,47 +155,47 @@ export const scenarioPresetDetails: Record<
   },
   research: {
     kind: "research",
-    label_en: "Ask AI to research and give me a conclusion",
-    label_zh: "让 AI 查资料并给结论",
-    task_en: "research this and give me a conclusion",
-    task_zh: "查资料并给结论",
+    label_en: "Research sources or papers",
+    label_zh: "查资料、找论文，整理结论",
+    task_en: "research sources or papers",
+    task_zh: "查资料、找论文，整理结论",
     artifact_en: "research note",
     artifact_zh: "资料笔记",
     overwriteLine_en: "Saved the new version over the original research note",
     overwriteLine_zh: "保存新版本时，覆盖了原来的资料笔记",
   },
-  organize: {
-    kind: "organize",
-    label_en: "Ask AI to organize scattered notes",
-    label_zh: "让 AI 整理零散信息",
-    task_en: "organize these scattered notes",
-    task_zh: "整理零散信息",
-    artifact_en: "notes",
-    artifact_zh: "原始笔记",
-    overwriteLine_en: "Saved the new version over the original notes",
-    overwriteLine_zh: "保存新版本时，覆盖了原始笔记",
+  visual: {
+    kind: "visual",
+    label_en: "Make an image or one-page visual",
+    label_zh: "做一张图或一页展示稿",
+    task_en: "make an image or one-page visual",
+    task_zh: "做一张图或一页展示稿",
+    artifact_en: "visual draft",
+    artifact_zh: "图片或展示稿",
+    overwriteLine_en: "Exported the new version over the original visual draft",
+    overwriteLine_zh: "导出新版本时，覆盖了原来的图片或展示稿",
   },
-  rewrite: {
+  automation: {
+    kind: "automation",
+    label_en: "Set up a reminder or small workflow",
+    label_zh: "安排提醒，或处理一件重复的小事",
+    task_en: "set up a reminder or small workflow",
+    task_zh: "安排提醒，或处理一件重复的小事",
+    artifact_en: "workflow setting",
+    artifact_zh: "提醒或流程设置",
+    overwriteLine_en: "Saved the new setup over the previous workflow setting",
+    overwriteLine_zh: "保存新设置时，替换了原来的提醒或流程",
+  },
+  writing: {
     kind: "writing",
-    label_en: "Ask AI to rewrite something I wrote",
-    label_zh: "让 AI 改一段文字",
-    task_en: "rewrite this draft",
-    task_zh: "改一段文字",
-    artifact_en: "draft",
-    artifact_zh: "原稿",
-    overwriteLine_en: "Saved the new version over the original draft",
-    overwriteLine_zh: "保存新版本时，覆盖了原稿",
-  },
-  summarize: {
-    kind: "summarize",
-    label_en: "Ask AI to summarize something long",
-    label_zh: "让 AI 总结一大段内容",
-    task_en: "summarize this long material",
-    task_zh: "总结一大段内容",
-    artifact_en: "source document",
-    artifact_zh: "原文档",
-    overwriteLine_en: "Saved the new version over the original source document",
-    overwriteLine_zh: "保存新版本时，覆盖了原文档",
+    label_en: "Turn messy notes into clear writing",
+    label_zh: "把零散想法整理成文字",
+    task_en: "turn messy notes into clear writing",
+    task_zh: "把零散想法整理成文字",
+    artifact_en: "notes or draft",
+    artifact_zh: "笔记或草稿",
+    overwriteLine_en: "Saved the new version over the original notes or draft",
+    overwriteLine_zh: "保存新版本时，覆盖了原来的笔记或草稿",
   },
 };
 
@@ -206,7 +203,7 @@ export const routingQuestions: RoutingQuestion[] = [
   {
     id: "stakes",
     title_en: "If it got that wrong, what happens?",
-    title_zh: "这件事如果它做错了，会怎么样？",
+    title_zh: "如果这件事做错了，会怎样？",
     options: [
       {
         id: "play",
@@ -217,20 +214,20 @@ export const routingQuestions: RoutingQuestion[] = [
       {
         id: "redo",
         score: 1,
-        label_en: "I would notice and redo it myself.",
-        label_zh: "我会发现，自己重做就行。",
+        label_en: "I would notice right away and just do it myself.",
+        label_zh: "我能马上发现，就自己来。",
       },
       {
         id: "rework",
         score: 2,
-        label_en: "I might notice late and have to rework.",
-        label_zh: "我可能发现得晚，还得返工。",
+        label_en: "I might notice later and have to redo a larger chunk.",
+        label_zh: "可能过几步才发现，到时要重改一大块。",
       },
       {
         id: "consequence",
         score: 3,
         label_en: "Someone else would see it. There would be consequences.",
-        label_zh: "会给别人看到，或者有后果。",
+        label_zh: "会给别人看到，或者真的影响到事。",
       },
     ],
   },
@@ -311,10 +308,10 @@ export const diagnosticQuestions: DiagnosticQuestion[] = [
   {
     id: "d2",
     axis: "precheck",
-    title_en: "Before AI starts changing things.",
-    title_zh: "在 AI 动手之前。",
-    prompt_en: "Which first message gives you the cleanest handoff?",
-    prompt_zh: "哪一句最容易让后面验得清楚？",
+    title_en: "Before AI starts.",
+    title_zh: "在 AI 开始做之前。",
+    prompt_en: "Which first message makes the result easiest to check?",
+    prompt_zh: "先说哪一句，后面最容易检查？",
     options: [
       {
         id: "handle",
@@ -330,16 +327,16 @@ export const diagnosticQuestions: DiagnosticQuestion[] = [
       },
       {
         id: "list_changes",
-        label_en: '"Handle it, then tell me what you changed."',
-        label_zh: "「处理完告诉我你改了哪里。」",
+        label_en: '"Do it, then tell me what you changed."',
+        label_zh: "「做完告诉我你具体做了什么。」",
         axes: { precheck: 2 },
       },
       {
         id: "plan_first",
         label_en:
-          '"Before changing it, tell me what you will touch, what stays untouched, and how I can check it."',
+          '"Before you begin, tell me your plan, what you will not do, and how I can check it."',
         label_zh:
-          "「先别改。先说你准备动哪里、哪里不动、我怎么验。」",
+          "「先别做。先说你准备怎么做、哪些不做、我怎么检查。」",
         axes: { precheck: 3 },
       },
     ],
@@ -370,8 +367,8 @@ export const diagnosticQuestions: DiagnosticQuestion[] = [
       },
       {
         id: "overwrite",
-        label_en: "Saving over the original.",
-        label_zh: "覆盖保存回原件。",
+        label_en: "Saving over the original version.",
+        label_zh: "覆盖了原来的版本。",
         axes: { diff: 3 },
       },
       {
@@ -425,7 +422,7 @@ export const expectationItems = [
     id: "build_product",
     answer: true,
     claim_en: "By the end, I should have a stronger foundation for using AI to build something real.",
-    claim_zh: "学完之后，我会更有基础地用 AI 做出一点真实的东西。",
+    claim_zh: "学完之后，我用 AI 做真实项目会更有底。",
     verdict_en: "Yes.",
     verdict_zh: "对。",
     body_en:
@@ -448,26 +445,18 @@ const diagnosticResults: Record<ActivationAxis, DiagnosticResultCopy> = {
       "Ask what changed, how it checked, and what may still be wrong.",
     bridge_zh:
       "问它：改了什么、怎么验、哪里还可能不对。",
-    bridge_generic_en:
-      "Ask what changed, how it checked, and what may still be wrong.",
-    bridge_generic_zh:
-      "问它：改了什么、怎么验、哪里还可能不对。",
   },
   precheck: {
     area_en: "Setting boundaries before it acts",
     area_zh: "动手前先定边界",
     title_en: "The issue may not be saying more. It may be setting the edge earlier.",
-    title_zh: "问题不一定是你说得不够多，而是边界没有放到动手前。",
+    title_zh: "问题不一定是你说得不够多，而是动手前没先说清边界。",
     body_en:
       "AI is good at continuing. Good use means making it name what is allowed before it moves.",
     body_zh: "AI 很会顺着话往下做；真正用顺，是先让它说清哪些能动、哪些不能动。",
     bridge_en:
       "Before it moves, ask what can change, what is off-limits, and how to check it.",
     bridge_zh:
-      "动手前先问：哪些能动、哪些不能动、改完怎么验。",
-    bridge_generic_en:
-      "Before it moves, ask what can change, what is off-limits, and how to check it.",
-    bridge_generic_zh:
       "动手前先问：哪些能动、哪些不能动、改完怎么验。",
   },
   diff: {
@@ -481,10 +470,6 @@ const diagnosticResults: Record<ActivationAxis, DiagnosticResultCopy> = {
     bridge_en:
       "See exactly what changed and whether you can roll it back.",
     bridge_zh:
-      "别只听改动说明。看它动了哪里、有没有牵连、还能不能退回来。",
-    bridge_generic_en:
-      "See exactly what changed and whether you can roll it back.",
-    bridge_generic_zh:
       "别只听改动说明。看它动了哪里、有没有牵连、还能不能退回来。",
   },
 };
@@ -569,46 +554,46 @@ const scenarioBridgeCopy: Record<
       zh: "结论改过之后，看判断变了什么、删了哪些限定、来源还能不能追。",
     },
   },
-  organize: {
+  visual: {
     evidence: {
-      en: "For organizing, ask what got grouped, what got dropped, and what rule it used.",
-      zh: "整理信息时，要看哪些被合并、哪些被丢掉、它按什么规则整理。",
+      en: "For visuals, do not only ask if it looks good. Check the size, use case, must-keep details, and what it guessed.",
+      zh: "做图或展示时，别只看好不好看。要看尺寸、用途、必须保留的内容，以及哪些是它猜的。",
     },
     precheck: {
-      en: "Before it organizes, set the grouping rule, what must stay, and what meaning cannot change.",
-      zh: "整理前先定：分类规则、必须保留什么、原意哪里不能动。",
+      en: "Before it makes the visual, set the audience, where it will be used, and what must appear or must not appear.",
+      zh: "开始做前先定：给谁看、用在哪里、必须出现什么、绝不能出现什么。",
     },
     diff: {
-      en: "After organizing, check what moved, what is missing, and whether the original can still be found.",
-      zh: "整理完看哪些位置变了、有没有漏项、原始材料还找不找得到。",
+      en: "When it changes a visual, check whether the old version is saved, what disappeared, and whether you can go back.",
+      zh: "图或展示稿改过之后，看旧版还在不在、少了什么、能不能退回去。",
+    },
+  },
+  automation: {
+    evidence: {
+      en: 'For reminders or workflows, do not stop at "set up." Check when it runs, what it touches, and how failure shows up.',
+      zh: "安排提醒或流程时，别只听“设好了”。要看什么时候触发、会动什么、失败了你怎么知道。",
+    },
+    precheck: {
+      en: "Before it sets anything up, name the trigger, the action, and what should never happen automatically.",
+      zh: "设置前先说清：什么时候触发、要做什么、哪些事绝不能自动发生。",
+    },
+    diff: {
+      en: "When a workflow changes, check the trigger, the old setting, and how to stop it if it behaves wrong.",
+      zh: "流程改过之后，看触发条件变没变、旧设置还在不在、出错时能不能停。",
     },
   },
   writing: {
     evidence: {
-      en: "For writing, do not only ask if it sounds good. Ask what brief it followed and where it may drift.",
-      zh: "改文字时，别只看顺不顺。要看它保留了哪些要求，哪里可能跑偏。",
+      en: "For writing, do not only ask if it reads well. Check what it kept, what it dropped, and where it may drift.",
+      zh: "整理成文字时，别只看顺不顺。要看重点有没有漏、语气有没有跑、原意有没有变。",
     },
     precheck: {
-      en: "Before it writes, set tone, length, must-keep points, and what should stay untouched.",
-      zh: "写之前先定：语气、长度、必须保留的点、不能碰的设定。",
+      en: "Before it writes, set the audience, tone, must-keep points, and what it should not invent for you.",
+      zh: "写之前先定：给谁看、什么语气、哪些点必须保留、哪些话不能替你发挥。",
     },
     diff: {
-      en: "After it rewrites, check which lines changed, what got removed, and whether the old version is still there.",
-      zh: "拿到文字后，别只看顺不顺。看它保留了什么、删了什么、有没有偏离原来的想法。",
-    },
-  },
-  summarize: {
-    evidence: {
-      en: "For summaries, ask what was removed, what rule it used, and whether any key point went missing.",
-      zh: "做摘要时，要看删了什么、按什么保留、有没有漏掉关键点。",
-    },
-    precheck: {
-      en: "Before it summarizes, set the audience, length, and information that cannot be cut.",
-      zh: "压缩前先定：给谁看、留多长、哪些信息不能删。",
-    },
-    diff: {
-      en: "After the summary, compare what disappeared, what changed meaning, and whether it still matches the source.",
-      zh: "摘要完成后，看哪些信息不见了、意思有没有变、还能不能对回原文。",
+      en: "After it rewrites or organizes, check what disappeared, what changed meaning, and whether the original is still findable.",
+      zh: "文字成稿后，看删了什么、意思有没有变、原来的想法还能不能找回来。",
     },
   },
   general: {
@@ -742,8 +727,6 @@ export function getDiagnosticResult(
     title: locale === "zh" ? result.title_zh : result.title_en,
     body: locale === "zh" ? result.body_zh : result.body_en,
     bridge: locale === "zh" ? result.bridge_zh : result.bridge_en,
-    genericBridge:
-      locale === "zh" ? result.bridge_generic_zh : result.bridge_generic_en,
   };
 }
 
@@ -767,13 +750,13 @@ export function getActivationReadiness(
 export function describeStakesSignal(score: AxisLevel | null, locale: Locale) {
   if (locale === "zh") {
     if (score === 3) return "会影响别人";
-    if (score === 2) return "发现晚了要返工";
-    if (score === 1) return "错了能重做";
+    if (score === 2) return "过几步才发现";
+    if (score === 1) return "马上发现就自己来";
     return "只是试试看";
   }
   if (score === 3) return "Others may see it";
-  if (score === 2) return "Late errors mean rework";
-  if (score === 1) return "You can redo it";
+  if (score === 2) return "Late errors mean larger rework";
+  if (score === 1) return "You can catch it early";
   return "Just trying it";
 }
 

@@ -68,3 +68,11 @@ specific replacement line.
 - 2026-09-14: Do not use "先补一块" for an activation result signal. It is
   unclear whether it names a flaw, a lesson, or a task. Use "先练哪一步" when
   the product is naming the next practice focus.
+- 2026-09-14: In activation stakes questions, do not translate both "redo it
+  myself" and "notice late and rework" into near-identical Chinese. The useful
+  distinction is timing and blast radius: "我能马上发现，就自己来" versus "可能过
+  几步才发现，到时要重改一大块."
+- 2026-09-14: When task labels feed directly into `请帮我...`, avoid labels that
+  already contain another helper phrase such as "帮我给结论"; otherwise the
+  artifact line becomes assembled Chinese. Prefer compact verb phrases like
+  "查资料、找论文，整理结论."

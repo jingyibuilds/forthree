@@ -136,7 +136,7 @@ export async function saveActivationDiagnostic(
       activation_v2: {
         completed: true,
         completed_at: now,
-        version: 4,
+        version: 5,
         skipped,
         verbatim: scenarioDetails?.label ?? null,
         slots: scenarioDetails
@@ -212,7 +212,6 @@ export async function saveActivationDiagnostic(
       scenario_preset: scenarioPreset,
       stakes,
       friction,
-      used_general_example: scenarioPreset === null,
     },
   });
 
@@ -240,7 +239,6 @@ export async function saveActivationDiagnostic(
       evidence: axes?.evidence,
       precheck: axes?.precheck,
       diff: axes?.diff,
-      used_general_example: scenarioPreset === null,
     },
   });
 
