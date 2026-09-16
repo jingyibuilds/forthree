@@ -82,10 +82,10 @@
       "stage": 1,
       "label_zh": "卷一",
       "label_en": "Part 1",
-      "title_en": "Computational thinking & Python foundations",
-      "title_zh": "计算思维与 Python 基础",
-      "milestone_en": "You can read and trace basic Python.",
-      "milestone_zh": "你能读懂基础 Python 代码，并一步步跟出它会做什么。"
+      "title_en": "AI agent handoffs & Python foundations",
+      "title_zh": "AI agent 工作痕迹与 Python 基础",
+      "milestone_en": "You can read a basic AI-agent handoff, ask for missing evidence, and trace simple Python.",
+      "milestone_zh": "你能读懂基础 AI agent（AI 代理）交接记录，追问缺失证据，并一步步跟出简单 Python 会做什么。"
     },
     {
       "stage": 2,

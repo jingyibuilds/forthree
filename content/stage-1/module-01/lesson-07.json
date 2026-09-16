@@ -4,22 +4,24 @@
   "order": 7,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 8,
-  "title_en": "The folder changes the meaning",
-  "title_zh": "站在哪个文件夹，很重要",
-  "outcome_en": "You can spot when a command likely failed because it ran from the wrong folder.",
-  "outcome_zh": "你能看出一条命令是不是可能因为站错文件夹而失败。",
-  "takeaway_move_en": "Before running it, tell me the current folder and branch.",
-  "takeaway_move_zh": "运行前，先说清当前文件夹和分支。",
+  "est_minutes": 10,
+  "title_en": "Where did the agent run it?",
+  "title_zh": "agent 是在哪里运行的",
+  "outcome_en": "You can spot when a command likely failed because it ran in the wrong folder, workspace, or branch.",
+  "outcome_zh": "你能看出一条命令是不是可能因为站错文件夹、工作区（workspace）或分支（branch）而失败。",
+  "takeaway_move_en": "Before running it, tell me the folder, workspace, and branch.",
+  "takeaway_move_zh": "运行前，先说清文件夹、工作区（workspace）和分支（branch）。",
   "review_tags": [
     "must_master",
+    "recognize_only:workspace",
+    "recognize_only:branch",
     "profile_anchor:ai-agent"
   ],
   "blocks": [
     {
       "type": "reading",
-      "body_en": "Lesson 3 introduced the current directory. This point deserves its own practice because it explains many real agent failures. The code may be fine; the command may be fine; the terminal may simply be standing in the wrong folder.",
-      "body_zh": "第 3 课提到过当前目录。它值得单独练一次，因为很多真实的 agent 失败都卡在这里：代码可能没错，命令也可能没错，只是终端站错了文件夹。"
+      "body_en": "Lesson 3 introduced the current directory. This point deserves its own practice because many real agent failures are location failures. The code may be fine; the command may be fine; the terminal may simply be standing in the wrong place.",
+      "body_zh": "第 3 课提到过当前目录。它值得单独练一次，因为很多真实的 agent 失败，其实是位置弄错了：代码可能没错，命令也可能没错，只是终端站错了地方。"
     },
     {
       "type": "concept",
@@ -36,21 +38,34 @@
     },
     {
       "type": "reading",
-      "body_en": "A useful question when reading logs: where was the command run from? If you see `cd project` before a command, that means the terminal changed directory into a folder named `project`.",
-      "body_zh": "读日志时有一个很好用的问题：这条命令是从哪里运行的？如果你看到 `cd project` 出现在命令前面，意思是终端先切换到了名叫 `project` 的文件夹。"
+      "body_en": "Two more location words will show up in agent work. A `workspace` is the project area the agent is working inside. A `branch` is a version lane inside a repo. You do not need Git mastery yet; just recognize that \"right file, wrong branch\" can still mean wrong work.",
+      "body_zh": "和 agent 协作时，还会常见两个位置词。`workspace`（工作区）是 agent 正在处理的项目区域；`branch`（分支）是代码仓库里的另一条版本线。你现在不用精通 Git，只要先认出：文件对了，分支错了，工作仍然可能错。"
     },
     {
       "type": "exercise",
       "ref": "m01-l07-e02"
     },
     {
+      "type": "reading",
+      "body_en": "A useful question when reading logs: where was the command run from? If you see `cd project` before a command, that means the terminal changed directory into a folder named `project`.",
+      "body_zh": "读日志时有一个很好用的问题：这条命令是从哪里运行的？如果你看到 `cd project` 出现在命令前面，意思是终端先切换到了名叫 `project` 的文件夹。"
+    },
+    {
       "type": "exercise",
       "ref": "m01-l07-e03"
     },
     {
+      "type": "exercise",
+      "ref": "m01-l07-e04"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l07-e05"
+    },
+    {
       "type": "reading",
-      "body_en": "Checkpoint: after this lesson, you can read a file-not-found failure without panicking. One of your first hypotheses can be: maybe the command ran from the wrong folder.",
-      "body_zh": "这一课的小结：现在你看到「找不到文件」时，不必立刻慌。你的第一个猜测可以是：也许命令是从错误的文件夹运行的。"
+      "body_en": "Checkpoint: after this lesson, file-not-found should not immediately mean \"the program is bad.\" Your first hypotheses can be: wrong folder, wrong workspace, wrong branch, or wrong file name.",
+      "body_zh": "这一课的小结：现在看到「找不到文件」，不要立刻等同于「程序写坏了」。你的前几个猜测可以是：文件夹错了、工作区错了、分支错了，或者文件名错了。"
     }
   ],
   "exercises": [
@@ -60,25 +75,48 @@
       "prompt_en": "A command says it cannot find `report.py`. Which question is most useful first?",
       "prompt_zh": "一条命令说找不到 `report.py`。你最该先问哪个问题？",
       "options_en": [
-        "Which folder was the terminal in when the command ran?",
-        "Is Python always broken?",
-        "Should I memorize C and Rust first?",
-        "Did the output become source code?"
+        "Did the agent use enough comments in the code?",
+        "Should we switch programming languages before checking the path?",
+        "Does `report.py` prove the output was correct?",
+        "Did the agent run from the folder where `report.py` actually lives?"
       ],
       "options_zh": [
-        "这条命令运行时，终端站在哪个文件夹里？",
-        "是不是 Python 总是坏的？",
-        "我要不要先背 C 和 Rust？",
-        "输出是不是变成了源代码？"
+        "agent 有没有在代码里写足够多注释？",
+        "在检查路径前，我们是不是应该先换一种编程语言？",
+        "`report.py` 这个文件名能不能证明输出正确？",
+        "agent 运行命令时，是否站在 `report.py` 真正所在的文件夹？"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain_en": "File-not-found often means a location mismatch. Check the current directory before assuming the program logic is wrong.",
       "explain_zh": "找不到文件常常是位置不匹配。先看当前目录，再判断程序逻辑是不是错了。",
-      "difficulty": 1,
+      "difficulty": 2,
       "xp_value": 10
     },
     {
       "id": "m01-l07-e02",
+      "type": "mcq",
+      "prompt_en": "An agent says: `I changed cleanup.py on a temporary branch, not main.` What should you understand for now?",
+      "prompt_zh": "agent 说：`I changed cleanup.py on a temporary branch, not main.`（我是在临时分支上改了 cleanup.py，不是在 main 主分支上。）你现在应该怎么理解？",
+      "options_en": [
+        "The code definitely ran successfully.",
+        "The change may exist in a different version lane than the main project.",
+        "The folder path no longer matters.",
+        "A branch means the file was deleted."
+      ],
+      "options_zh": [
+        "代码一定已经成功运行。",
+        "改动可能在不同于主项目的版本岔路上。",
+        "文件夹路径从此不重要了。",
+        "分支的意思是文件被删除了。"
+      ],
+      "answer": 1,
+      "explain_en": "For now, branch is a location/version clue. You do not need full Git yet; you only need to notice which lane the work happened in.",
+      "explain_zh": "现在先把 branch（分支）当成位置 / 版本线索。你还不需要完整学 Git，只需要注意这件工作发生在哪条版本岔路上。",
+      "difficulty": 2,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l07-e03",
       "type": "fill_in",
       "prompt_en": "The word for a file's address inside folders is ______.",
       "prompt_zh": "表示一个文件在各层文件夹里具体地址的英文词是 ______。",
@@ -95,27 +133,57 @@
       "term_drill": true
     },
     {
-      "id": "m01-l07-e03",
+      "id": "m01-l07-e04",
+      "type": "drag_order",
+      "prompt_en": "Put this agent's location repair in order.",
+      "prompt_zh": "把这次 agent 修正运行位置的过程排好顺序。",
+      "items_en": [
+        "`FileNotFoundError: customers.csv`",
+        "`cd data-tools`",
+        "`python3 cleanup.py` again",
+        "`python3 cleanup.py`"
+      ],
+      "items_zh": [
+        "`FileNotFoundError: customers.csv`（找不到 customers.csv）",
+        "`cd data-tools`",
+        "再次运行 `python3 cleanup.py`",
+        "`python3 cleanup.py`"
+      ],
+      "answer": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "explain_en": "The first run fails, the agent changes directory, then the same script is tried again from a better location.",
+      "explain_zh": "第一次运行失败，agent 切换目录，然后从更合适的位置再次运行同一个脚本。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
+    },
+    {
+      "id": "m01-l07-e05",
       "type": "mcq",
-      "prompt_en": "Transcript:\n\n`cd project`\n`python3 hello.py`\n`hello`\n\nWhat did `cd project` most likely do?",
-      "prompt_zh": "工作记录：\n\n`cd project`\n`python3 hello.py`\n`hello`\n\n`cd project` 最可能做了什么？",
+      "prompt_en": "Transcript:\n\n`cd old-reports`\n`python3 summarize.py`\n`Output: wrote summary.md`\n\nYou expected the agent to work in `current-reports`. What is the safest next instruction?",
+      "prompt_zh": "工作记录：\n\n`cd old-reports`\n`python3 summarize.py`\n`Output: wrote summary.md`（写出了 summary.md）\n\n你原本要求 agent 处理 `current-reports`。下一句最稳妥的指令是什么？",
       "options_en": [
-        "It moved the terminal into the `project` folder before running the file",
-        "It printed `hello`",
-        "It wrote Python source code",
-        "It proved the code has no risk"
+        "Looks good, because there is output.",
+        "Please confirm which folder contained the source files, and do not use this summary until we know it came from `current-reports`.",
+        "Delete all report folders and rerun from scratch.",
+        "Explain Python syntax before checking the folder."
       ],
       "options_zh": [
-        "它先把终端切换到 `project` 文件夹，再运行文件",
-        "它打印出了 `hello`",
-        "它写出了 Python 源代码",
-        "它证明这段代码没有任何风险"
+        "看起来没问题，因为有输出。",
+        "请确认源文件在哪个文件夹；在确认它来自 `current-reports` 前，先不要使用这个 `summary.md` 摘要文件。",
+        "删除所有报告文件夹，然后从头重跑。",
+        "先解释 Python 语法，再检查文件夹。"
       ],
-      "answer": 0,
-      "explain_en": "`cd` changes the current directory. For now, recognize its role: it changes where later commands run from.",
-      "explain_zh": "`cd` 会改变当前目录。现在只要认出它的作用：它会改变后续命令从哪里运行。",
-      "difficulty": 2,
-      "xp_value": 10
+      "answer": 1,
+      "explain_en": "Output exists, but it may be output from the wrong folder. The next move is to verify the location and avoid trusting the artifact too early.",
+      "explain_zh": "输出确实存在，但可能来自错误文件夹。下一步是确认位置，并且不要太早信任产物。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
     }
   ]
 }

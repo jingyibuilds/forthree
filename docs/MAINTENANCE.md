@@ -93,6 +93,12 @@ For course content, also check:
   one responsive layout inspection when the lesson includes visuals,
   side-by-side comparisons, sticky controls, dialogs, or external links.
 
+Build validation note, 2026-09-16: if plain `npm run build` fails locally with
+a Turbopack internal panic about binding to a port, rerun the production build
+as `npm run build -- --webpack` and report both results in the handoff. This is
+a local build-tool workaround, not a reason to skip content validation or
+TypeScript/build verification.
+
 ## External resource gate
 
 Do not add external course links just because a source is authoritative. Treat

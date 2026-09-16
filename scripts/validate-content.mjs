@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Content validator — fails the build on malformed content. DECISIONS.md
-// overrides the original long-session target: Phase 1 lessons should stay
-// friendly to 10-minute fragments.
+// Content validator — fails the build on malformed content. Phase 1 JSON files
+// are micro-lesson cards capped at 10 minutes; learner-facing sessions may
+// bundle several cards plus a lab/checkpoint for a 15-30 minute effort.
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 

@@ -136,6 +136,7 @@ function ExerciseCard({
   t,
   completed,
   assistantEnabled,
+  hintsAllowed,
   anchorHint,
   onDone,
   onAskAssistant,
@@ -147,6 +148,7 @@ function ExerciseCard({
   t: Dict;
   completed: boolean;
   assistantEnabled: boolean;
+  hintsAllowed: boolean;
   anchorHint?: string;
   onDone: (r: ExerciseResult) => void;
   onAskAssistant: (seed?: AssistantSeed) => void;
@@ -289,7 +291,7 @@ function ExerciseCard({
           <p className="rounded-lg bg-warn-soft p-3 text-base leading-7 text-warn">
             {t.incorrect}
           </p>
-          {tries >= 2 && (
+          {hintsAllowed && tries >= 2 && (
             <div className="rounded-lg border border-warn/25 bg-warn-soft p-4 text-base leading-7 text-warn">
               <p className="font-medium">{t.staticHint}</p>
               <p className="mt-2">
@@ -303,7 +305,7 @@ function ExerciseCard({
               )}
             </div>
           )}
-          {assistantEnabled && (
+          {hintsAllowed && assistantEnabled && (
             <button
               type="button"
               onClick={() => {
@@ -1196,14 +1198,19 @@ export function LessonPlayer({
   );
   const checkpointMaterial = useMemo(() => {
     if (!lesson.review_tags?.includes("module_checkpoint")) return null;
+    const materialPatterns = ["Transcript:", "Handoff A:", "交接 A：", "工作记录"];
     return (
       lesson.blocks.find(
         (item): item is Extract<Block, { type: "reading" }> =>
           item.type === "reading" &&
-          (item.body_en.includes("Transcript:") || item.body_zh.includes("工作记录"))
+          materialPatterns.some(
+            (pattern) => item.body_en.includes(pattern) || item.body_zh.includes(pattern)
+          )
       ) ?? null
     );
   }, [lesson]);
+  const hintsAllowed = !lesson.review_tags?.includes("no_hint_checkpoint");
+  const assistantAvailable = assistantEnabled && hintsAllowed;
   const firstExerciseIndex = lesson.blocks.findIndex((item) => item.type === "exercise");
   const block = lesson.blocks[index];
   const isExercise = block.type === "exercise";
@@ -1517,7 +1524,7 @@ export function LessonPlayer({
         </span>
       </div>
 
-      {assistantEnabled && (
+      {assistantAvailable && (
         <button
           type="button"
           onClick={() => openAssistant()}
@@ -1618,7 +1625,8 @@ export function LessonPlayer({
               locale={locale}
               t={t}
               completed={blockDone}
-              assistantEnabled={assistantEnabled}
+              assistantEnabled={assistantAvailable}
+              hintsAllowed={hintsAllowed}
               anchorHint={currentAnchorHint}
               onAskAssistant={openAssistant}
               onDone={recordCorrectResult}
@@ -1654,7 +1662,7 @@ export function LessonPlayer({
       </div>
 
       <div className="sticky bottom-0 z-30 -mx-5 flex gap-3 border-t border-line/70 bg-background/95 px-5 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-3 backdrop-blur sm:-mx-8 sm:px-8">
-        {assistantEnabled && (
+        {assistantAvailable && (
           <button
             type="button"
             onClick={() => openAssistant()}

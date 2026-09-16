@@ -79,18 +79,18 @@
       "prompt_en": "What appears on the screen after Python runs `print(\"hello\")`?",
       "prompt_zh": "Python 运行 `print(\"hello\")` 之后，屏幕上会出现什么？",
       "options_en": [
-        "hello",
         "\"hello\"",
         "print",
-        "Nothing, because this is only source code"
+        "Nothing, because this is only source code",
+        "hello"
       ],
       "options_zh": [
-        "hello",
         "\"hello\"",
         "print",
-        "什么都不会出现，因为这只是源代码"
+        "什么都不会出现，因为这只是源代码",
+        "hello"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain_en": "The quote marks mark the text inside the code; they are not part of the printed result.",
       "explain_zh": "引号是在代码里标记文字边界的，不属于最终打印到屏幕上的结果。",
       "difficulty": 1,
@@ -119,18 +119,18 @@
       "prompt_en": "Which story is correct for a tiny Python script?",
       "prompt_zh": "下面哪一条，正确描述了一个很小的 Python 脚本从文字到结果的过程？",
       "options_en": [
-        "Source code sits in a file; a command asks Python to run it; Python produces output",
         "Output appears first; then Python writes the source code",
+        "Source code sits in a file; a command asks Python to run it; Python produces output",
         "A terminal automatically understands Python without an interpreter",
         "Pseudocode is the final thing the computer runs"
       ],
       "options_zh": [
-        "源代码先在文件里；命令请求 Python 运行它；Python 产生输出",
         "先出现输出，然后 Python 再写源代码",
+        "源代码先在文件里；命令请求 Python 运行它；Python 产生输出",
         "终端不需要解释器，就能自动理解 Python",
         "伪代码就是电脑最终运行的东西"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain_en": "This is the whole Module 1 chain so far: text, command, interpreter, action, output.",
       "explain_zh": "这就是第 1 模块到目前为止的整条链：文字、命令、解释器、动作、输出。",
       "difficulty": 2,

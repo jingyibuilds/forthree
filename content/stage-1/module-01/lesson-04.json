@@ -96,18 +96,18 @@
       "prompt_en": "Which version is best pseudocode for \"send a reminder to every person who has not replied\"?",
       "prompt_zh": "如果任务是「给每个还没回复的人发送提醒」，下面哪一版最像好的伪代码？",
       "options_en": [
-        "FOR EACH person: IF they have not replied, send reminder",
         "Use Python professionally",
         "Find some people and maybe remind them",
+        "FOR EACH person: IF they have not replied, send reminder",
         "Make the computer handle replies"
       ],
       "options_zh": [
-        "对每个人：如果这个人还没回复，就发送提醒",
         "专业地使用 Python",
         "随便找一些人，也许提醒一下",
+        "对每个人：如果这个人还没回复，就发送提醒",
         "让电脑处理回复"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain_en": "Good pseudocode names the repeated item, the decision, and the action. It is specific enough to implement, but not yet tied to exact Python spelling.",
       "explain_zh": "好的伪代码会说清楚：重复处理谁、判断条件是什么、满足条件后做什么。它足够具体，可以被实现；但还不急着写成准确的 Python 语法。",
       "difficulty": 1,
@@ -138,18 +138,18 @@
       "prompt_en": "Why is pseudocode useful when asking an AI agent to write code?",
       "prompt_zh": "请 AI agent（AI 代理）写代码前，先写伪代码有什么用？",
       "options_en": [
-        "It makes your intended steps visible, so both you and the agent can check the plan",
         "It guarantees the final code has no bugs",
         "It replaces running the code",
-        "It hides the problem from the agent"
+        "It hides the problem from the agent",
+        "It makes your intended steps visible, so both you and the agent can check the plan"
       ],
       "options_zh": [
-        "它把你想要的步骤显性写出来，方便你和 agent 一起检查计划",
         "它能保证最后的代码绝对没有 bug（代码里的错误）",
         "它可以代替运行代码",
-        "它会把问题藏起来，不让 agent 看懂"
+        "它会把问题藏起来，不让 agent 看懂",
+        "它把你想要的步骤显性写出来，方便你和 agent 一起检查计划"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain_en": "Pseudocode does not prove code is correct. Its value is clarity: it gives the later code a visible contract to match.",
       "explain_zh": "伪代码不能证明代码一定正确。它的价值是清楚：后面真正写出的代码，至少有一个看得见的计划可以对照。",
       "difficulty": 2,
@@ -190,18 +190,18 @@
       "prompt_en": "Your pseudocode says:\n\n1. Make a copy of `customers.csv`.\n2. Remove rows with missing email.\n3. Count how many rows were removed.\n4. Save the result as `customers_clean.csv`.\n\nAn agent replies: \"I will open `customers.csv`, delete rows with missing email, and save `customers.csv`.\" What should you flag?",
       "prompt_zh": "你的伪代码写的是：\n\n1. 先复制一份 `customers.csv`。\n2. 删除缺少邮箱的行。\n3. 统计一共删除了多少行。\n4. 把结果保存成 `customers_clean.csv`。\n\nagent 回答：「我会打开 `customers.csv`，删除缺少邮箱的行，然后保存 `customers.csv`。」你应该提醒什么？",
       "options_en": [
-        "It may overwrite the original file and it skipped the removal count",
         "It used too many English words",
+        "It may overwrite the original file and it skipped the removal count",
         "It must be correct because it mentions missing email",
         "It is only pseudocode, so it cannot be compared to your plan"
       ],
       "options_zh": [
-        "它可能覆盖原文件，而且漏掉了统计删除数量这一步",
         "它用了太多英文词",
+        "它可能覆盖原文件，而且漏掉了统计删除数量这一步",
         "它提到了缺少邮箱，所以一定正确",
         "它只是伪代码，所以不能和你的计划对照"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain_en": "You are not judging Python spelling here. You are checking whether the agent preserved the contract: copy first, count removed rows, and save to a new file.",
       "explain_zh": "这里不是在检查 Python 拼写，而是在检查 agent 有没有守住计划约定：先复制、统计删除数量、保存到新文件。",
       "difficulty": 3,
@@ -214,18 +214,18 @@
       "prompt_en": "Which message gives an AI agent the strongest pseudocode-style contract?",
       "prompt_zh": "下面哪句话最像在给 AI agent（AI 代理）一份清楚的伪代码式约定？",
       "options_en": [
-        "Read `orders.csv`; for each order, if `paid` is false, add it to a follow-up list; print the count",
         "Write professional Python for my orders",
         "Analyze the file and do the right thing",
+        "Read `orders.csv`; for each order, if `paid` is false, add it to a follow-up list; print the count",
         "Make it clean and efficient"
       ],
       "options_zh": [
-        "读取 `orders.csv`；对每一笔订单，如果 `paid`（已付款）为 false（否），就加入待跟进列表；最后打印数量",
         "给我的订单写一段专业 Python",
         "分析这个文件，然后做正确的事",
+        "读取 `orders.csv`；对每一笔订单，如果 `paid`（已付款）为 false（否），就加入待跟进列表；最后打印数量",
         "写得干净、高效一点"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain_en": "The strongest contract names the input, the repeated item, the condition, the action, and the visible result. The vague requests sound confident but are hard to check.",
       "explain_zh": "最强的约定会说清楚输入、重复处理的对象、判断条件、动作和可见结果。含糊请求听起来很自信，但后面很难检查。",
       "difficulty": 3,

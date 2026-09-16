@@ -111,18 +111,18 @@
       "prompt_en": "An agent working on a program that must be built first says: \"the build failed, fixing and rebuilding.\" Which translator style is at work, and when was the error caught?",
       "prompt_zh": "agent 在处理一个「必须先构建才能运行」的程序时说：\"the build failed, fixing and rebuilding.\"（构建失败，正在修复并重新构建。）这是哪种翻译方式？错误是在什么时候被抓住的？",
       "options_en": [
-        "Compiler — the error was caught before the program ever ran",
         "Interpreter — the error was caught mid-execution",
         "Compiler — the error appeared while the program was running",
-        "Neither — builds have nothing to do with translation"
+        "Neither — builds have nothing to do with translation",
+        "Compiler — the error was caught before the program ever ran"
       ],
       "options_zh": [
-        "编译器——错误在程序运行之前就被抓住了",
         "解释器——错误在执行到一半时被抓住",
         "编译器——错误是在程序运行中出现的",
-        "都不是——构建（build）和翻译无关"
+        "都不是——构建（build）和翻译无关",
+        "编译器——错误在程序运行之前就被抓住了"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain_en": "\"Build\" is the compile step: whole-book translation. A failed build usually means the target program never started running. Compared with a mid-run crash, this is often the safer kind of failure.",
       "explain_zh": "\"build\"（构建）就是编译这一步：整本书式翻译。构建失败通常意味着目标程序还没真正开始运行。和跑到一半才崩溃相比，它往往是更安全的一种失败。",
       "difficulty": 2,
@@ -153,18 +153,18 @@
       "prompt_en": "An agent says: \"The script crashed after creating `backup.csv`, before deleting old rows.\" What should you ask next?",
       "prompt_zh": "agent 说：\"The script crashed after creating `backup.csv`, before deleting old rows.\"（脚本在创建 `backup.csv` 之后、删除旧行之前崩溃了。）你接下来最该问什么？",
       "options_en": [
-        "Confirm what files now exist, because some action already happened.",
         "Nothing changed, because the script crashed.",
+        "Confirm what files now exist, because some action already happened.",
         "Only ask whether the code style is clean.",
         "Treat it as a build failure."
       ],
       "options_zh": [
-        "确认现在有哪些文件存在，因为已经有动作发生过。",
         "脚本崩溃了，所以什么都没变。",
+        "确认现在有哪些文件存在，因为已经有动作发生过。",
         "只问代码风格干不干净。",
         "把它当成构建失败。"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain_en": "This was a runtime failure after at least one step succeeded. Your next move is evidence: what was created, changed, or left half-done?",
       "explain_zh": "这是运行中的失败，而且至少有一步已经成功。下一步要证据：创建了什么、改了什么、有没有半成品？",
       "difficulty": 3,

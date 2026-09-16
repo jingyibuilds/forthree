@@ -4,32 +4,34 @@
   "order": 8,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 8,
+  "est_minutes": 10,
   "title_en": "When running changes things",
   "title_zh": "运行之后，可能已经改了东西",
-  "outcome_en": "You can distinguish harmless-looking checks from commands that may create, change, install, or delete things.",
-  "outcome_zh": "你能初步分清哪些命令像是在检查，哪些命令可能创建、修改、安装或删除东西。",
-  "takeaway_move_en": "Will this command create, change, install, or delete anything?",
-  "takeaway_move_zh": "这条命令会创建、修改、安装或删除东西吗？",
+  "outcome_en": "You can distinguish harmless-looking checks from commands that may create, change, install, send, or delete things.",
+  "outcome_zh": "你能初步分清哪些命令像是在检查，哪些命令可能创建、修改、安装、发送或删除东西。",
+  "takeaway_move_en": "Will this create, change, install, send, or delete anything?",
+  "takeaway_move_zh": "它会创建、修改、安装、发送或删除东西吗？",
   "review_tags": [
     "must_master",
     "later_formalize:shell-safety",
+    "recognize_only:backup",
+    "recognize_only:rollback",
     "profile_anchor:ai-agent"
   ],
   "blocks": [
     {
       "type": "reading",
       "body_en": "Running code is the moment risk can enter. Not every command is dangerous, and you do not need a full security course yet. But you do need one early habit: ask whether this command only checks something, or may change something.",
-      "body_zh": "运行代码，是风险可能进入的那一刻。不是每条命令都危险，你现在也不需要上一整门安全课。但你需要很早养成一个习惯：这条命令只是检查什么，还是可能改动什么？"
+      "body_zh": "运行代码，是风险开始出现的时刻。不是每条命令都危险，你现在也不需要上一整门安全课。但你需要很早养成一个习惯：这条命令只是检查什么，还是可能改动什么？"
     },
     {
       "type": "concept",
       "term": "side effect",
-      "term_zh": "副作用 / 额外影响（side effect）",
+      "term_zh": "副作用（额外影响，side effect）",
       "anchor_en": "Reading a recipe has no side effect; cooking it uses ingredients, makes dishes dirty, and changes the kitchen.",
       "anchor_zh": "读菜谱没有副作用；真的做菜会用掉食材、弄脏盘子、改变厨房状态。",
-      "explain_en": "A side effect is a change a program makes outside its own calculation: creating a file, editing data, deleting something, installing a package, sending a request. When an agent runs code, ask what side effects are possible.",
-      "explain_zh": "副作用指程序在自己计算之外造成的改变：创建文件、修改数据、删除东西、安装包、向外发送请求。agent 运行代码时，你要问：它可能带来哪些额外影响？"
+      "explain_en": "A side effect is a change a program makes outside its own calculation: creating a file, editing data, deleting something, installing a package, or sending a request. When an agent runs code, ask what side effects are possible.",
+      "explain_zh": "副作用指程序不只是算出结果，还改了外面的东西：创建文件、修改数据、删除东西、安装包、向外发送请求。agent 运行代码时，你要问：它可能带来哪些额外影响？"
     },
     {
       "type": "exercise",
@@ -45,37 +47,54 @@
       "ref": "m01-l08-e02"
     },
     {
+      "type": "concept",
+      "term": "rollback",
+      "term_zh": "回滚 / 撤回改动（rollback）",
+      "anchor_en": "Undo for work that has already touched something real: a file, a database row, a deployment, or a setting.",
+      "anchor_zh": "像给已经碰到真实东西的操作准备「撤销」：文件、数据库里的行、部署、设置，都算真实东西。",
+      "explain_en": "A rollback is a way to return to a previous safer state. You do not need to know the command yet. You only need the judgment: before an agent runs a command with side effects, ask whether there is a backup or rollback path.",
+      "explain_zh": "rollback（回滚）就是把系统退回到之前更安全的状态。你现在不用知道具体命令，只要先有判断：agent 要运行有副作用的命令前，有没有备份或回滚办法？"
+    },
+    {
       "type": "exercise",
       "ref": "m01-l08-e03"
     },
     {
+      "type": "exercise",
+      "ref": "m01-l08-e04"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l08-e05"
+    },
+    {
       "type": "reading",
-      "body_en": "Checkpoint: after this lesson, you can ask a practical safety question before approving an agent run: if this command succeeds halfway and then crashes, what may already have changed?",
-      "body_zh": "这一课的小结：现在你在同意 agent 运行之前，可以先问一个实际的安全问题：如果这条命令跑到一半又崩了，什么东西可能已经被改过？"
+      "body_en": "Checkpoint: after this lesson, you can ask a practical safety question before approving an agent run: if this command succeeds halfway and then crashes, what may already have changed, and how would we recover?",
+      "body_zh": "这一课的小结：现在你在同意 agent 运行之前，可以先问一个实际的安全问题：如果这条命令跑到一半又崩了，什么东西可能已经被改过？我们怎么恢复？"
     }
   ],
   "exercises": [
     {
       "id": "m01-l08-e01",
       "type": "mcq",
-      "prompt_en": "Which action is most clearly a side effect?",
-      "prompt_zh": "下面哪个动作最明显属于副作用 / 额外影响？",
+      "prompt_en": "Which command is most likely to have a side effect?",
+      "prompt_zh": "下面哪条命令最可能产生副作用 / 额外影响？",
       "options_en": [
-        "Creating a new file",
-        "Reading a line of source code",
-        "Thinking through pseudocode",
-        "Seeing the word Python"
+        "`python3 check_format.py --dry-run`",
+        "`python3 cleanup.py --write customers_clean.csv`",
+        "`cat README.md`",
+        "`python3 --version`"
       ],
       "options_zh": [
-        "创建一个新文件",
-        "读一行源代码",
-        "在脑中理一遍伪代码",
-        "看到 Python 这个词"
+        "`python3 check_format.py --dry-run`（只试跑检查格式）",
+        "`python3 cleanup.py --write customers_clean.csv`（写出清理后的文件）",
+        "`cat README.md`（查看 README 文件）",
+        "`python3 --version`（查看 Python 版本）"
       ],
-      "answer": 0,
-      "explain_en": "Creating a file changes the outside world of the program. That is a side effect.",
-      "explain_zh": "创建文件会改变程序外部的世界，所以它是副作用。",
-      "difficulty": 1,
+      "answer": 1,
+      "explain_en": "`--write customers_clean.csv` signals that the command may create or overwrite a file. That is a side effect to notice.",
+      "explain_zh": "`--write customers_clean.csv` 暗示这条命令可能创建或覆盖文件。这就是需要注意的副作用。",
+      "difficulty": 2,
       "xp_value": 10
     },
     {
@@ -101,22 +120,75 @@
       "prompt_en": "An agent says: \"The script crashed after writing 200 rows.\" What should you infer?",
       "prompt_zh": "agent 说：\"The script crashed after writing 200 rows.\"（脚本写入 200 行之后崩溃了。）你应该怎么理解？",
       "options_en": [
-        "Even though it crashed, it may already have changed data",
-        "Because it crashed, nothing could have changed",
-        "It was only source code and never ran",
-        "This proves the current directory was wrong"
+        "Because it crashed, nothing could have changed.",
+        "Even though it crashed, data or files may already have changed.",
+        "It was only source code and never ran.",
+        "This proves the current branch was wrong."
       ],
       "options_zh": [
-        "虽然它崩了，但数据可能已经被改过",
-        "因为它崩了，所以一定什么都没改",
-        "它只是源代码，从来没有运行",
-        "这证明当前目录一定错了"
+        "因为它崩了，所以一定什么都没改。",
+        "虽然它崩了，但数据或文件可能已经被改过。",
+        "它只是源代码，从来没有运行。",
+        "这证明当前分支一定错了。"
       ],
-      "answer": 0,
-      "explain_en": "Interpreted or running programs can do partial work before failing. A crash does not undo every side effect.",
+      "answer": 1,
+      "explain_en": "Running programs can do partial work before failing. A crash does not automatically undo every side effect.",
       "explain_zh": "正在运行的程序可能先做了一部分事，然后才失败。崩溃不代表之前的副作用都会自动撤销。",
       "difficulty": 2,
       "xp_value": 10
+    },
+    {
+      "id": "m01-l08-e04",
+      "type": "mcq",
+      "prompt_en": "Before approving `delete_duplicate_rows.py` on the only copy of `customers.csv`, what should you ask for first?",
+      "prompt_zh": "在同意 agent 对唯一一份 `customers.csv` 运行 `delete_duplicate_rows.py` 之前，你应该先要求什么？",
+      "options_en": [
+        "A promise that the script name sounds safe.",
+        "A backup or a plan for how to recover if the result is wrong.",
+        "A shorter file name.",
+        "A full explanation of every Python keyword."
+      ],
+      "options_zh": [
+        "让它保证脚本名字听起来很安全。",
+        "先有备份，或者说明如果结果错了怎么恢复。",
+        "把文件名改短一点。",
+        "完整解释每个 Python 关键词。"
+      ],
+      "answer": 1,
+      "explain_en": "Deleting or rewriting real data needs a recovery path before the run, not confidence after the run.",
+      "explain_zh": "删除或重写真数据，需要在运行前就有恢复路径，而不是运行后再听它保证。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
+    },
+    {
+      "id": "m01-l08-e05",
+      "type": "drag_order",
+      "prompt_en": "Order these side-effect checks before an agent runs a risky cleanup script.",
+      "prompt_zh": "在 agent 运行有风险的清理脚本前，把这些副作用检查排好顺序。",
+      "items_en": [
+        "Run on a copy or small sample first",
+        "Name what the command may change",
+        "Only then consider running on the real file",
+        "Confirm there is a backup or rollback path"
+      ],
+      "items_zh": [
+        "先在副本或小样本上运行",
+        "说清这条命令可能改动什么",
+        "最后才考虑对真实文件运行",
+        "确认有备份或回滚办法"
+      ],
+      "answer": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "explain_en": "This order turns vague caution into an actionable pre-run check.",
+      "explain_zh": "这个顺序把笼统的「小心一点」变成了运行前可以执行的检查。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
     }
   ]
 }

@@ -84,7 +84,7 @@ the actual moves being trained.
   "order": 1,
   "format": "reading",     // reading | drill | code | scenario
   "tag": "core",           // core | elective  (core is never auto-removed)
-  "est_minutes": 8,        // whole lesson; validator enforces ≤ 10 in Phase 1
+  "est_minutes": 8,        // micro-lesson card; validator enforces ≤ 10 in Phase 1
   "title_en": "…", "title_zh": "…",
   "outcome_en": "…", "outcome_zh": "…", // optional: concrete ability after this lesson
   "takeaway_move_en": "…", "takeaway_move_zh": "…", // required: one sentence the learner can say to AI today
@@ -106,6 +106,13 @@ the actual moves being trained.
   "exercises": [ … ]       // referenced from blocks by id
 }
 ```
+
+Phase 1 currently stores short micro-lessons because the app renders one lesson
+at a time. A learner-facing **session** may bundle several micro-lessons plus a
+lab/checkpoint to reach the product's honest 15-30 minute active-effort
+promise. Do not inflate a single micro-lesson with filler prose to hit a
+session duration; add stronger practice, transcript judgment, or bundle the
+cards.
 
 `resources` are reviewed external references that open on the original site.
 Do not add one because the source is generally good. Add it only after reading

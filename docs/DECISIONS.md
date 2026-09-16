@@ -6,6 +6,45 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-16 — Part 1 needs course-architecture correction before more authoring
+
+Owner testing through Lesson 8 found a serious course-quality mismatch: lessons
+declared 7-10 minutes but often took 1-3 minutes, MCQs had one obvious answer
+and several irrelevant distractors, and the whole Part 1 experience felt closer
+to a polished glossary than a course worth a dedicated app. The owner also
+challenged whether public-course research and AI-era vocabulary were actually
+changing the curriculum, or only decorating it.
+
+Review-panel finding: M1's concept spine is directionally right — source vs.
+run, command vs. output, folder context, pseudocode, claim/evidence, output, and
+side effects are good early moves for judging AI-agent work. The failure is the
+unit of learning and assessment rigor. The current micro-lesson pattern must not
+be used as the template for the rest of Part 1.
+
+Resolution: revise the course architecture before batch-authoring more lessons.
+A learner-facing session should be 15-30 minutes and may bundle several short
+cards, but it must include meaningful practice: plausible distractors,
+bidirectional term use, ordering/tracing tasks, messy transcript judgment, and a
+checkpoint or lab that requires synthesizing what happened, what evidence is
+missing, what may have changed, and what to ask next. Timing is active effort,
+not seat time, and estimates must be recalibrated from observed completion.
+
+Part 1 is reframed as "read, question, and verify AI-agent work" using
+terminal/Python basics as the medium. Pull a thin `recognize_only` slice of
+agent-workflow vocabulary earlier when it explains real incidents: workspace,
+repo, branch, diff, changed files, build, test, lint, dependency/install, env
+var, secret, backup/rollback, and residual risk. Do not teach the full Git,
+deployment, or LLM-infra taxonomy here; those stay formalized later. Public
+courses should influence sequencing, problem density, labs, and mastery bars,
+not become passive linked homework or copied content.
+
+Immediate implication: before M1 is accepted and before M2-M4 are authored,
+upgrade M1 into a stronger vertical slice with realistic agent transcripts,
+plausible wrong answers, a required transcript-reading lab, and a no-hint
+checkpoint that proves the module capability.
+
+---
+
 ## 2026-09-14 — Start hook typography is an approval gate
 
 Owner review found that the English `/start` hook passed broad taste review but

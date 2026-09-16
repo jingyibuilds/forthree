@@ -88,19 +88,19 @@
       "prompt_en": "A colleague sends you `cleanup.py` in Slack. At this moment, what has the file done to your computer?",
       "prompt_zh": "同事在 Slack 上发给你一个 `cleanup.py` 文件。此刻，这个文件对你的电脑做了什么？",
       "options_en": [
-        "Nothing — it's text sitting in a file, like an unopened recipe",
         "It has started cleaning up files in the background",
+        "Nothing — it's text sitting in a file, like an unopened recipe",
         "It depends on how well the code is written",
         "It has installed itself"
       ],
       "options_zh": [
-        "什么都没做——它只是文件里的文字，像一张没打开的菜谱",
         "它已经在后台开始清理文件了",
+        "什么都没做——它只是文件里的文字，像一张没打开的菜谱",
         "取决于代码写得好不好",
         "它已经把自己安装好了"
       ],
-      "answer": 0,
-      "explain_en": "Code does nothing until something runs it. This distinction is also why receiving a file is safe but *running* an untrusted file is not.",
+      "answer": 1,
+      "explain_en": "Code does nothing until something runs it. This distinction is also why a code file is usually inert until run, while *running* an untrusted file is risky.",
       "explain_zh": "代码不被运行就什么都不做。这个区分也解释了为什么「收到」文件通常没事，而**运行**来路不明的文件就有风险。",
       "difficulty": 1,
       "xp_value": 10
@@ -152,18 +152,18 @@
       "prompt_en": "An agent reports: \"I created `rename_files.py` but have not run it yet.\" What is the best next question?",
       "prompt_zh": "agent 汇报：\"I created `rename_files.py` but have not run it yet.\"（我创建了 `rename_files.py`，但还没有运行。）你最该问什么？",
       "options_en": [
-        "Show me what the script plans to change before you run it.",
         "Great, so the files are already renamed.",
         "Why is Python installed?",
+        "Show me what the script plans to change before you run it.",
         "No need to review anything because it has not run."
       ],
       "options_zh": [
-        "先给我看它准备改哪些东西，再运行。",
         "很好，所以文件已经改名完成了。",
         "为什么安装了 Python？",
+        "先给我看它准备改哪些东西，再运行。",
         "既然还没运行，就完全不用看。"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain_en": "Nothing has changed yet, so this is the cheap moment to review intent. The collaboration move is: inspect before action.",
       "explain_zh": "还没运行，就还没改东西；这正是最便宜的检查时刻。协作动作是：先看意图，再让它动手。",
       "difficulty": 3,

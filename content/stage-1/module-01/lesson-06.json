@@ -5,21 +5,23 @@
   "format": "reading",
   "tag": "core",
   "est_minutes": 10,
-  "title_en": "Claims, commands, output",
-  "title_zh": "他说了什么，证据是什么",
-  "outcome_en": "You can separate an agent's claim from the command and output that support it.",
-  "outcome_zh": "你能分清 agent 的说法、它运行的命令，以及命令返回的证据。",
-  "takeaway_move_en": "You say it is done. Which command output proves that?",
-  "takeaway_move_zh": "你说完成了，哪段命令输出能证明？",
+  "title_en": "Claims need evidence",
+  "title_zh": "说法要配证据",
+  "outcome_en": "You can separate an agent's claim from the command, output, and remaining gap behind it.",
+  "outcome_zh": "你能把 agent 的说法，和对应的命令、输出、还没查到的地方分开看。",
+  "takeaway_move_en": "Which command output proves this, and what is still unchecked?",
+  "takeaway_move_zh": "哪段命令输出证明了它？还有什么没检查？",
   "review_tags": [
     "must_master",
+    "recognize_only:build",
+    "recognize_only:test",
     "profile_anchor:ai-agent"
   ],
   "blocks": [
     {
       "type": "reading",
-      "body_en": "An AI agent often writes in confident sentences: \"I fixed it,\" \"tests pass,\" \"the script ran.\" Confidence is not evidence. In engineering work, you look for the trail underneath the sentence: claim, command, output.",
-      "body_zh": "AI agent（AI 代理）常常会很有信心地说：「我修好了」「测试通过了」「脚本跑完了」。语气自信不等于证据。在工程工作里，你要看这句话下面有没有一条痕迹：说法、命令、输出。"
+      "body_en": "An AI agent often writes in confident sentences: \"I fixed it,\" \"tests pass,\" \"the script ran.\" Confidence is not evidence. In engineering work, you look for the trail underneath the sentence: claim, command, output, and any remaining gap.",
+      "body_zh": "AI agent（AI 代理）常常会很有信心地说：「我修好了」「测试通过了」「脚本跑完了」。语气自信不等于证据。在工程工作里，你要顺着这句话往下找线索：说法、命令、输出，以及还没检查到的地方。"
     },
     {
       "type": "concept",
@@ -27,8 +29,8 @@
       "term_zh": "说法 / 声称（claim）",
       "anchor_en": "A restaurant saying \"your order is ready.\" That sentence may be true, but you still look for the tray or the receipt number.",
       "anchor_zh": "像餐厅说「你的餐好了」。这句话可能是真的，但你还是会看有没有餐盘、有没有取餐号。",
-      "explain_en": "A claim is what the agent says happened. It is useful, but it is not the same as proof. A good transcript lets you compare the claim against the command that ran and the output that came back.",
-      "explain_zh": "说法，就是 agent 说发生了什么。它有用，但不等于证明。好的工作记录应该能让你把 agent 的说法，和它实际运行的命令、返回的输出对上。"
+      "explain_en": "A claim is what the agent says happened. It is useful, but it is not the same as proof. A good handoff lets you compare the claim against the command that ran and the output that came back.",
+      "explain_zh": "说法，就是 agent 说发生了什么。它有用，但不等于证明。好的交接记录应该能让你把 agent 的说法，和它实际运行的命令、返回的输出对上。"
     },
     {
       "type": "concept",
@@ -37,7 +39,7 @@
       "anchor_en": "A package tracking page. \"Delivered\" is the claim; the timestamp, address, and photo are evidence you can inspect.",
       "anchor_zh": "像快递页面。「已送达」是说法；时间、地址、照片，才是你能检查的证据。",
       "explain_en": "Evidence in a coding-agent transcript usually includes commands, terminal output, test results, file names, or diffs. At this stage, you do not need to verify everything perfectly. You only need the habit: ask what sentence is being supported by what evidence.",
-      "explain_zh": "在 AI coding agent（AI 编程代理）的工作记录里，证据通常包括命令、终端输出、测试结果、文件名，或者代码改动。现在不需要你完美核查一切，只要先养成习惯：它说的哪句话，是由哪条证据支撑的？"
+      "explain_zh": "在 AI coding agent（AI 编程代理）的工作记录里，证据通常包括命令、终端输出、测试结果、文件名，或者代码差异。现在不需要你完美核查一切，只要先养成习惯：它说的哪句话，是由哪条证据支撑的？"
     },
     {
       "type": "exercise",
@@ -45,8 +47,8 @@
     },
     {
       "type": "reading",
-      "body_en": "A tiny transcript might look like this:\n\n```text\nAgent: I ran the script.\nCommand: python3 hello.py\nOutput: hello\n```\n\nThe claim is the first line. The command is the request. The output is what came back.",
-      "body_zh": "一段很小的工作记录可能长这样：\n\n```text\nAgent: I ran the script.（我运行了这个脚本。）\nCommand: python3 hello.py\nOutput: hello\n```\n\n第一行是说法；第二行是命令，也就是发出的请求；第三行是输出，也就是电脑返回的结果。"
+      "body_en": "A tiny handoff might look like this:\n\n```text\nAgent: I checked it.\nCommand: npm run build\nOutput: Compiled successfully\nNote: I did not run the unit tests.\n```\n\nYou do not need to know npm yet. Read the shape: claim, command, output, leftover gap.",
+      "body_zh": "一段很小的交接记录可能长这样：\n\n```text\nAgent: I checked it.（我检查过了。）\nCommand: npm run build\nOutput: Compiled successfully（编译成功。）\nNote: I did not run the unit tests.（我没有运行单元测试。）\n```\n\n你现在不用懂 npm。先读形状：说法、命令、输出、留下的缺口。"
     },
     {
       "type": "exercise",
@@ -58,59 +60,101 @@
     },
     {
       "type": "reading",
-      "body_en": "Checkpoint: after this lesson, you can stop treating an agent transcript as one blob of text. You can ask: what did it claim, what command did it run, and what output supports the claim?",
-      "body_zh": "这一课的小结：现在你不必把 agent 的工作记录当成一整团文字。你可以拆开问：它声称了什么？运行了什么命令？哪段输出支撑这个说法？"
+      "body_en": "`build` and `test` are survival words for agent work. Build usually checks whether the project can be assembled. Tests check specific promised behavior. A build passing is good evidence, but it is not the same as every test passing.",
+      "body_zh": "`build`（构建）和 `test`（测试）是和 agent 协作时必须先认出来的两个词。构建通常检查项目能不能组装起来；测试检查某些承诺的行为是否成立。构建通过是好证据，但不等于所有测试都通过。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l06-e04"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l06-e05"
+    },
+    {
+      "type": "reading",
+      "body_en": "Checkpoint: after this lesson, do not accept a bare \"done\" as one piece. Split it: what is the claim, what evidence supports it, and what important check is still missing?",
+      "body_zh": "这一课的小结：现在不要把一句 `done`（完成）当成完整交付。把它拆开：它声称了什么？哪条证据支撑它？还有哪项重要检查没做？"
     }
   ],
   "exercises": [
     {
       "id": "m01-l06-e01",
       "type": "mcq",
-      "prompt_en": "In `Agent: tests pass`, what kind of line is this?",
-      "prompt_zh": "`Agent: tests pass`（测试通过了）这一行属于什么？",
+      "prompt_en": "An agent says, `tests pass`, but shows no command or output. What is the best next question?",
+      "prompt_zh": "agent 说 `tests pass`（测试通过），但没有展示命令或输出。你最好接着问什么？",
       "options_en": [
-        "A claim from the agent",
-        "A terminal command",
-        "The full proof that everything is correct",
-        "Python source code"
+        "Can you rewrite the code in a more stylish way?",
+        "Can you confirm the build would probably pass too?",
+        "Can you paste the test command you ran and the output it returned?",
+        "Can you explain what a test is in general?"
       ],
       "options_zh": [
-        "agent 的一个说法",
-        "一条终端命令",
-        "证明一切都正确的完整证据",
-        "Python 源代码"
+        "能把代码改得更有风格一点吗？",
+        "能确认构建大概也会通过吗？",
+        "能贴出你运行的测试命令，以及它返回的输出吗？",
+        "能笼统解释一下什么是测试吗？"
       ],
-      "answer": 0,
-      "explain_en": "It may be true, but by itself it is still a claim. You would look for the command and output next.",
-      "explain_zh": "它可能是真的，但单独看仍然只是一个说法。下一步要看它运行了什么命令，以及输出是什么。",
-      "difficulty": 1,
+      "answer": 2,
+      "explain_en": "The useful move is to ask for inspectable evidence, not a more confident claim or a general explanation.",
+      "explain_zh": "有用的动作是要可检查的证据，而不是要一个更自信的说法，或者泛泛解释概念。",
+      "difficulty": 2,
       "xp_value": 10
     },
     {
       "id": "m01-l06-e02",
       "type": "mcq",
-      "prompt_en": "Which line is the command in this transcript?\n\n`Agent: I checked it`\n`npm run build`\n`Compiled successfully`",
-      "prompt_zh": "下面这段记录里，哪一行是命令？\n\n`Agent: I checked it`（我检查过了）\n`npm run build`\n`Compiled successfully`（编译成功）",
+      "prompt_en": "In this handoff, which line is strongest evidence for the narrow claim \"the project compiled\"?\n\n`Agent: I checked it.`\n`Command: npm run build`\n`Output: Compiled successfully`\n`Note: I did not run the unit tests.`",
+      "prompt_zh": "在这段交接里，哪一行最能支持「项目完成了构建 / 编译」这个窄说法？\n\n`Agent: I checked it.`（我检查过了。）\n`Command: npm run build`\n`Output: Compiled successfully`（编译成功。）\n`Note: I did not run the unit tests.`（我没有运行单元测试。）",
       "options_en": [
-        "`Agent: I checked it`",
-        "`npm run build`",
-        "`Compiled successfully`",
-        "All three are commands"
+        "`Agent: I checked it.`",
+        "`Command: npm run build`",
+        "`Output: Compiled successfully`",
+        "`Note: I did not run the unit tests.`"
       ],
       "options_zh": [
-        "`Agent: I checked it`",
-        "`npm run build`",
-        "`Compiled successfully`",
-        "三行全都是命令"
+        "`Agent: I checked it.`（我检查过了。）",
+        "`Command: npm run build`（运行构建命令。）",
+        "`Output: Compiled successfully`（编译成功。）",
+        "`Note: I did not run the unit tests.`（我没有运行单元测试。）"
       ],
-      "answer": 1,
-      "explain_en": "`npm run build` is the typed request. You do not need to know npm yet; the shape matters here.",
-      "explain_zh": "`npm run build` 是打出来、交给电脑执行的请求。你现在不用懂 npm，只需要认出它是一条命令。",
-      "difficulty": 1,
+      "answer": 2,
+      "explain_en": "The command matters, but the returned output is the visible evidence that this build command succeeded.",
+      "explain_zh": "命令很重要，但返回的输出才是这条构建命令成功的可见证据。",
+      "difficulty": 2,
       "xp_value": 10
     },
     {
       "id": "m01-l06-e03",
+      "type": "drag_order",
+      "prompt_en": "Put the review order in the strongest sequence for an agent handoff.",
+      "prompt_zh": "把阅读 agent 交接记录的顺序排成最稳妥的一版。",
+      "items_en": [
+        "Inspect the output",
+        "Read the claim",
+        "Name what remains unchecked",
+        "Find the command"
+      ],
+      "items_zh": [
+        "检查命令返回了什么输出",
+        "先读它声称了什么",
+        "说出还有什么没有检查",
+        "再找它运行了什么命令"
+      ],
+      "answer": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "explain_en": "This order keeps you from jumping from a confident sentence straight to trust.",
+      "explain_zh": "这个顺序能防止你从一句自信的话直接跳到相信它。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
+    },
+    {
+      "id": "m01-l06-e04",
       "type": "fill_in",
       "prompt_en": "The general word for support you can inspect, such as command output or test results, is ______.",
       "prompt_zh": "像命令输出、测试结果这种你可以检查的支撑材料，英文统称为 ______。",
@@ -125,6 +169,30 @@
       "difficulty": 1,
       "xp_value": 15,
       "term_drill": true
+    },
+    {
+      "id": "m01-l06-e05",
+      "type": "mcq",
+      "prompt_en": "Agent handoff:\n\n`Agent: Done. Build passed. I did not run tests because it was a tiny copy change.`\n\nWhat is the safest judgment?",
+      "prompt_zh": "agent 交接：\n\n`Agent: Done. Build passed. I did not run tests because it was a tiny copy change.`（完成。构建通过了。我没有跑测试，因为只是很小的文案改动。）\n\n最稳妥的判断是什么？",
+      "options_en": [
+        "Reject it automatically; any skipped test means the work is wrong.",
+        "Accept it automatically; a build passing proves the whole change is safe.",
+        "Treat build as useful evidence, but note that behavior tests are still unchecked.",
+        "Ignore the build and ask for a full computer-science explanation."
+      ],
+      "options_zh": [
+        "自动拒绝；只要跳过测试，就说明工作一定错了。",
+        "自动接受；构建通过就证明整个改动安全。",
+        "把构建通过当作有用证据，同时标记行为测试还没检查。",
+        "忽略构建，要求它完整解释一遍计算机科学。"
+      ],
+      "answer": 2,
+      "explain_en": "The mature move is neither panic nor blind trust. Build evidence narrows the claim; it does not erase the remaining gap.",
+      "explain_zh": "成熟的动作既不是恐慌，也不是盲信。构建证据能缩小说法范围，但不能抹掉剩下的缺口。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
     }
   ]
 }

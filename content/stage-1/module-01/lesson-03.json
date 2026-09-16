@@ -124,18 +124,18 @@
       "prompt_en": "An agent says it ran `python3 cleanup.py`. What did it ask the computer to do?",
       "prompt_zh": "agent 说它运行了 `python3 cleanup.py`。它是在请求电脑做什么？",
       "options_en": [
-        "Start Python, then ask Python to run the file `cleanup.py`",
         "Open `cleanup.py` as a plain text note only",
         "Translate every program on the computer",
+        "Start Python, then ask Python to run the file `cleanup.py`",
         "Install Python again"
       ],
       "options_zh": [
-        "启动 Python，然后让 Python 运行 `cleanup.py` 这个文件",
         "只把 `cleanup.py` 当成普通文字笔记打开",
         "翻译电脑里的所有程序",
+        "启动 Python，然后让 Python 运行 `cleanup.py` 这个文件",
         "重新安装 Python"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain_en": "`python3` starts the Python interpreter; `cleanup.py` is the file handed to it. This is a command, not a magic sentence.",
       "explain_zh": "`python3` 会启动 Python 解释器；`cleanup.py` 是交给解释器运行的文件。这是一条命令，不是一句魔法咒语。",
       "difficulty": 1,
@@ -164,18 +164,18 @@
       "prompt_en": "Your terminal is standing in `Downloads`, but `hello.py` is on your Desktop. You run `python3 hello.py`. The computer will not search every folder automatically. What is the most likely problem?",
       "prompt_zh": "终端当前站在 `Downloads` 文件夹里，但 `hello.py` 在桌面。你运行 `python3 hello.py`。电脑不会自动全盘搜索文件。最可能出现什么问题？",
       "options_en": [
-        "The terminal cannot find `hello.py` from where it is standing",
         "Python changes folders automatically and finds it",
         "The file deletes itself",
-        "The command becomes SQL"
+        "The command becomes SQL",
+        "The terminal cannot find `hello.py` from where it is standing"
       ],
       "options_zh": [
-        "终端会从当前位置找不到 `hello.py`",
         "Python 会自动换到正确文件夹并找到它",
         "这个文件会自己删除",
-        "这条命令会变成 SQL"
+        "这条命令会变成 SQL",
+        "终端会从当前位置找不到 `hello.py`"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain_en": "Relative file names depend on the current directory. If the terminal is in the wrong folder, the command can fail even when the code itself is fine.",
       "explain_zh": "只写文件名时，终端会从当前目录开始找，而不是从整台电脑里到处找。如果终端站错了文件夹，代码本身没问题，命令也可能失败。",
       "difficulty": 2,
@@ -187,18 +187,18 @@
       "prompt_en": "In this log line, which part is the command you would actually type?\n\n`forthree % python3 hello.py`",
       "prompt_zh": "看这一行记录，哪一部分才是你真正输入的命令？\n\n`forthree % python3 hello.py`",
       "options_en": [
-        "`python3 hello.py`",
         "`forthree %`",
+        "`python3 hello.py`",
         "`hello.py` only",
         "The whole line, including `forthree %`"
       ],
       "options_zh": [
-        "`python3 hello.py`",
         "`forthree %`",
+        "`python3 hello.py`",
         "只有 `hello.py`",
         "整行都要输入，包括 `forthree %`"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain_en": "`forthree %` is the prompt: the terminal showing its current place and saying it is ready. The command is the request after it.",
       "explain_zh": "`forthree %` 是提示符：终端在显示自己当前的位置，并表示已经准备好。真正的命令是它后面的那段请求。",
       "difficulty": 2,
@@ -210,18 +210,18 @@
       "prompt_en": "A web app has a **Run** button. You click it, and the app runs your code. How is that related to a terminal command?",
       "prompt_zh": "一个网页 app 里有 **Run** 按钮。你点它之后，app 会运行你的代码。这和终端命令是什么关系？",
       "options_en": [
-        "The button is a shortcut that sends a run request for you",
         "The button is output, because you can see it",
         "The button is the current directory",
+        "The button is a shortcut that sends a run request for you",
         "The button means no command-like request exists"
       ],
       "options_zh": [
-        "按钮像快捷方式，替你发出「运行」请求",
         "按钮看得见，所以它就是输出",
         "按钮就是当前目录",
+        "按钮像快捷方式，替你发出「运行」请求",
         "有按钮就说明不存在类似命令的请求"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain_en": "A button can hide the command-like request behind a friendly UI. The idea is the same: something asks a tool to run code.",
       "explain_zh": "按钮会把类似命令的请求藏在友好的界面后面。底层想法是一样的：有东西在请求某个工具运行代码。",
       "difficulty": 2,
@@ -233,18 +233,18 @@
       "prompt_en": "In a command log, which question does the location prompt help answer?",
       "prompt_zh": "在一段命令记录里，位置提示符主要帮你回答哪个问题？",
       "options_en": [
-        "Where the terminal was standing when the command was sent",
         "Whether the output is correct",
         "What Python means",
-        "Whether the code is beautiful"
+        "Whether the code is beautiful",
+        "Where the terminal was standing when the command was sent"
       ],
       "options_zh": [
-        "发出命令时，终端站在哪个文件夹里",
         "输出结果是否一定正确",
         "Python 这个词是什么意思",
-        "代码写得漂不漂亮"
+        "代码写得漂不漂亮",
+        "发出命令时，终端站在哪个文件夹里"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain_en": "The prompt is not the command. It gives surrounding context, especially where the terminal is standing before the request is sent.",
       "explain_zh": "提示符不是命令。它给的是周围信息，尤其是发出请求之前，终端站在哪个文件夹里。",
       "difficulty": 2,
@@ -282,18 +282,18 @@
       "prompt_en": "An agent shows this log:\n\n`reports % python3 cleanup.py`\n`FileNotFoundError: raw.csv`\n\nWhat is the safest judgment?",
       "prompt_zh": "agent 给出这段记录：\n\n`reports % python3 cleanup.py`\n`FileNotFoundError: raw.csv`（找不到 `raw.csv` 这个文件）\n\n最稳妥的判断是什么？",
       "options_en": [
-        "It asked Python to run `cleanup.py` from the `reports` location, but a needed file was not found there or from there",
         "Python was never started, because the output is an error",
+        "It asked Python to run `cleanup.py` from the `reports` location, but a needed file was not found there or from there",
         "`cleanup.py` definitely has broken logic",
         "The command successfully cleaned the data"
       ],
       "options_zh": [
-        "它在 `reports` 这个位置请求 Python 运行 `cleanup.py`，但程序需要的文件没有在那个位置或从那个位置找到",
         "Python 根本没有启动，因为输出里有错误",
+        "它在 `reports` 这个位置请求 Python 运行 `cleanup.py`，但程序需要的文件没有在那个位置或从那个位置找到",
         "`cleanup.py` 的逻辑一定写坏了",
         "这条命令已经成功清理了数据"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain_en": "The command did run Python and point it at `cleanup.py`. The error is evidence about a missing file, not enough evidence to conclude the code logic is wrong or that the cleanup succeeded.",
       "explain_zh": "这条命令确实启动了 Python，并把 `cleanup.py` 交给它运行。报错证明有文件没找到，但还不足以断定代码逻辑写错了，更不能说明清理已经成功。",
       "difficulty": 3,
