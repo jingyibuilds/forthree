@@ -270,7 +270,7 @@
         0,
         1
       ],
-      "explain_en": "Read the surrounding place first, then the request, then the response. That order keeps you from treating output as proof without knowing what was actually run.",
+      "explain_en": "Read the surrounding place first, then the request, then the response. That order keeps you from treating output as enough evidence before you know what was actually run.",
       "explain_zh": "先看周围位置，再看发出的请求，最后看返回结果。这个顺序能避免你只看见输出，就误以为已经知道当时到底运行了什么。",
       "difficulty": 3,
       "xp_value": 15,
@@ -295,7 +295,7 @@
       ],
       "answer": 1,
       "explain_en": "The command did run Python and point it at `cleanup.py`. The error is evidence about a missing file, not enough evidence to conclude the code logic is wrong or that the cleanup succeeded.",
-      "explain_zh": "这条命令确实启动了 Python，并把 `cleanup.py` 交给它运行。报错证明有文件没找到，但还不足以断定代码逻辑写错了，更不能说明清理已经成功。",
+      "explain_zh": "这条命令确实启动了 Python，并把 `cleanup.py` 交给它运行。报错说明有文件没找到，但还不足以断定代码逻辑写错了，更不能说明清理已经成功。",
       "difficulty": 3,
       "xp_value": 15,
       "advanced": true

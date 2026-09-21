@@ -1,8 +1,8 @@
 {
-  "course_title_en": "Code & AI Fluency: Learning to Read Technical Work",
-  "course_title_zh": "代码与 AI 祛魅：学会读懂技术工作",
-  "course_promise_en": "For non-engineers who work with programmers and AI agents: reduce the information gap, read the work trail, and know what evidence to ask for. Current release: orientation plus Part 1 foundations.",
-  "course_promise_zh": "给需要和程序员、AI agent（AI 代理）协作的人：减少技术信息差，读懂工作痕迹，知道该追问什么证据。当前开放入门章与卷一。",
+  "course_title_en": "Code & AI Fluency: Inspecting AI Handoffs",
+  "course_title_zh": "代码与 AI 祛魅：验收 AI 交付",
+  "course_promise_en": "For non-engineers who work with programmers and AI agents: reduce the information gap, inspect AI handoffs, and know what evidence to ask for. Current release: orientation plus Part 1 foundations.",
+  "course_promise_zh": "给需要和程序员、AI agent（AI 代理）协作的人：减少技术信息差，验收 AI 交付，知道该追问什么证据。当前开放入门章与卷一。",
   "course_sources": [
     {
       "name": "MIT 6.100L",
@@ -82,10 +82,10 @@
       "stage": 1,
       "label_zh": "卷一",
       "label_en": "Part 1",
-      "title_en": "AI agent handoffs & Python foundations",
-      "title_zh": "AI agent 工作痕迹与 Python 基础",
-      "milestone_en": "You can read a basic AI-agent handoff, ask for missing evidence, and trace simple Python.",
-      "milestone_zh": "你能读懂基础 AI agent（AI 代理）交接记录，追问缺失证据，并一步步跟出简单 Python 会做什么。"
+      "title_en": "AI handoff evidence & Python foundations",
+      "title_zh": "AI 交付证据与 Python 基础",
+      "milestone_en": "You can inspect a basic AI handoff, ask for missing evidence, and trace simple Python.",
+      "milestone_zh": "你能验收一段基础的 AI 交接记录，追问缺失证据，并一步步跟出简单 Python 会做什么。"
     },
     {
       "stage": 2,

@@ -7,7 +7,7 @@ import {
 } from "@/lib/dev-local-account";
 import { createClient } from "@/lib/supabase/server";
 import { dict, getLocale } from "@/lib/i18n";
-import { getLesson } from "@/lib/content";
+import { getLesson, lessons, nextLesson } from "@/lib/content";
 import { LessonPlayer } from "@/components/lesson-player";
 import { getLearnerProfile, ONBOARDING_PATH } from "@/lib/profile";
 import { START_PATH } from "@/lib/routes";
@@ -61,10 +61,25 @@ export default async function LessonPage({
     ? await supabase
         .from("attempts")
         .select("exercise_id")
+        .eq("user_id", user.id)
         .eq("correct", true)
-        .in("exercise_id", ids)
     : { data: [] };
-  const alreadyCorrect = (attempts ?? []).map((a) => a.exercise_id as string);
+  const correctExerciseIds = new Set(
+    (attempts ?? []).map((a) => a.exercise_id as string)
+  );
+  const alreadyCorrect = ids.filter((id) => correctExerciseIds.has(id));
+  const afterCompletionCorrect = new Set([...correctExerciseIds, ...ids]);
+  const lessonIndex = lessons.findIndex((item) => item.id === lesson.id);
+  const devLocalNextLesson =
+    devUser && lessonIndex >= 0 ? lessons[lessonIndex + 1] : undefined;
+  const nextAfterCompletion = devUser
+    ? devLocalNextLesson
+    : nextLesson(afterCompletionCorrect);
+  const nextLessonIdAfterCompletion =
+    nextAfterCompletion &&
+    (hasFullAccess || nextAfterCompletion.module_id === "m00")
+      ? nextAfterCompletion.id
+      : undefined;
 
   return (
     <LessonPlayer
@@ -74,6 +89,7 @@ export default async function LessonPage({
       alreadyCorrect={alreadyCorrect}
       initialIndex={initialIndex}
       assistantEnabled={hasFullAccess}
+      nextLessonIdAfterCompletion={nextLessonIdAfterCompletion}
     />
   );
 }

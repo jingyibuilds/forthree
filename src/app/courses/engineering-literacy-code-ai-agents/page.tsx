@@ -56,7 +56,7 @@ export default async function LearnPage({
 
   let showTestReset = false;
   let correct = isDevPreview ? devPreviewCorrectExerciseIds() : new Set<string>();
-  let activeSeconds = isDevPreview ? 12 * 60 : 0;
+  let courseActiveSeconds = isDevPreview ? 12 * 60 : 0;
   let hasOrientationAccess = false;
   let signedInUserId: string | null = null;
   const supabase = isDevPreview || isDevLocal ? null : await createClient();
@@ -84,6 +84,7 @@ export default async function LearnPage({
     const { data: attempts } = await supabase
       .from("attempts")
       .select("exercise_id")
+      .eq("user_id", user.id)
       .eq("correct", true);
     correct = new Set((attempts ?? []).map((a) => a.exercise_id as string));
   }
@@ -106,13 +107,10 @@ export default async function LearnPage({
       sum + lesson.exercises.filter((exercise) => correct.has(exercise.id)).length,
     0
   );
-  const totalMinutes = currentModuleLessons.reduce(
-    (sum, lesson) => sum + lesson.est_minutes,
-    0
-  );
-  const lessonIds = currentModuleLessons.map((lesson) => lesson.id);
-  if (supabase && signedInUserId && lessonIds.length > 0) {
-    activeSeconds = 0;
+  const totalMinutes = lessons.reduce((sum, lesson) => sum + lesson.est_minutes, 0);
+  const courseLessonIds = lessons.map((lesson) => lesson.id);
+  if (supabase && signedInUserId && courseLessonIds.length > 0) {
+    courseActiveSeconds = 0;
     for (let page = 0; page < 20; page += 1) {
       const from = page * TIME_PAGE_SIZE;
       const to = from + TIME_PAGE_SIZE - 1;
@@ -120,11 +118,11 @@ export default async function LearnPage({
         .from("lesson_time_events")
         .select("active_seconds")
         .eq("user_id", signedInUserId)
-        .in("lesson_id", lessonIds)
+        .in("lesson_id", courseLessonIds)
         .order("id", { ascending: true })
         .range(from, to);
       if (error) break;
-      activeSeconds += (data ?? []).reduce(
+      courseActiveSeconds += (data ?? []).reduce(
         (sum, event) => sum + ((event.active_seconds as number | null) ?? 0),
         0
       );
@@ -161,12 +159,16 @@ export default async function LearnPage({
   );
   const capabilityProgress =
     locale === "zh"
-      ? `距离「能读懂一段 agent 工作记录」还差 ${remainingLessons} 节`
-      : `${remainingLessons} lessons until you can read a short agent work trail`;
+      ? remainingLessons === 0
+        ? `已完成「${moduleTitle}」`
+        : `距离「${moduleTitle}」还差 ${remainingLessons} 节`
+      : remainingLessons === 0
+        ? `${moduleTitle} complete`
+        : `${remainingLessons} lesson${remainingLessons === 1 ? "" : "s"} left for ${moduleTitle}`;
 
   return (
     <main className="relative mx-auto min-h-dvh w-full max-w-5xl px-5 py-6 sm:px-8 sm:py-10">
-      <div className="mb-4 flex flex-wrap justify-end gap-2">
+      <div className="mb-4 flex max-w-full flex-wrap justify-start gap-2 sm:justify-end">
         <Link
           href={`${ONBOARDING_PATH}?edit=1`}
           className="min-h-11 rounded-lg border border-line bg-surface px-3 py-2.5 text-sm font-medium text-muted shadow-sm transition-[background-color,border-color,color,transform] hover:-translate-y-px hover:border-primary hover:bg-primary/5 hover:text-primary"
@@ -184,11 +186,11 @@ export default async function LearnPage({
         </form>
       </div>
       <header className="flex max-w-4xl items-start gap-3">
-        <Link href="/" aria-label={t.name}>
+        <Link href="/" aria-label={t.name} className="shrink-0">
           <Seal size={36} />
         </Link>
-        <div>
-          <h1 className="font-serif text-xl font-semibold leading-tight sm:text-3xl">
+        <div className="min-w-0">
+          <h1 className="break-words font-serif text-xl font-semibold leading-tight sm:text-3xl">
             {courseTitle}
           </h1>
           <p className="mt-1 text-sm font-medium text-primary">
@@ -206,8 +208,8 @@ export default async function LearnPage({
       </header>
 
       {next && currentModule && (
-        <section className="mt-6 rounded-lg border border-primary/30 bg-surface p-4 shadow-lg sm:mt-8 sm:p-5">
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <section className="mt-6 min-w-0 overflow-hidden rounded-lg border border-primary/30 bg-surface p-4 shadow-lg sm:mt-8 sm:p-5">
+          <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
             <div className="min-w-0">
               <p className="text-sm font-medium text-primary">
                 {t.today} · {moduleTitle}
@@ -234,11 +236,25 @@ export default async function LearnPage({
                 {currentModule &&
                   (locale === "zh" ? currentModule.capability_zh : currentModule.capability_en)}
               </p>
+              <div className="mt-4 grid min-w-0 gap-2 sm:flex sm:flex-wrap">
+                <span className="min-w-0 rounded-lg border border-line bg-background px-3 py-1.5 text-sm leading-6 text-muted sm:rounded-full">
+                  {t.courseLearningTime}:{" "}
+                  <span className="font-medium text-ink">
+                    {formatActiveMinutes(courseActiveSeconds, locale)}
+                  </span>
+                </span>
+                <span className="min-w-0 rounded-lg border border-line bg-background px-3 py-1.5 text-sm leading-6 text-muted sm:rounded-full">
+                  {t.estimatedPathTime}:{" "}
+                  <span className="font-medium text-ink">
+                    {totalMinutes} {t.minutes}
+                  </span>
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col gap-2 lg:items-end">
+            <div className="min-w-0 flex flex-col gap-2 lg:items-end">
               <Link
                 href={lessonPath(next.id)}
-                className="min-h-12 rounded-lg bg-primary px-6 py-3 text-center text-base font-semibold text-on-primary shadow-sm transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover active:translate-y-0"
+                className="block min-h-12 w-full max-w-full rounded-lg bg-primary px-6 py-3 text-center text-base font-semibold text-on-primary shadow-sm transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover active:translate-y-0 lg:w-auto"
               >
                 {nextLessonHasProgress ? t.resumeLesson : t.startNextLesson}
               </Link>
@@ -271,7 +287,7 @@ export default async function LearnPage({
             <p className="text-sm font-medium text-muted">{t.courseArc}</p>
             {currentModule && (
               <p className="text-sm text-muted">
-                {t.activeLearningTime}: {formatActiveMinutes(activeSeconds, locale)} ·{" "}
+                {t.courseLearningTime}: {formatActiveMinutes(courseActiveSeconds, locale)} ·{" "}
                 {t.estimatedPathTime}: {totalMinutes} {t.minutes}
               </p>
             )}

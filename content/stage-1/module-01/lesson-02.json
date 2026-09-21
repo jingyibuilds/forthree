@@ -4,7 +4,7 @@
   "order": 2,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 7,
+  "est_minutes": 8,
   "title_en": "When did it fail?",
   "title_zh": "失败发生在什么时候",
   "outcome_en": "You can judge whether failure stopped the work before action, or after some action may already have happened.",
@@ -74,6 +74,15 @@
     {
       "type": "exercise",
       "ref": "m01-l02-e04"
+    },
+    {
+      "type": "reading",
+      "body_en": "This is also why a vague failure report is weak. `It failed` tells you less than `the build failed before the app started` or `it crashed after writing one file`.",
+      "body_zh": "这也是为什么含糊的失败汇报很弱。`It failed`（失败了）提供的信息，远少于 `the build failed before the app started`（应用启动前构建失败）或 `it crashed after writing one file`（写出一个文件后崩溃）。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l02-e05"
     },
     {
       "type": "reading",
@@ -167,6 +176,30 @@
       "answer": 1,
       "explain_en": "This was a runtime failure after at least one step succeeded. Your next move is evidence: what was created, changed, or left half-done?",
       "explain_zh": "这是运行中的失败，而且至少有一步已经成功。下一步要证据：创建了什么、改了什么、有没有半成品？",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
+    },
+    {
+      "id": "m01-l02-e05",
+      "type": "mcq",
+      "prompt_en": "Which failure report gives you the best next move?",
+      "prompt_zh": "下面哪种失败汇报，最能帮你判断下一步该查什么？",
+      "options_en": [
+        "`The app crashed while running, but I did not check whether any files were written.`",
+        "`The build failed after I edited the file; I assume nothing else needs checking.`",
+        "`The build failed before the app started; no data-writing command ran.`",
+        "`The script stopped after creating output.csv, so there is no cleanup risk.`"
+      ],
+      "options_zh": [
+        "`The app crashed while running, but I did not check whether any files were written.`（应用运行中崩了，但我没有检查是否写出了文件。）",
+        "`The build failed after I edited the file; I assume nothing else needs checking.`（我改完文件后构建失败；我假设不用再查别的。）",
+        "`The build failed before the app started; no data-writing command ran.`（应用启动前构建失败；没有运行写数据的命令。）",
+        "`The script stopped after creating output.csv, so there is no cleanup risk.`（脚本创建 output.csv 后停止，所以没有清理风险。）"
+      ],
+      "answer": 2,
+      "explain_en": "It names both the failure stage and the side-effect boundary. That tells you the next check is likely code/build, not cleanup after a half-run script.",
+      "explain_zh": "它同时说清了失败阶段和副作用边界。这样你就知道下一步多半是查代码 / 构建，而不是清理跑到一半的脚本。",
       "difficulty": 3,
       "xp_value": 15,
       "advanced": true

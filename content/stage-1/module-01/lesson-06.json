@@ -9,8 +9,8 @@
   "title_zh": "说法要配证据",
   "outcome_en": "You can separate an agent's claim from the command, output, and remaining gap behind it.",
   "outcome_zh": "你能把 agent 的说法，和对应的命令、输出、还没查到的地方分开看。",
-  "takeaway_move_en": "Which command output proves this, and what is still unchecked?",
-  "takeaway_move_zh": "哪段命令输出证明了它？还有什么没检查？",
+  "takeaway_move_en": "Which command output supports this, and what is still unchecked?",
+  "takeaway_move_zh": "哪段命令输出支撑了它？还有什么没检查？",
   "review_tags": [
     "must_master",
     "recognize_only:build",
@@ -29,8 +29,8 @@
       "term_zh": "说法 / 声称（claim）",
       "anchor_en": "A restaurant saying \"your order is ready.\" That sentence may be true, but you still look for the tray or the receipt number.",
       "anchor_zh": "像餐厅说「你的餐好了」。这句话可能是真的，但你还是会看有没有餐盘、有没有取餐号。",
-      "explain_en": "A claim is what the agent says happened. It is useful, but it is not the same as proof. A good handoff lets you compare the claim against the command that ran and the output that came back.",
-      "explain_zh": "说法，就是 agent 说发生了什么。它有用，但不等于证明。好的交接记录应该能让你把 agent 的说法，和它实际运行的命令、返回的输出对上。"
+      "explain_en": "A claim is what the agent says happened. It is useful, but it is not enough by itself. A good handoff lets you compare the claim against the command that ran and the output that came back.",
+      "explain_zh": "说法，就是 agent 说发生了什么。它有用，但单独一句话还不够。好的交接记录应该能让你把 agent 的说法，和它实际运行的命令、返回的输出对上。"
     },
     {
       "type": "concept",
@@ -70,6 +70,15 @@
     {
       "type": "exercise",
       "ref": "m01-l06-e05"
+    },
+    {
+      "type": "reading",
+      "body_en": "Evidence has a scope. A build output can support \"it compiled.\" A screenshot can support \"this page rendered.\" Neither automatically supports every bigger claim around the work.",
+      "body_zh": "证据有范围。构建输出可以支持「它编译了」；截图可以支持「这个页面渲染出来了」。但它们都不会自动支持这件工作周围所有更大的说法。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l06-e06"
     },
     {
       "type": "reading",
@@ -190,6 +199,30 @@
       "answer": 2,
       "explain_en": "The mature move is neither panic nor blind trust. Build evidence narrows the claim; it does not erase the remaining gap.",
       "explain_zh": "成熟的动作既不是恐慌，也不是盲信。构建证据能缩小说法范围，但不能抹掉剩下的缺口。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
+    },
+    {
+      "id": "m01-l06-e06",
+      "type": "mcq",
+      "prompt_en": "Agent handoff:\n\n`Claim: The login fix is safe.`\n`Command: npm run build`\n`Output: Compiled successfully`\n\nWhich narrower claim is best supported?",
+      "prompt_zh": "agent 交接：\n\n`Claim: The login fix is safe.`（说法：登录修复是安全的。）\n`Command: npm run build`（命令：运行构建。）\n`Output: Compiled successfully`（输出：编译成功。）\n\n哪一个更窄的说法最被这段证据支持？",
+      "options_en": [
+        "The project compiled successfully after the change.",
+        "Every login behavior has been tested.",
+        "No user can ever hit a login bug.",
+        "The agent's broad safety claim is fully proven."
+      ],
+      "options_zh": [
+        "改动后，项目成功完成了构建 / 编译。",
+        "所有登录行为都已经测过。",
+        "用户以后绝不会遇到登录 bug。",
+        "agent 关于安全性的宽泛说法已经被完全证明。"
+      ],
+      "answer": 0,
+      "explain_en": "The output strongly supports the build claim. It does not by itself cover all login behavior or every safety question.",
+      "explain_zh": "这段输出有力支持「构建通过」这个说法。它本身还不能覆盖所有登录行为，也不能覆盖所有安全问题。",
       "difficulty": 3,
       "xp_value": 15,
       "advanced": true

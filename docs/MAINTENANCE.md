@@ -93,11 +93,12 @@ For course content, also check:
   one responsive layout inspection when the lesson includes visuals,
   side-by-side comparisons, sticky controls, dialogs, or external links.
 
-Build validation note, 2026-09-16: if plain `npm run build` fails locally with
-a Turbopack internal panic about binding to a port, rerun the production build
-as `npm run build -- --webpack` and report both results in the handoff. This is
-a local build-tool workaround, not a reason to skip content validation or
-TypeScript/build verification.
+Build validation note, updated 2026-09-20: `npm run build` intentionally runs
+content validation followed by `next build --webpack`. Next 16's default
+Turbopack build repeatedly hit a local Codex environment panic while processing
+CSS (`Operation not permitted` during worker port binding). Keep reporting the
+actual `npm run build` result in handoffs; revisit the webpack pin only after
+the environment can run the Turbopack CSS worker reliably.
 
 ## External resource gate
 

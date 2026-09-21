@@ -5,30 +5,32 @@
   "format": "scenario",
   "tag": "core",
   "est_minutes": 10,
-  "title_en": "M1 lab: read the agent trail",
-  "title_zh": "M1 实战：读懂 agent 的工作痕迹",
-  "outcome_en": "You can read a short agent handoff and judge what happened, what is proven, what may have changed, and what to ask next.",
-  "outcome_zh": "你能读一小段 agent 交接，判断发生了什么、什么被证明了、哪些东西可能已经被改过，以及下一句该问什么。",
-  "takeaway_move_en": "Separate changed files, commands, outputs, gaps, and risks before accepting done.",
-  "takeaway_move_zh": "接收前，分清改动文件、命令、输出、缺口和风险。",
+  "title_en": "M1 lab: inspect the AI handoff",
+  "title_zh": "M1 实战：检查 AI 交付证据",
+  "outcome_en": "You can inspect short AI handoffs across code, data, research, and automation, then judge what the evidence supports, what may have changed, what remains unchecked, and what to ask next.",
+  "outcome_zh": "你能检查几段来自代码、数据、研究和自动化任务的 AI 交接，判断证据支持什么、什么可能已经改变、还有什么没检查，以及下一句该问什么。",
+  "takeaway_move_en": "Before I accept this, show the claim, artifacts, evidence, gaps, and risk.",
+  "takeaway_move_zh": "我接收前，先给我说法、产物、证据、缺口和风险。",
   "review_tags": [
     "must_master",
     "module_checkpoint",
     "no_hint_checkpoint",
     "recognize_only:diff",
     "recognize_only:changed-files",
+    "recognize_only:source-evidence",
+    "recognize_only:dry-run",
     "profile_anchor:ai-agent"
   ],
   "blocks": [
     {
       "type": "reading",
-      "body_en": "This lab is the reason the earlier small lessons exist. Do not memorize definitions. Read the handoff like a trail: what changed, what ran, where it ran, what came back, what remains unchecked, and what may already have changed.",
-      "body_zh": "这个实战，就是前面那些小课存在的原因。不要把它当成背定义；把交接记录当成一串痕迹来读：改了什么、运行了什么、在哪里运行、返回了什么、还有什么没检查、什么东西可能已经被改过。"
+      "body_en": "This lab is the reason the earlier small lessons exist. A modern AI handoff may be a terminal log, a pull request, a research answer, a screenshot, or a short summary. The format changes; the acceptance move stays steady: separate claim, artifact, evidence, gap, and risk.",
+      "body_zh": "这个实战，就是前面那些小课存在的原因。现在的 AI 交付可能是一段终端记录、一个代码合并请求（pull request）、一份研究回答、一张截图，或者一小段总结。格式会变；验收动作不变：分清说法、产物、证据、缺口和风险。"
     },
     {
       "type": "reading",
-      "body_en": "Handoff A:\n\n```text\nAgent: I wrote cleanup.py to remove duplicate rows.\nChanged files: cleanup.py\nCommand: python3 cleanup.py\nOutput: FileNotFoundError: customers.csv\nAgent: I was in the wrong folder. Switching directories.\nCommand: cd data-tools\nCommand: python3 cleanup.py\nOutput: wrote 200 rows to customers_clean.csv\nAgent: Done.\n```\n\nHandoff B:\n\n```text\nAgent: I updated the login copy and tests pass.\nChanged files: app/login/page.tsx, content/stages.json\nCommand: npm run build\nOutput: Compiled successfully\nNote: I did not run unit tests; copy-only change.\nDiff summary: edited login headline; also edited course promise text.\n```",
-      "body_zh": "交接 A：\n\n```text\nAgent: I wrote cleanup.py to remove duplicate rows.（我写了 cleanup.py，用来移除重复行。）\nChanged files: cleanup.py（改动文件：cleanup.py）\nCommand: python3 cleanup.py\nOutput: FileNotFoundError: customers.csv（找不到 customers.csv 文件。）\nAgent: I was in the wrong folder. Switching directories.（我刚才在错误的文件夹里。正在切换目录。）\nCommand: cd data-tools\nCommand: python3 cleanup.py\nOutput: wrote 200 rows to customers_clean.csv（向 customers_clean.csv 写入了 200 行。）\nAgent: Done.（完成。）\n```\n\n交接 B：\n\n```text\nAgent: I updated the login copy and tests pass.（我更新了登录页文案，测试通过。）\nChanged files: app/login/page.tsx, content/stages.json（改动文件：app/login/page.tsx、content/stages.json）\nCommand: npm run build\nOutput: Compiled successfully（编译成功。）\nNote: I did not run unit tests; copy-only change.（我没有跑单元测试；只是文案改动。）\nDiff summary: edited login headline; also edited course promise text.（差异摘要：改了登录页标题；也改了课程承诺文案。）\n```"
+      "body_en": "Handoff A - code and data:\n\n```text\nAgent: I cleaned duplicate customer rows.\nChanged files: cleanup.py\nCommand: python3 cleanup.py\nOutput: FileNotFoundError: customers.csv\nAgent: I was in the wrong folder. Switching directories.\nCommand: cd data-tools\nCommand: python3 cleanup.py\nOutput: wrote 200 rows to customers_clean.csv\nAgent: Done.\n```\n\nHandoff B - research answer:\n\n```text\nAgent: I summarized three recent vendor options.\nArtifact: vendor_summary.md\nSaved sources: none; relied on model memory\nOutput: wrote vendor_summary.md\nGap: I did not verify current pricing pages.\n```\n\nHandoff C - small automation:\n\n```text\nAgent: I sent reminder emails to everyone who had not replied.\nArtifact: reminder_email.py\nCommand: python3 reminder_email.py --live\nOutput: Sent 32 emails\nGap: I did not run a dry-run first.\n```",
+      "body_zh": "交接 A：代码和数据：\n\n```text\nAgent: I cleaned duplicate customer rows.（我清理了重复客户行。）\nChanged files: cleanup.py（改动文件：cleanup.py。）\nCommand: python3 cleanup.py\nOutput: FileNotFoundError: customers.csv（找不到 customers.csv 文件。）\nAgent: I was in the wrong folder. Switching directories.（我刚才在错误文件夹里。正在切换目录。）\nCommand: cd data-tools\nCommand: python3 cleanup.py\nOutput: wrote 200 rows to customers_clean.csv（向 customers_clean.csv 写入了 200 行。）\nAgent: Done.（完成。）\n```\n\n交接 B：研究回答：\n\n```text\nAgent: I summarized three recent vendor options.（我总结了三个最近的供应商选项。）\nArtifact: vendor_summary.md（交付产物：vendor_summary.md。）\nSaved sources: none; relied on model memory（没有保存来源；只靠模型自己记得的内容。）\nOutput: wrote vendor_summary.md（写出了 vendor_summary.md。）\nGap: I did not verify current pricing pages.（缺口：我没有核对当前价格页面。）\n```\n\n交接 C：小自动化：\n\n```text\nAgent: I sent reminder emails to everyone who had not replied.（我给所有还没回复的人发送了提醒邮件。）\nArtifact: reminder_email.py（交付产物：reminder_email.py。）\nCommand: python3 reminder_email.py --live（以真实发送模式运行提醒邮件脚本。）\nOutput: Sent 32 emails（已发送 32 封邮件。）\nGap: I did not run a dry-run first.（缺口：我没有先做试跑（dry-run），也就是不真正发送的预演。）\n```"
     },
     {
       "type": "exercise",
@@ -59,28 +61,32 @@
       "ref": "m01-l09-e07"
     },
     {
+      "type": "exercise",
+      "ref": "m01-l09-e08"
+    },
+    {
       "type": "reading",
-      "body_en": "Module 1 capability: you now have a first map for AI-agent work. You can separate text from action, claim from evidence, command from output, folder mistake from code mistake, intended file from changed file, and harmless reading from possible side effects.",
-      "body_zh": "第 1 模块的能力闭环：你现在有了一张读 AI agent（AI 代理）工作的第一版地图。你能分清文字和动作、说法和证据、命令和输出、文件夹错误和代码错误、原本要改的文件和实际改过的文件，以及单纯读取和可能产生副作用的运行。"
+      "body_en": "Module 1 capability: you now have a first acceptance checklist for AI work. You can separate confident language from inspectable evidence, and you can slow down when evidence is missing or when files, data, sources, or people may already have been touched.",
+      "body_zh": "第 1 模块的能力闭环：你现在有了一张验收 AI 工作的第一版清单。你能把自信的话和可检查的证据分开；当证据缺失，或者文件、数据、来源、别人可能已经受到影响时，你知道要慢下来。"
     }
   ],
   "exercises": [
     {
       "id": "m01-l09-e01",
       "type": "drag_order",
-      "prompt_en": "When reviewing either handoff, put the checks in the strongest order.",
-      "prompt_zh": "检查任一段交接时，把这些动作排成最稳妥的顺序。",
+      "prompt_en": "When reviewing any AI handoff, put the checks in the strongest order.",
+      "prompt_zh": "检查任一段 AI 交接时，把这些动作排成最稳妥的顺序。",
       "items_en": [
-        "Check command and output",
-        "Read the agent's claim",
-        "Name missing evidence and possible risk",
-        "Check changed files"
+        "Inspect the evidence: command output, source links, screenshot, or test result",
+        "Read the claim",
+        "Name the remaining gap and possible risk",
+        "Find the artifact or changed thing"
       ],
       "items_zh": [
-        "检查运行的命令和返回的输出",
-        "先读 agent 声称了什么",
-        "说出缺了什么证据、可能有什么风险",
-        "检查实际改动了哪些文件"
+        "检查证据：命令输出、来源链接、截图或测试结果",
+        "先读它声称了什么",
+        "说出剩下的缺口和可能风险",
+        "找出交付产物或被改动的东西"
       ],
       "answer": [
         1,
@@ -88,8 +94,8 @@
         0,
         2
       ],
-      "explain_en": "This sequence stops you from accepting a confident summary before you inspect the trail underneath it.",
-      "explain_zh": "这个顺序能防止你在检查底下的痕迹之前，就先接受一句自信总结。",
+      "explain_en": "This order works across formats. First read the claim, then locate the artifact, inspect evidence, and only then decide what remains uncertain or risky.",
+      "explain_zh": "这个顺序可以跨格式使用。先读说法，再定位产物，然后检查证据，最后判断还剩什么不确定或有风险。",
       "difficulty": 3,
       "xp_value": 15,
       "advanced": true
@@ -97,8 +103,8 @@
     {
       "id": "m01-l09-e02",
       "type": "mcq",
-      "prompt_en": "In Handoff A, which line proves source code changed, but does not prove the script ran successfully?",
-      "prompt_zh": "在交接 A 里，哪一行能证明源代码有改动，但不能证明脚本成功运行？",
+      "prompt_en": "In Handoff A, which line indicates source code may have changed, but does not show the script ran successfully?",
+      "prompt_zh": "在交接 A 里，哪一行说明源代码可能被改过，但不能说明脚本已经成功跑完？",
       "options_en": [
         "`Command: cd data-tools`",
         "`Output: wrote 200 rows to customers_clean.csv`",
@@ -112,8 +118,8 @@
         "`Agent: Done.`（完成。）"
       ],
       "answer": 2,
-      "explain_en": "Changed files show what was edited. Execution evidence comes later from commands and outputs.",
-      "explain_zh": "改动文件说明编辑了什么。运行证据要从后面的命令和输出里找。",
+      "explain_en": "The handoff line says which file changed; stronger confirmation would be a diff or file view. Execution evidence comes later from commands and outputs.",
+      "explain_zh": "这行交接记录说明哪个文件被改过；更强的确认需要看 diff（差异）或文件内容。运行证据要从后面的命令和输出里找。",
       "difficulty": 2,
       "xp_value": 10
     },
@@ -143,23 +149,23 @@
     {
       "id": "m01-l09-e04",
       "type": "mcq",
-      "prompt_en": "In Handoff B, which detail should make you slow down before accepting the agent's \"copy-only\" claim?",
-      "prompt_zh": "在交接 B 里，哪一个细节会让你在接受「只是文案改动」这个说法前先慢下来？",
+      "prompt_en": "In Handoff B, which detail should make you slow down before trusting the research summary?",
+      "prompt_zh": "在交接 B 里，哪一个细节会让你在相信这份研究总结前先慢下来？",
       "options_en": [
-        "`Output: Compiled successfully`",
-        "`Command: npm run build`",
-        "`app/login/page.tsx` was changed",
-        "`content/stages.json` and the course promise were also changed"
+        "`Artifact: vendor_summary.md`",
+        "`Output: wrote vendor_summary.md`",
+        "`Saved sources: none; relied on model memory`",
+        "`Agent: I summarized three recent vendor options.`"
       ],
       "options_zh": [
-        "`Output: Compiled successfully`（编译成功。）",
-        "`Command: npm run build`（运行构建命令。）",
-        "`app/login/page.tsx` 被改了",
-        "`content/stages.json` 和课程承诺文案也被改了"
+        "`Artifact: vendor_summary.md`（交付产物：vendor_summary.md。）",
+        "`Output: wrote vendor_summary.md`（写出了 vendor_summary.md。）",
+        "`Saved sources: none; relied on model memory`（没有保存来源；只靠模型自己记得的内容。）",
+        "`Agent: I summarized three recent vendor options.`（我总结了三个最近的供应商选项。）"
       ],
-      "answer": 3,
-      "explain_en": "The agent's claim is narrower than the actual changed files. Course-promise copy is product-significant, so it needs explicit review.",
-      "explain_zh": "agent 的说法比实际改动范围更窄。课程承诺文案属于重要产品信息，需要明确检查。",
+      "answer": 2,
+      "explain_en": "For a current research task, model memory without saved sources is weak evidence. You need source links or another check against current pages.",
+      "explain_zh": "对于需要当前信息的研究任务，只靠模型记忆、没有保存来源链接，是很弱的证据。你需要来源链接，或者再核对当前页面。",
       "difficulty": 3,
       "xp_value": 15,
       "advanced": true
@@ -190,40 +196,64 @@
     {
       "id": "m01-l09-e06",
       "type": "mcq",
-      "prompt_en": "What is the safest next instruction for Handoff B?",
-      "prompt_zh": "对交接 B，下一句最稳妥的指令是什么？",
+      "prompt_en": "In Handoff C, what is the most important risk signal?",
+      "prompt_zh": "在交接 C 里，最重要的风险信号是什么？",
       "options_en": [
-        "Ship it because the build compiled.",
-        "Delete the test suite because it was not run.",
-        "Show the diff for both changed files, and explain why the course promise changed.",
-        "Rewrite everything in Python so it is easier to inspect."
+        "`Artifact: reminder_email.py` exists, so only code review remains.",
+        "The command used `--live` and the output says 32 emails were sent.",
+        "The missing dry-run means the emails probably were not sent yet.",
+        "The output count is 32, so the blast radius is automatically safe."
       ],
       "options_zh": [
-        "直接上线，因为构建成功了。",
-        "删掉测试套件，因为这次没有运行。",
-        "展示两个改动文件的 diff（代码差异），并说明为什么改了课程承诺。",
-        "全部改成 Python，这样更容易检查。"
+        "存在 `Artifact: reminder_email.py`（交付产物：reminder_email.py），所以只剩代码审查。",
+        "命令用了 `--live`（真实发送模式），而且输出说已经发送 32 封邮件。",
+        "缺少试跑（dry-run）说明邮件大概还没有真的发出。",
+        "输出数量是 32，所以影响范围自动就是安全的。"
       ],
-      "answer": 2,
-      "explain_en": "The next instruction asks for evidence about the actual scope of change, especially the surprising course-promise edit.",
-      "explain_zh": "这句指令要求 agent 给出实际改动范围的证据，尤其是那个意外出现的课程承诺改动。",
+      "answer": 1,
+      "explain_en": "`--live` plus `Sent 32 emails` means the automation may already have affected real people. A missing dry-run matters more after a live send.",
+      "explain_zh": "`--live` 加上 `Sent 32 emails`（已发送 32 封邮件）说明自动化可能已经影响了真实的人。已经真实发送之后，缺少试跑（dry-run）就更重要。",
       "difficulty": 3,
       "xp_value": 15,
       "advanced": true
     },
     {
       "id": "m01-l09-e07",
+      "type": "mcq",
+      "prompt_en": "What is the safest next instruction for Handoff C?",
+      "prompt_zh": "对交接 C，下一句最稳妥的指令是什么？",
+      "options_en": [
+        "Run the same command in dry-run mode now, then decide later whether to check recipients.",
+        "Stop further sends, show the recipient list and exact email text, and give evidence for any recommended follow-up.",
+        "Review the script first, because code review is enough to contain a live send.",
+        "Ask for the terminal log only; the recipient list can wait."
+      ],
+      "options_zh": [
+        "现在用试跑（dry-run）模式再跑一遍，之后再决定要不要查收件人。",
+        "先停止继续发送，展示收件人名单和准确邮件正文；如果建议补救，也给出依据。",
+        "先审查脚本，因为代码审查足以控制一次真实发送。",
+        "只要求终端记录；收件人名单可以晚一点再看。"
+      ],
+      "answer": 1,
+      "explain_en": "The action may already be real. The next move is containment and evidence, not another run or a syntax lesson.",
+      "explain_zh": "这个动作可能已经真实发生。下一步应该是停止扩大影响并拿到证据，而不是再跑一次，或者先学语法。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
+    },
+    {
+      "id": "m01-l09-e08",
       "type": "fill_in",
-      "prompt_en": "In one English word, what do we call visible results such as `Compiled successfully` or `wrote 200 rows`? ______",
-      "prompt_zh": "像 `Compiled successfully`（编译成功）或 `wrote 200 rows`（写入了 200 行）这种可见结果，英文统称为 ______。",
+      "prompt_en": "In one English word, what do we call support you can inspect, such as command output, source links, screenshots, or test results? ______",
+      "prompt_zh": "像命令输出、来源链接、截图、测试结果这种你可以检查的支撑材料，英文统称为 ______。",
       "answer_spec": {
         "accept": [
-          "output"
+          "evidence"
         ],
         "ignore_case": true
       },
-      "explain_en": "Output is the result a command or program sends back. In a handoff, output is often the first evidence you inspect.",
-      "explain_zh": "output（输出）就是命令或程序返回的结果。在交接记录里，输出往往是你最先检查的证据。",
+      "explain_en": "Evidence lets you judge a handoff instead of trusting fluency. In AI work, evidence can be terminal output, a changed file, a source link, a screenshot, or a test result.",
+      "explain_zh": "evidence（证据）让你能判断一份交付，而不是只相信它说得顺不顺。在 AI 工作里，证据可以是终端输出、改动文件、来源链接、截图或测试结果。",
       "difficulty": 1,
       "xp_value": 15,
       "term_drill": true

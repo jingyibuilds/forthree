@@ -27,8 +27,8 @@
       "term_zh": "伪代码（pseudocode）",
       "anchor_en": "A prep note before the formal recipe: wash, heat, add, stop when soft.",
       "anchor_zh": "像正式菜谱前的备忘：洗菜，热锅，放油，炒软就停。",
-      "explain_en": "Pseudocode is code logic in plain language. It focuses on steps, order, decisions, and repetition. With AI, it works like a contract: implement this, then prove the code follows it.",
-      "explain_zh": "伪代码就是用普通语言写代码逻辑。它关注步骤、顺序、判断和重复。和 AI 合作时，它像一份合约：请按这个实现，再证明代码没有跑偏。"
+      "explain_en": "Pseudocode is code logic in plain language. It focuses on steps, order, decisions, and repetition. With AI, it works like a contract: implement this, then show the code follows it.",
+      "explain_zh": "伪代码就是用普通语言写代码逻辑。它关注步骤、顺序、判断和重复。和 AI 合作时，它像一份合约：请按这个实现，再拿证据说明代码没有跑偏。"
     },
     {
       "type": "visual",
@@ -150,8 +150,8 @@
         "它把你想要的步骤显性写出来，方便你和 agent 一起检查计划"
       ],
       "answer": 3,
-      "explain_en": "Pseudocode does not prove code is correct. Its value is clarity: it gives the later code a visible contract to match.",
-      "explain_zh": "伪代码不能证明代码一定正确。它的价值是清楚：后面真正写出的代码，至少有一个看得见的计划可以对照。",
+      "explain_en": "Pseudocode does not guarantee code is correct. Its value is clarity: it gives the later code a visible contract to match.",
+      "explain_zh": "伪代码不能保证代码一定正确。它的价值是清楚：后面真正写出的代码，至少有一个看得见的计划可以对照。",
       "difficulty": 2,
       "xp_value": 10
     },

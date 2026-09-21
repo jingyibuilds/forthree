@@ -4,7 +4,7 @@
   "order": 5,
   "format": "reading",
   "tag": "core",
-  "est_minutes": 8,
+  "est_minutes": 10,
   "title_en": "Read your first Python output",
   "title_zh": "看懂第一段 Python 输出",
   "outcome_en": "You can connect a tiny Python output back to the code and command that produced it.",
@@ -27,8 +27,8 @@
       "term_zh": "打印到屏幕（print）",
       "anchor_en": "A kitchen calling out an order number: the kitchen already did something inside, but the shout is what lets people outside see the result.",
       "anchor_zh": "像后厨喊出取餐号：后厨内部已经做了事，但外面的人是通过这声喊话看见结果的。",
-      "explain_en": "`print()` is a Python instruction that sends text to the screen. In tiny beginner programs, it is the easiest way to prove that the program really ran. You do not need to memorize the parentheses and quote-mark rules yet; for now, read it as: show the text inside the parentheses.",
-      "explain_zh": "`print()` 是 Python 里「把文字送到屏幕上」的指令。在最小的入门程序里，它是证明程序真的跑起来的最简单方式。现在不用背括号和引号的规则，先这样读就够了：括号里放的是要显示的文字。"
+      "explain_en": "`print()` is a Python instruction that sends text to the screen. In tiny beginner programs, it is the easiest way to show that the program really ran. You do not need to memorize the parentheses and quote-mark rules yet; for now, read it as: show the text inside the parentheses.",
+      "explain_zh": "`print()` 是 Python 里「把文字送到屏幕上」的指令。在最小的入门程序里，它是说明程序真的跑起来的最简单方式。现在不用背括号和引号的规则，先这样读就够了：括号里放的是要显示的文字。"
     },
     {
       "type": "visual",
@@ -43,6 +43,15 @@
     {
       "type": "exercise",
       "ref": "m01-l05-e01"
+    },
+    {
+      "type": "reading",
+      "body_en": "When you read the output, keep the layers separate. The code may contain quote marks, parentheses, and an instruction name like `print`. The output usually contains only the result the program sent back.",
+      "body_zh": "看输出时，要把层次分开。代码里可能有引号、括号、像 `print` 这样的指令名字；输出里通常只有程序送回来的结果。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l05-e04"
     },
     {
       "type": "concept",
@@ -65,6 +74,15 @@
     {
       "type": "exercise",
       "ref": "m01-l05-e03"
+    },
+    {
+      "type": "reading",
+      "body_en": "For agent work, output is evidence that a command ran and returned something. It is not automatically evidence that the agent used the right file, right data, or right folder.",
+      "body_zh": "和 agent 协作时，输出能支持一个判断：一条命令运行过，并且返回了东西。但它不能自动说明 agent 用的是正确文件、正确数据，或者正确文件夹。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l05-e05"
     },
     {
       "type": "reading",
@@ -135,6 +153,53 @@
       "explain_zh": "这就是第 1 模块到目前为止的整条链：文字、命令、解释器、动作、输出。",
       "difficulty": 2,
       "xp_value": 10
+    },
+    {
+      "id": "m01-l05-e04",
+      "type": "mcq",
+      "prompt_en": "Code:\n\n```python\nprint(\"done\")\n```\n\nWhat is the output?",
+      "prompt_zh": "代码：\n\n```python\nprint(\"done\")\n```\n\n输出是什么？",
+      "options_en": [
+        "`print`",
+        "`\"done\"`",
+        "`done`",
+        "`print(\"done\")`"
+      ],
+      "options_zh": [
+        "`print`",
+        "`\"done\"`",
+        "`done`",
+        "`print(\"done\")`"
+      ],
+      "answer": 2,
+      "explain_en": "The code contains `print`, parentheses, and quote marks. The visible output is only the text sent to the screen: `done`.",
+      "explain_zh": "代码里有 `print`、括号和引号；真正显示出来的输出只有送到屏幕上的文字：`done`。",
+      "difficulty": 2,
+      "xp_value": 10
+    },
+    {
+      "id": "m01-l05-e05",
+      "type": "mcq",
+      "prompt_en": "Agent transcript:\n\n`Command: python3 report.py`\n`Output: cleaned 12 rows`\n\nWhat can you safely conclude from this output alone?",
+      "prompt_zh": "agent 工作记录：\n\n`Command: python3 report.py`（命令：用 Python 运行 report.py。）\n`Output: cleaned 12 rows`（输出：清理了 12 行。）\n\n只凭这段输出，你能稳妥得出什么结论？",
+      "options_en": [
+        "The command returned an output saying 12 rows were cleaned.",
+        "The agent definitely used the correct file.",
+        "All future reports are now correct.",
+        "No command actually ran because output is only text."
+      ],
+      "options_zh": [
+        "这条命令返回了一段输出，说清理了 12 行。",
+        "agent 一定用了正确文件。",
+        "之后所有报告都已经正确。",
+        "没有命令真正运行，因为输出只是文字。"
+      ],
+      "answer": 0,
+      "explain_en": "Output is useful evidence, but keep the claim narrow. It supports that the command produced that result; it does not by itself show the file, data, or folder were correct.",
+      "explain_zh": "输出是有用证据，但说法要收窄。它支持「这条命令产生了这个结果」；单凭它还不能说明文件、数据或文件夹一定正确。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
     }
   ],
   "why_en": "Why this fifth: a first Python line is only useful if you can connect the visible output back to code, command, and interpreter.",

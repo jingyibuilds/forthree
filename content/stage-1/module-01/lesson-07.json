@@ -64,6 +64,15 @@
     },
     {
       "type": "reading",
+      "body_en": "A location check is not blame; it is cheap alignment. Ask for folder, workspace, and branch before treating a successful-looking output as the right output.",
+      "body_zh": "检查位置不是追责，而是低成本对齐。在把一段看起来成功的输出当成正确输出前，先问清文件夹、工作区（workspace）和分支（branch）。"
+    },
+    {
+      "type": "exercise",
+      "ref": "m01-l07-e06"
+    },
+    {
+      "type": "reading",
       "body_en": "Checkpoint: after this lesson, file-not-found should not immediately mean \"the program is bad.\" Your first hypotheses can be: wrong folder, wrong workspace, wrong branch, or wrong file name.",
       "body_zh": "这一课的小结：现在看到「找不到文件」，不要立刻等同于「程序写坏了」。你的前几个猜测可以是：文件夹错了、工作区错了、分支错了，或者文件名错了。"
     }
@@ -152,8 +161,8 @@
       "answer": [
         3,
         0,
-        2,
-        1
+        1,
+        2
       ],
       "explain_en": "The first run fails, the agent changes directory, then the same script is tried again from a better location.",
       "explain_zh": "第一次运行失败，agent 切换目录，然后从更合适的位置再次运行同一个脚本。",
@@ -181,6 +190,30 @@
       "answer": 1,
       "explain_en": "Output exists, but it may be output from the wrong folder. The next move is to verify the location and avoid trusting the artifact too early.",
       "explain_zh": "输出确实存在，但可能来自错误文件夹。下一步是确认位置，并且不要太早信任产物。",
+      "difficulty": 3,
+      "xp_value": 15,
+      "advanced": true
+    },
+    {
+      "id": "m01-l07-e06",
+      "type": "mcq",
+      "prompt_en": "Agent says:\n\n`Output: all checks passed`\n\nbut also says:\n\n`Workspace: demo-copy`\n`Branch: experiment`\n\nYou expected work on the main project. What is the best response?",
+      "prompt_zh": "agent 说：\n\n`Output: all checks passed`（输出：所有检查通过。）\n\n但它同时说：\n\n`Workspace: demo-copy`（工作区：demo-copy。）\n`Branch: experiment`（分支：experiment。）\n\n你原本要求它处理主项目。最好的回应是什么？",
+      "options_en": [
+        "Accept it immediately because all checks passed somewhere.",
+        "Ask the agent to confirm the same checks on the intended workspace and branch.",
+        "Ignore workspace and branch because output is always enough.",
+        "Assume the main project is broken."
+      ],
+      "options_zh": [
+        "立刻接受，因为某个地方的检查通过了。",
+        "请 agent 在原本指定的工作区和分支上确认同样的检查。",
+        "忽略工作区和分支，因为有输出就足够。",
+        "直接认定主项目坏了。"
+      ],
+      "answer": 1,
+      "explain_en": "Successful output from the wrong place may be irrelevant. The next move is to align location before accepting the handoff.",
+      "explain_zh": "错误位置上的成功输出，可能和你要的工作无关。下一步是先对齐位置，再接受交接。",
       "difficulty": 3,
       "xp_value": 15,
       "advanced": true

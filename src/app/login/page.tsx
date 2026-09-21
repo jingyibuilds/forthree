@@ -45,7 +45,11 @@ export default async function LoginPage({
   const onboarded = hasCompletedOnboarding(profile);
   const { data: attempts } = user
     ? supabase
-      ? await supabase.from("attempts").select("exercise_id").eq("correct", true)
+      ? await supabase
+          .from("attempts")
+          .select("exercise_id")
+          .eq("user_id", user.id)
+          .eq("correct", true)
       : { data: [] }
     : { data: [] };
   const correct = new Set((attempts ?? []).map((a) => a.exercise_id as string));

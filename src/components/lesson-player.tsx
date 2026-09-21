@@ -868,7 +868,7 @@ function CsScopeMapIllustration({ locale }: { locale: Locale }) {
     locale === "zh"
       ? {
           center: "AI agent 协作",
-          centerHint: "你先学会读工作痕迹",
+          centerHint: "你先学会验收证据",
           areas: [
             ["程序与语言", "代码怎样表达意图"],
             ["数据与算法", "信息怎样被处理"],
@@ -880,7 +880,7 @@ function CsScopeMapIllustration({ locale }: { locale: Locale }) {
         }
       : {
           center: "AI-agent collaboration",
-          centerHint: "start by reading the work trail",
+          centerHint: "start by inspecting evidence",
           areas: [
             ["Programs & languages", "how code expresses intent"],
             ["Data & algorithms", "how information is processed"],
@@ -1157,6 +1157,7 @@ export function LessonPlayer({
   alreadyCorrect,
   initialIndex,
   assistantEnabled,
+  nextLessonIdAfterCompletion,
 }: {
   lesson: Lesson;
   locale: Locale;
@@ -1164,6 +1165,7 @@ export function LessonPlayer({
   alreadyCorrect: string[];
   initialIndex: number;
   assistantEnabled: boolean;
+  nextLessonIdAfterCompletion?: string;
 }) {
   const [index, setIndex] = useState(initialIndex);
   const [results, setResults] = useState<ExerciseResult[]>(() =>
@@ -1475,12 +1477,26 @@ export function LessonPlayer({
             </p>
           </div>
         </div>
-        <Link
-          href={COURSE_PATH}
-          className="mt-8 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-on-primary shadow-sm transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover active:translate-y-0"
-        >
-          {t.backToPath}
-        </Link>
+        <div className="mt-8 flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
+          <Link
+            href={
+              nextLessonIdAfterCompletion
+                ? lessonPath(nextLessonIdAfterCompletion)
+                : COURSE_PATH
+            }
+            className="min-h-12 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-on-primary shadow-sm transition-[background-color,transform,box-shadow] hover:-translate-y-px hover:bg-primary-hover active:translate-y-0"
+          >
+            {nextLessonIdAfterCompletion ? t.continueNextLesson : t.backToPath}
+          </Link>
+          {nextLessonIdAfterCompletion && (
+            <Link
+              href={COURSE_PATH}
+              className="min-h-12 rounded-lg border border-line bg-surface px-8 py-3 text-sm font-semibold text-muted shadow-sm transition-[border-color,color,transform] hover:-translate-y-px hover:border-primary hover:text-primary active:translate-y-0"
+            >
+              {t.backToPath}
+            </Link>
+          )}
+        </div>
       </main>
     );
   }

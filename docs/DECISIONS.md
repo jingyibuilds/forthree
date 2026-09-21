@@ -6,6 +6,133 @@ just the outcome: what was considered, what was rejected, why.
 
 ---
 
+## 2026-09-20 — L1-L7 productive-difficulty audit completed before accepting M1
+
+The first seven M1 lessons were audited against the density bar established by
+owner testing in Lessons 8-9. The goal was not to inflate step count, but to
+make early confidence feel earned: the learner should repeatedly separate file
+from action, failure stage from cleanup risk, command from output, output from
+broader correctness, and evidence scope from overclaim.
+
+Resolution: keep Lessons 3-4 structurally intact because they already meet the
+target through command/output, transcript ordering, pseudocode, and side-effect
+practice. Deepen Lessons 1, 2, 5, 6, and 7 with targeted transfer checks:
+
+- Lesson 1 now adds a late distinction between creating a file, running a
+  command, and seeing output.
+- Lesson 2 now asks learners to prefer failure reports that name both stage and
+  side-effect boundary.
+- Lesson 5 is the main repaired thin point: it now distinguishes code syntax
+  from visible output, then narrows what a Python output can and cannot support
+  in an agent handoff.
+- Lesson 6 now explicitly teaches evidence scope: build output supports a build
+  claim, not every broad safety claim.
+- Lesson 7 now adds a workspace/branch transfer check so successful-looking
+  output from the wrong location does not get accepted too early.
+
+Language correction: throughout L1-L7, use "support/show/indicate" framing for
+evidence whenever the evidence is scoped. Reserve "prove" only for clear
+negative contrast or obviously wrong distractors. This keeps M1 aligned with
+the newer AI-handoff promise: evidence helps judgment, but broad claims still
+need boundaries.
+
+## 2026-09-20 — Production build uses webpack until Turbopack is stable here
+
+Next 16 defaults `next build` to Turbopack. In the current local Codex
+environment, Turbopack repeatedly panics while processing `src/app/globals.css`:
+the PostCSS/CSS worker path attempts to create a process that binds to a port,
+which is rejected with `Operation not permitted (os error 1)`. The failure
+persists after stopping `next dev` and clearing `.next/dev/lock`.
+
+Resolution: `npm run build` now runs content validation followed by
+`next build --webpack`. This keeps the project build gate green using an
+official Next-supported builder path while preserving the same content
+validation step. Revisit this once the local/CI environment can run the
+Turbopack CSS worker without the port-binding panic.
+
+## 2026-09-20 — M1 lessons need productive difficulty, not just smooth micro-cards
+
+Owner testing after M1 Lesson 8-9 clarified that the stronger learning feeling
+came from needing to stop, recall earlier moves, compare plausible options, and
+reason across a messy handoff. Earlier lessons below roughly 10 tabs often felt
+too simple, which risks a paradox: the learner can finish quickly but does not
+trust the achievement because the course did not make the brain work.
+
+Resolution: for the main M1 learning path, use Lesson 8-9 as the density
+reference. A normal lesson should generally land around 12-15 learner-visible
+tabs/steps when the concept warrants it, with meaningful recall, contrast,
+ordering, or transfer checks. This is a learning-density target, not permission
+to pad. Every added tab must do one of four jobs: introduce a necessary anchor,
+make a hidden distinction visible, force retrieval of a prior move, or ask the
+learner to apply the move in a slightly new situation.
+
+Immediate implication: before accepting M1 as the vertical slice, audit Lessons
+1-7 against this bar. Prefer deepening the existing spine with richer examples
+and better distractors over adding decorative explanation. The goal is a course
+that feels learnable and confidence-building, but still earns the learner's
+trust through productive effort.
+
+## 2026-09-20 — Progress surfaces must match learner meaning, not implementation scope
+
+Owner testing found two trust-breaking path issues: the learning-time number
+looked like a total but was computed only from the active module's lessons, and
+after completing a lesson the learner had to return to the path and manually
+find the next unstarted lesson.
+
+Resolution: path-level learning time means cumulative active time across the
+opened course path unless the label explicitly says lesson, today, or module.
+Do not use a narrower implementation scope behind a broad label like "total"
+or "cumulative." The current-lesson card should show the cumulative value
+without requiring the learner to open the full route details.
+
+Lesson completion is also a continuation state, not just a result state. When
+there is a valid next lesson, the primary completion action should go directly
+there; the path page remains a secondary action for orientation and review.
+This keeps the intended sequence obvious and avoids making the learner scroll
+to rediscover where they are.
+
+## 2026-09-20 — M1 is an AI handoff evidence module, not a log-reading module
+
+Owner review after completing most of M1 challenged two linked assumptions:
+whether the examples were overfit to this project and whether "reading an agent
+work log" remains the right promise now that many 2026 AI products hide the
+process and return polished artifacts. A multi-scout research pass across
+current agent practice, AI-assisted development pain points, curriculum
+patterns, and review-learning science found a consistent shift: generation is
+less scarce, while verification, handoff evidence, authority boundaries,
+source checking, and recovery paths are the bottleneck.
+
+Resolution: M1's durable capability is no longer framed as "read the agent
+trail" in the narrow sense. It is "inspect an AI handoff evidence packet":
+separate claim, artifact or changed thing, evidence, missing checks, and risk
+before accepting "done." Logs remain one evidence format, but not the product
+promise. Evidence may be command output, changed files, a diff, a source link,
+a screenshot, a test result, a dry-run, or a recovery note.
+
+Part 1 should use a fixed multi-scenario spine rather than a single
+personalized scenario or many loose generic examples. The recurring families
+are: (1) AI changed code, (2) AI handled data/files, (3) AI answered from
+sources, and (4) AI automated a small workflow. This keeps examples broadly
+relevant while preserving the For Three promise of transfer: the same judgment
+move repeats across surfaces. Avoid shallow personalization where the learner
+chooses a scenario but the course cannot deeply honor it. A lightweight
+"your version of this" reflection may still appear after the fixed spine.
+
+Immediate content implication: keep M1 lessons 1-8 as the concept ramp, fix the
+known Lesson 7 ordering answer key, and rewrite the M1 lab to mix code/data,
+research/source, and automation handoffs. Future M2-M4 work should continue the
+same security-aware spine: data boundaries, secrets, source evidence, side
+effects, permission, dry-runs, rollback, and human judgment remain practical
+course content rather than high-level ethics wallpaper.
+
+Progress implication: because this is a module-level reframing, reset the
+owner/test learner's progress after publishing the rewrite so the owner can
+experience M1 from a clean state. More generally, content edits must respect
+lived progress: completed lessons should not silently become confusing review
+states. The review experience must eventually show prior answer, correct
+answer, explanation, and whether the item changed since the learner completed
+it.
+
 ## 2026-09-16 — Part 1 needs course-architecture correction before more authoring
 
 Owner testing through Lesson 8 found a serious course-quality mismatch: lessons

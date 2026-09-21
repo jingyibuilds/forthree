@@ -2,25 +2,25 @@
   "id": "m01",
   "stage": 1,
   "order": 1,
-  "title_en": "Read the agent trail",
-  "title_zh": "读懂 agent 的工作痕迹",
-  "description_en": "This module is not trying to make you write code immediately. It first trains you to read an AI coding agent handoff: what changed, what actually ran, where it ran, what the output proves, what remains unchecked, and where risk may have entered.",
-  "description_zh": "这个模块不是一上来就让你写代码，而是先训练你看懂 AI coding agent（AI 编程代理）的交接记录：改了什么、哪些真的运行过、在哪里运行，输出证明了什么，还有什么没检查，风险可能从哪里进入。",
-  "capability_en": "You can read a short AI coding-agent handoff and judge what was changed, what ran, where it ran, what failed, what the output proves, what remains unchecked, and whether files or data may already have been affected.",
-  "capability_zh": "你能读一小段 AI coding agent（AI 编程代理）的交接记录，并判断：它改了什么、运行了什么、在哪里运行、哪里失败、输出证明了什么、还有什么没检查，以及文件或数据是否可能已经被影响。",
-  "refusal_en": "An agent update that blends changed files, executed action, output, missing checks, and risk into one vague 'done'.",
-  "refusal_zh": "把「改了哪些文件」「运行过什么」「产生了什么输出」「还缺什么检查」「可能有风险」混成一句含糊「做好了」的 agent 汇报。",
+  "title_en": "Check the AI handoff",
+  "title_zh": "检查 AI 交付证据",
+  "description_en": "This module is not trying to make you write code immediately. It first trains you to inspect an AI handoff evidence packet: what was claimed, what changed, what actually ran, what evidence came back, what remains unchecked, and where risk may have entered.",
+  "description_zh": "这个模块不是一上来就让你写代码，而是先训练你验收 AI 交付时给出的证据包：它声称了什么、改了什么、哪些真的运行过、返回了哪些证据、还有什么没检查，风险可能从哪里进入。",
+  "capability_en": "You can read a short AI handoff and judge what was claimed, what may have changed, what ran, where it ran, what failed, what the output or source evidence supports, what remains unchecked, and whether files, data, or people may already have been affected.",
+  "capability_zh": "你能读一小段 AI 交接记录，并判断：它声称了什么、可能改了什么、运行了什么、在哪里运行、哪里失败、输出或来源链接等证据支持什么判断、还有什么没检查，以及文件、数据或别人是否可能已经被影响。",
+  "refusal_en": "An AI handoff that blends claims, changed artifacts, executed actions, evidence, missing checks, and risk into one vague 'done'.",
+  "refusal_zh": "把「声称了什么」「改了哪些东西」「执行过什么」「证据是什么」「还缺什么检查」「可能有什么风险」混成一句含糊「做好了」的 AI 交付。",
   "capability_moves_en": [
-    "What changed",
+    "What is claimed",
     "What ran",
-    "What is unproven",
-    "What is risky"
+    "What supports it",
+    "What remains risky"
   ],
   "capability_moves_zh": [
-    "改了什么",
+    "声称了什么",
     "运行了什么",
-    "还有什么没证实",
-    "哪里有风险"
+    "证据支持什么",
+    "还剩什么风险"
   ],
   "customization_points": [
     {
