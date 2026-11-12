@@ -1,8 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": null,
-  "buildCommand": null,
+  "installCommand": "echo skip",
+  "buildCommand": "echo skip",
   "outputDirectory": "demo",
-  "rewrites": [{"source": "/", "destination": "/day-one.html"}]
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/day-one.html"
+    }
+  ]
 }

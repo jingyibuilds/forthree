@@ -24,6 +24,8 @@ Why the course is shaped this way, and what it covers. The skill tree and the
 demo can be opened in a browser without installing anything:
 [skill tree](https://jingyibuilds.github.io/forthree/content/skill-tree.html) ·
 [demo](https://jingyibuilds.github.io/forthree/demo/day-one.html).
+The web pages are previews only: the course app itself runs just on your own
+computer, as described below.
 
 - **What we mean by "learning"** — one page, [Chinese original](docs/background/learning-one-pager.zh.md)
   and an [English translation](docs/background/learning-one-pager.en.md).
