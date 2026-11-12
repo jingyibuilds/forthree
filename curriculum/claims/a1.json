@@ -1,0 +1,295 @@
+{
+  "about": "What the content says each program prints. Checked by scripts/measure-content.mjs: every quote must be in the named content field and in the program's output (or, for source_quotes, in its source). See docs/LESSONS.md L-AUTH-02.",
+  "volatile": [
+    "content/interviews/s01-check-env.py"
+  ],
+  "claims": [
+    {
+      "part": "s02-lab-a",
+      "in": "compare.mine",
+      "lines": [
+        "18",
+        "12",
+        "31",
+        "27",
+        "25",
+        "19",
+        "total at the end: 19"
+      ],
+      "from": "curriculum/reference/s02-lab-a/inside.py",
+      "uses": [
+        "public/labs/s02-lab-a/rows.py"
+      ]
+    },
+    {
+      "part": "s02-lab-a",
+      "in": "compare.theirs",
+      "lines": [
+        "18",
+        "30",
+        "61",
+        "88",
+        "113",
+        "132",
+        "total at the end: 132"
+      ],
+      "from": "curriculum/reference/s02-lab-a/outside.py"
+    },
+    {
+      "part": "s02-lab-a",
+      "in": "compare.table",
+      "quotes": [
+        "19"
+      ],
+      "from": "curriculum/reference/s02-lab-a/inside.py",
+      "lines": [
+        "total at the end: 19"
+      ],
+      "content_lines": false
+    },
+    {
+      "part": "s02-lab-a",
+      "in": "compare.table",
+      "quotes": [
+        "132"
+      ],
+      "from": "curriculum/reference/s02-lab-a/outside.py",
+      "lines": [
+        "total at the end: 132"
+      ],
+      "content_lines": false
+    },
+    {
+      "part": "s02-lab-a",
+      "in": "acceptance_checks.0.need",
+      "lines": [
+        "Ana",
+        "Bo",
+        "Cy",
+        "Di",
+        "Eve",
+        "Fei"
+      ],
+      "from": "curriculum/reference/s02-lab-a/tasks.py"
+    },
+    {
+      "part": "s02-lab-a",
+      "in": "acceptance_checks.1.need",
+      "quotes": [
+        "83",
+        "61"
+      ],
+      "lines": [
+        "count 3 83",
+        "Cy 61"
+      ],
+      "from": "curriculum/reference/s02-lab-a/tasks.py",
+      "content_lines": false
+    },
+    {
+      "part": "s02-lab-a",
+      "in": "compare.after",
+      "quotes": [
+        "31"
+      ],
+      "from": "curriculum/reference/s02-lab-a/tasks.py",
+      "lines": [
+        "largest 31"
+      ],
+      "content_lines": false
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "compare.mine",
+      "lines": [
+        "charged: 0.30000000000000004",
+        "is it 0.30? False"
+      ],
+      "from": "public/labs/s03-lab-a/09_money.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "compare.mine",
+      "lines": [
+        "before: 2147483647",
+        "after one more: -2147483648"
+      ],
+      "from": "public/labs/s03-lab-a/10_overflow.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "acceptance_checks.1.pairs",
+      "quotes": [
+        "30000000000000004"
+      ],
+      "from": "public/labs/s03-lab-a/09_money.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "acceptance_checks.1.pairs",
+      "quotes": [
+        "2147483648"
+      ],
+      "from": "public/labs/s03-lab-a/10_overflow.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "compare.theirs",
+      "lines": [
+        "1 ['Ana', 'new']"
+      ],
+      "from": "curriculum/reference/s03-lab-a/bump.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "predict.options.2",
+      "quotes": [
+        "1 ['Ana', 'new']"
+      ],
+      "from": "curriculum/reference/s03-lab-a/bump.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "compare.table",
+      "quotes": [
+        "1 ['Ana', 'new']"
+      ],
+      "from": "curriculum/reference/s03-lab-a/bump.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "tasks.2.passes_when",
+      "quotes": [
+        "10"
+      ],
+      "from": "curriculum/reference/s03-lab-a/03_fixed.py",
+      "lines": [
+        "10"
+      ],
+      "content_lines": false
+    },
+    {
+      "part": "s01-interview-a",
+      "in": "brief",
+      "quotes": [
+        "Success"
+      ],
+      "source_quotes": [
+        "a script that checks my setup"
+      ],
+      "from": "content/interviews/s01-check-env.py"
+    },
+    {
+      "part": "s01-interview-a",
+      "in": "looks_for.2",
+      "source_quotes": [
+        "except Exception"
+      ],
+      "from": "content/interviews/s01-check-env.py"
+    },
+    {
+      "part": "s02-interview-a",
+      "in": "brief",
+      "source_quotes": [
+        "total the week's amounts by team"
+      ],
+      "from": "content/interviews/s02-weekly-total.py"
+    },
+    {
+      "part": "s03-interview-a",
+      "in": "brief",
+      "quotes": [
+        "90.0",
+        "81.0",
+        "72.9"
+      ],
+      "source_quotes": [
+        "apply the discounts to a price"
+      ],
+      "from": "content/interviews/s03-price.py"
+    },
+    {
+      "part": "s03-interview-a",
+      "in": "looks_for.2",
+      "source_quotes": [
+        "discounts.append(0.1)"
+      ],
+      "from": "content/interviews/s03-price.py"
+    },
+    {
+      "part": "s03-interview-a",
+      "in": "looks_for.2",
+      "quotes": [
+        "0.9900000000000001"
+      ],
+      "uses": [
+        "content/interviews/s03-price.py"
+      ],
+      "code": "source = open('content/interviews/s03-price.py').read().split('\\nprint(')[0]\nnames = {}\nexec(source, names)\nprint(names['apply'](1.10))"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "acceptance_checks.0.need",
+      "quotes": [
+        "NameError"
+      ],
+      "from": "public/labs/s03-lab-a/01_scope.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "acceptance_checks.0.need",
+      "quotes": [
+        "TypeError"
+      ],
+      "from": "public/labs/s03-lab-a/02_arguments.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "acceptance_checks.0.need",
+      "quotes": [
+        "UnboundLocalError"
+      ],
+      "from": "public/labs/s03-lab-a/03_reassign.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "acceptance_checks.0.need",
+      "quotes": [
+        "AttributeError"
+      ],
+      "from": "public/labs/s03-lab-a/04_returns_nothing.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "acceptance_checks.0.need",
+      "quotes": [
+        "KeyError"
+      ],
+      "from": "public/labs/s03-lab-a/05_missing_key.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "acceptance_checks.0.need",
+      "quotes": [
+        "IndexError"
+      ],
+      "from": "public/labs/s03-lab-a/06_off_by_one.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "acceptance_checks.0.need",
+      "quotes": [
+        "ZeroDivisionError"
+      ],
+      "from": "public/labs/s03-lab-a/07_empty_average.py"
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "acceptance_checks.0.need",
+      "quotes": [
+        "RecursionError"
+      ],
+      "from": "public/labs/s03-lab-a/08_no_base_case.py"
+    }
+  ]
+}

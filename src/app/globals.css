@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* Tailwind is loaded for its reset and the four layout utilities on <html>
+   and <body>. Every rule the app draws with, and every colour, is in
+   study.css — the port of docs/reference/day-one-demo.html. */
+html {
+  color-scheme: light;
+}
+
+body {
+  color: var(--ink);
+  font-size: 16px;
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--peacock) 18%, transparent);
+}
+
+input,
+textarea {
+  caret-color: var(--peacock);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

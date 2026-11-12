@@ -1,0 +1,2278 @@
+{
+ "sorting": {
+  "chosen": "By hardest job: the one promise a product cannot afford to break, as its users would see it.",
+  "why": "I took products people actually use (Similarweb's top sites; Stack Overflow's 2025 survey) and read about 60 dated write-ups and postmortems (public reports on a failure), noting what each team said was hard. The groups that held up formed around what a team feared breaking, not around market or technology. Disclosure: a rough candidate list was already in my head before reading, so this is not a clean derivation; the evidence changed it by removing games as a kind and by showing that spikes, abuse and internal control systems cut across kinds. This sort suits the reader best because it needs no inside knowledge: you can place Slack just by using it, and the kind tells you what to suspect first, which is the bar set for difficult projects. Check: I placed 12 products not used as examples and guessed the hard part from what users see, before opening each write-up. Hits (5): Monzo (2024-01-03), Duolingo (2023-02-05), ByteDance's Monolith recommender, a system that picks items for you (2022-09-16), Fly.io (2023-03-06), CrowdStrike (2024-08-06). Partial (4): Discord (2023-03-06), Shopify (2025-11-20), Canva (2022-11-29), Linear (an undated outside reverse-engineering). Misses (2): Ticketmaster (2023-01-24), where bots and a 3.5-billion-request surge dominated; Roblox (2022-01-20), where an internal service directory (the list programs use to find each other) failed. Unverifiable (1): Zoom, whose architecture is unpublished. The guesses were not pre-registered and I scored them myself, so this is a sanity check, not proof.",
+  "rejected": [
+   {
+    "sort": "Market category (app store and review-site labels)",
+    "why_rejected": "Easy to place, but it predicts nothing. TikTok and Netflix are both Entertainment on Apple's App Store (checked 2026-11-05), yet ByteDance's published recommender work is about retraining a model on live feedback (Monolith paper, 2022-09-16) and Netflix's is about surviving live traffic floods (InfoQ, 2025-12-05). Instagram is filed under Photo & Video and WhatsApp under Social Networking, which also says little about engineering."
+   },
+   {
+    "sort": "Architecture style (monolith, microservices, serverless, cells)",
+    "why_rejected": "A monolith is one program; microservices are many small programs talking over a network; serverless means a cloud provider runs your code on demand; cells are self-contained copies of a system, so a failure stays in one. You cannot see any of this from outside, and it does not predict the hard part: Intercom runs one monolith (2024-10-14) and Monzo about 2,500 microservices (talk published 2024-01-03), yet both fight to keep data consistent and to stay within database limits. Style also changes under the same product: Slack moved to cells (2023-08-22), and one Prime Video monitoring tool moved from serverless pieces to a single program (press coverage, May 2023; the original post no longer resolves)."
+   },
+   {
+    "sort": "Team or job title (full-stack, back-end, mobile, data)",
+    "why_rejected": "Tells you who builds, not what is hard. In Stack Overflow's 2025 survey 27% call themselves full-stack and 14.2% back-end, and almost every product here needs most roles, so one bucket would swallow nearly everything."
+   },
+   {
+    "sort": "Data shape (operational versus analytical; read-heavy versus write-heavy)",
+    "why_rejected": "The most predictive rejected sort, and it sits underneath several kinds; the second edition of Designing Data-Intensive Applications (O'Reilly, February 2026; I read third-party study notes, not the book) reportedly opens on this split. But it gives two to four buckets, most big products are both, it cannot separate Stripe from Slack, and a reader cannot check it from outside."
+   },
+   {
+    "sort": "System-design interview catalogues (news feed, chat, video, ride-hailing, payments)",
+    "why_rejected": "Used as a cross-check only, and its close match with my result may just mean both draw on the same common knowledge. These lists are undated and mostly commercial, name instances rather than give a rule for placing a new product, and tend to leave out data platforms, AI products and device software."
+   }
+  ],
+  "overlaps": "Yes, kinds overlap, and large products usually sit in three or four. Instagram is Feeds plus Streaming media; Uber is Marketplaces plus Records plus Device software; ChatGPT is AI plus Records plus Platforms. Rule: place a product by the promise whose failure users would notice first, then list the rest as secondary kinds. Games have no kind of their own: they sit between Live shared spaces and Device software, and I did not find enough recent published architecture to justify a separate kind. Three hazards cut across every kind and are not kinds: sudden traffic spikes (Shopify sales, Ticketmaster), abuse (bots, stolen logins, prompt injection, meaning instructions hidden in content that trick an AI model), and internal control systems everything depends on (Amazon's DNS, the internet's name-to-address lookup; Roblox's service directory; Snowflake's metadata, the data describing the data)."
+ },
+ "kinds": [
+  {
+   "name": "Feeds and social",
+   "hardest_job": "Show each person a fresh, relevant stream from millions of posts.",
+   "how_to_recognize": "You open it and a stream of other people's posts is already waiting, ordered or chosen for you.",
+   "sizes": {
+    "simple": {
+     "example": "Lobsters (link-sharing forum)",
+     "what_it_is": "An open-source link board with votes and comments; its setup guide describes one server holding the app, database and scheduled jobs.",
+     "parts": [
+      {
+       "part": "Web app (Ruby on Rails, a web framework)",
+       "does": "Serves pages, login, votes and comments."
+      },
+      {
+       "part": "SQLite database",
+       "does": "Stores users, stories and comments in one file."
+      },
+      {
+       "part": "Scheduled jobs",
+       "does": "Run every few minutes for background chores."
+      },
+      {
+       "part": "Web server (Caddy)",
+       "does": "Receives requests and passes them to the app."
+      },
+      {
+       "part": "Bot gate (Anubis)",
+       "does": "Slows scrapers before they reach the app."
+      }
+     ],
+     "blocks": {
+      "do": [
+       "A1",
+       "B2",
+       "B3",
+       "C2",
+       "D1"
+      ],
+      "know": [
+       "A3",
+       "B1",
+       "D2",
+       "D6"
+      ]
+     }
+    },
+    "medium": {
+     "example": "Bluesky",
+     "what_it_is": "A Twitter-like network on an open protocol, where separate services host your data, collect everyone's updates and build timelines; over 10 million users by October 2024.",
+     "parts": [
+      {
+       "part": "Personal Data Server (PDS)",
+       "does": "Holds each user's posts as signed records (provably theirs) and accepts their actions."
+      },
+      {
+       "part": "Relay",
+       "does": "Crawls all PDSes, checks signatures and emits one combined stream, the firehose."
+      },
+      {
+       "part": "App View",
+       "does": "Reads the firehose and computes counts, threads, follower lists and timelines."
+      },
+      {
+       "part": "Timeline store (ScyllaDB)",
+       "does": "Keeps one list per reader, split across hundreds of shards (pieces of a database on separate machines)."
+      },
+      {
+       "part": "Cache (Memcached)",
+       "does": "Keeps fast copies of data in memory so the database is hit less."
+      },
+      {
+       "part": "Feed generators",
+       "does": "Pick posts for custom feeds and return their IDs."
+      },
+      {
+       "part": "Labelers",
+       "does": "Publish moderation judgments that apps use to filter content."
+      }
+     ],
+     "flow": "A post goes from the client to its home PDS, then the Relay and firehose, and the App View writes a reference into each follower's timeline (fan-out, copying one item to many readers). A reader's request goes through their PDS to the App View, which assembles the timeline and applies labels.",
+     "tricky": [
+      {
+       "what": "One post can mean millions of writes, and some readers overload a shard.",
+       "why": "Accounts following hundreds of thousands of others hog one shard's processor, and a post from a 2-million-follower account could take 5 minutes to fan out. Bluesky now deliberately drops some writes for such readers.",
+       "source_title": "When Imperfect Systems are Good, Actually: Bluesky's Lossy Timelines",
+       "url": "https://jazco.dev/2025/02/19/imperfection/",
+       "date": "2025-02-19",
+       "type": "primary"
+      },
+      {
+       "what": "A tiny internal caller can take the site down.",
+       "why": "Fewer than 3 requests a second, each carrying up to 20,000 IDs, used up network ports (numbered connection slots); logging the errors then stalled garbage collection (automatic memory clean-up that pauses a program). About half of users were hit, on and off, for 8 hours.",
+       "source_title": "April 2026 Outage Post-Mortem",
+       "url": "https://pckt.blog/b/jcalabro/april-2026-outage-post-mortem-219ebg2",
+       "date": "2026-04-10",
+       "type": "primary"
+      },
+      {
+       "what": "An open design still concentrates where the cost is.",
+       "why": "Hosting a PDS is cheap but building a searchable copy of the whole network is not, so Bluesky's own company still runs most of the system; the paper's case rests on others being able to take over.",
+       "source_title": "Bluesky and the AT Protocol: Usable Decentralized Social Media",
+       "url": "https://arxiv.org/abs/2402.03239",
+       "date": "2024-10-16",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A3",
+       "A4",
+       "B1",
+       "B3",
+       "D1",
+       "D2",
+       "D3",
+       "D6"
+      ]
+     },
+     "inferred": false
+    },
+    "difficult": {
+     "example": "Instagram",
+     "what_it_is": "A photo and video network. Meta has published its Explore recommendation system in detail but no recent full account of storage and delivery, so this entry covers the ranking path.",
+     "parts": [
+      {
+       "part": "Retrieval sources",
+       "does": "Pull thousands of candidates from billions of items, using trends and past activity."
+      },
+      {
+       "part": "Two-tower model",
+       "does": "Turns users and items into embeddings (lists of numbers that place similar things close together)."
+      },
+      {
+       "part": "Nearest-neighbour service",
+       "does": "Finds the items closest to a user's embedding quickly."
+      },
+      {
+       "part": "First-stage ranker",
+       "does": "A light model that cuts thousands of candidates to about 100."
+      },
+      {
+       "part": "Second-stage ranker",
+       "does": "A heavy model that predicts clicks, likes and other actions for those 100."
+      },
+      {
+       "part": "Value model",
+       "does": "Combines the predictions, with tunable weights, into one score."
+      },
+      {
+       "part": "Final reranker",
+       "does": "Applies safety filters and stops runs of posts from one author."
+      },
+      {
+       "part": "Model registry and launch platform",
+       "does": "Tracks 1,000-plus models, their importance and their capacity."
+      }
+     ],
+     "flow": "A request fetches candidates, ranks them twice (light, then heavy), combines the predictions into one score and reranks for safety and variety. For some users the heavy results are computed ahead of time off-peak, because the model cannot always run at peak.",
+     "tricky": [
+      {
+       "what": "Speed forces weaker models early in the funnel.",
+       "why": "Two-tower models cannot use features of a specific user-item pair, or their embeddings could not be stored ahead of time; the heavy model is hard to run at peak hours.",
+       "source_title": "Scaling the Instagram Explore recommendations system",
+       "url": "https://engineering.fb.com/2023/08/09/ml-applications/scaling-instagram-explore-recommendations-system/",
+       "date": "2023-08-09",
+       "type": "primary"
+      },
+      {
+       "what": "Hundreds of tuning knobs with slow feedback.",
+       "why": "Live tuning can take over a month to settle; fast offline tuning only works if offline metrics track live results.",
+       "source_title": "Scaling the Instagram Explore recommendations system",
+       "url": "https://engineering.fb.com/2023/08/09/ml-applications/scaling-instagram-explore-recommendations-system/",
+       "date": "2023-08-09",
+       "type": "primary"
+      },
+      {
+       "what": "A model can be up and still be bad.",
+       "why": "Success-rate alarms miss irrelevant recommendations, and teams had lost track of which models ran in production, so Instagram built a registry and a stability metric based on calibration.",
+       "source_title": "Journey to 1000 models: Scaling Instagram's recommendation system",
+       "url": "https://engineering.fb.com/2025/05/21/production-engineering/journey-to-1000-models-scaling-instagrams-recommendation-system/",
+       "date": "2025-05-21",
+       "type": "primary"
+      },
+      {
+       "what": "Viral growth outruns capacity planning.",
+       "why": "Sister app Threads, built on Instagram's backend, had two days' infrastructure notice and about 100 million sign-ups in five days; follower imports were capped per second so they would not overload the social-graph database. Evidence is from Threads, not Instagram itself.",
+       "source_title": "How Meta built the infrastructure for Threads",
+       "url": "https://engineering.fb.com/2023/12/19/core-infra/how-meta-built-the-infrastructure-for-threads/",
+       "date": "2023-12-19",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A3",
+       "B1",
+       "B3",
+       "C1",
+       "D2",
+       "D3",
+       "D4",
+       "D6"
+      ]
+     },
+     "inferred": false
+    }
+   },
+   "what_changes_as_it_grows": "It moves from sorting by a formula on one server, to copying references to followers, to many ranking models tuned by experiment.",
+   "first_read_questions": [
+    "Is the feed built ahead of time for each reader, or assembled when they open it?",
+    "Is it chronological or ranked, and what is the ranking trained to maximise?",
+    "What happens when a huge account posts or a celebrity joins?"
+   ],
+   "confidence": "Medium: ranking is well published; Instagram storage and delivery lack recent write-ups."
+  },
+  {
+   "name": "Search and recommendation",
+   "hardest_job": "Find the best few items among billions, in milliseconds.",
+   "how_to_recognize": "You ask for something, or simply arrive, and get a short ordered list drawn from a far larger collection.",
+   "sizes": {
+    "simple": {
+     "example": "Pagefind (site search)",
+     "what_it_is": "An open-source search tool for websites that indexes built pages and runs in the browser with no search server.",
+     "parts": [
+      {
+       "part": "Indexer",
+       "does": "Reads the site's finished pages after each build."
+      },
+      {
+       "part": "Index files",
+       "does": "A lookup from words to pages, like a book's index, split into small chunks."
+      },
+      {
+       "part": "Browser search code",
+       "does": "Downloads only the chunks a query needs and ranks the matches."
+      },
+      {
+       "part": "Search box",
+       "does": "Takes the query and shows results."
+      },
+      {
+       "part": "Static hosting",
+       "does": "Serves the pages and index as plain files."
+      }
+     ],
+     "blocks": {
+      "do": [
+       "A1",
+       "B2",
+       "B3",
+       "C2",
+       "D1"
+      ],
+      "know": [
+       "A3",
+       "B1"
+      ]
+     }
+    },
+    "medium": {
+     "example": "GitHub code search",
+     "what_it_is": "A purpose-built search engine, Blackbird, over about 45 million code repositories in its beta, because general search tools handled code poorly.",
+     "parts": [
+      {
+       "part": "Kafka (a durable message queue)",
+       "does": "Carries change events and crawled documents between stages."
+      },
+      {
+       "part": "Crawlers",
+       "does": "Read content from Git repositories (version-tracked code folders)."
+      },
+      {
+       "part": "Symbol extractor",
+       "does": "Pulls out names of functions and classes."
+      },
+      {
+       "part": "Indexer shards",
+       "does": "Build lookups of n-grams (short overlapping chunks of characters) for content, symbols and paths."
+      },
+      {
+       "part": "Compaction",
+       "does": "Merges small indexes into large ones, moving relevant documents forward."
+      },
+      {
+       "part": "Query service",
+       "does": "Parses a query, adds permission rules and sends it to every shard."
+      },
+      {
+       "part": "Redis (a data store kept in memory)",
+       "does": "Tracks quotas and caches some access data."
+      },
+      {
+       "part": "GitHub.com web interface",
+       "does": "Highlights and renders the top results."
+      }
+     ],
+     "flow": "A push triggers crawling, and each shard reads its own slice of the queue and adds to its index. A query fans out to all shards, turns into chunk lookups, then matches are checked, scored, merged and filtered by permission before the top 100 return.",
+     "tricky": [
+      {
+       "what": "Code is not ordinary text.",
+       "why": "Punctuation matters, word-stemming (cutting words to their roots) breaks things, and people expect regular expressions (pattern-matching queries). Common three-character chunks return too many false candidates, so GitHub invented a sparser kind of chunk.",
+       "source_title": "The technology behind GitHub's new code search",
+       "url": "https://github.blog/engineering/architecture-optimization/the-technology-behind-githubs-new-code-search/",
+       "date": "2023-02-06",
+       "type": "primary"
+      },
+      {
+       "what": "Scanning everything is not an option, so it searches an index about a quarter the size of the code.",
+       "why": "A plain scan of 115 TB would tie up about 2,048 processor cores for 96 seconds per query. Removing duplicates and storing only differences cut this to a 25 TB index, and sharding by file content avoids overloaded shards.",
+       "source_title": "The technology behind GitHub's new code search",
+       "url": "https://github.blog/engineering/architecture-optimization/the-technology-behind-githubs-new-code-search/",
+       "date": "2023-02-06",
+       "type": "primary"
+      },
+      {
+       "what": "Results must respect permissions and stay consistent during pushes.",
+       "why": "Every query carries access rules, and a search must see a repository at one commit (a saved version of the code) even while new pushes are being indexed.",
+       "source_title": "The technology behind GitHub's new code search",
+       "url": "https://github.blog/engineering/architecture-optimization/the-technology-behind-githubs-new-code-search/",
+       "date": "2023-02-06",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A3",
+       "A4",
+       "B1",
+       "B3",
+       "D2",
+       "D3",
+       "D6"
+      ]
+     },
+     "inferred": false
+    },
+    "difficult": {
+     "example": "Google Search",
+     "what_it_is": "The web's default search engine. Google has not published its ranking design: this comes from antitrust testimony and court filings, read mostly through expert and press summaries, and may not match today's system.",
+     "parts": [
+      {
+       "part": "Crawler",
+       "does": "Fetches pages; how often depends on quality, popularity and spam signals."
+      },
+      {
+       "part": "Index",
+       "does": "Maps each document ID to its URL and signals."
+      },
+      {
+       "part": "Retrieval",
+       "does": "Narrows a huge candidate set to a manageable one."
+      },
+      {
+       "part": "Navboost",
+       "does": "Remembers about 13 months of clicks per query."
+      },
+      {
+       "part": "Deep models (RankBrain, DeepRank, RankEmbed BERT)",
+       "does": "Re-score only the final few candidates."
+      },
+      {
+       "part": "Tangram and Glue",
+       "does": "Assemble the results page and its extra features."
+      },
+      {
+       "part": "AI Overviews",
+       "does": "A language model that writes an answer backed by top results."
+      },
+      {
+       "part": "Quality evaluation",
+       "does": "Human rater scores and live tests judge each change."
+      }
+     ],
+     "flow": "A query retrieves candidates, click signals help narrow them, and costly deep models re-score the final set before the page is assembled, sometimes with an AI answer on top. This order is an outside reading of trial testimony, not Google's own account.",
+     "tricky": [
+      {
+       "what": "Ranking leans on remembered clicks.",
+       "why": "Navboost uses about 13 months of click data. Pages without clicks can still rank, but new and rare queries have less to go on (the last part is my inference).",
+       "source_title": "What Pandu Nayak Taught Me About SEO",
+       "url": "https://www.blindfiveyearold.com/what-pandu-nayak-taught-me-about-seo",
+       "date": "2023-11-16",
+       "type": "expert"
+      },
+      {
+       "what": "The best models are too expensive to run on everything.",
+       "why": "Deep models run near the end, on perhaps 20 to 40 documents (the author's estimate), so earlier cheap stages decide what they ever see.",
+       "source_title": "What Pandu Nayak Taught Me About SEO",
+       "url": "https://www.blindfiveyearold.com/what-pandu-nayak-taught-me-about-seo",
+       "date": "2023-11-16",
+       "type": "expert"
+      },
+      {
+       "what": "What gets crawled is already a ranking decision.",
+       "why": "Court documents say quality, popularity and spam scores affect how often pages are fetched, so spam fighting starts before ranking. The article warns this may not describe current practice.",
+       "source_title": "New Court Docs: Google Search Index, Spam Score, PageRank & Glue",
+       "url": "https://www.seroundtable.com/google-index-spam-score-pagerank-glue-violations-court-docs-40051.html",
+       "date": "2025-09-04",
+       "type": "press"
+      },
+      {
+       "what": "Rare questions break AI answers.",
+       "why": "Where little good content exists, the model repeated satire and forum jokes, such as eating rocks. Google limited which queries trigger an answer and how much it relies on user posts.",
+       "source_title": "AI Overviews: About last week",
+       "url": "https://blog.google/products/search/ai-overviews-update-may-2024/",
+       "date": "2024-05-30",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A3",
+       "A4",
+       "B1",
+       "B3",
+       "C1",
+       "D2",
+       "D3",
+       "D4",
+       "D5",
+       "D6"
+      ]
+     },
+     "inferred": true
+    }
+   },
+   "what_changes_as_it_grows": "It moves from matching words in your own files, to a custom index for one kind of content, to the whole web with click memory, spam fighting and AI answers.",
+   "first_read_questions": [
+    "How fresh is the index, and who decides what gets in?",
+    "What data trains the ranking, and could a rival get it?",
+    "How do they know a result got better?"
+   ],
+   "confidence": "Medium: GitHub rests on one post; Google is court-derived and inferred."
+  },
+  {
+   "name": "Records and money",
+   "hardest_job": "Never lose, duplicate or misreport a change to important data.",
+   "how_to_recognize": "People would be furious, or would sue, if a number or record in it were silently wrong.",
+   "sizes": {
+    "simple": {
+     "example": "Spliit (bill splitter)",
+     "what_it_is": "An open-source alternative to Splitwise for sharing expenses, built on a standard web stack.",
+     "parts": [
+      {
+       "part": "Web app (Next.js, a web framework)",
+       "does": "Shows groups, expenses and balances."
+      },
+      {
+       "part": "Database (Postgres, a popular open-source SQL database)",
+       "does": "Stores groups and expenses."
+      },
+      {
+       "part": "Database library (Prisma)",
+       "does": "Lets the code read and write tables safely."
+      },
+      {
+       "part": "Balance rules",
+       "does": "Work out who owes whom; the amounts must always add up."
+      },
+      {
+       "part": "Hosting (Vercel)",
+       "does": "Runs the app and database."
+      }
+     ],
+     "blocks": {
+      "do": [
+       "A1",
+       "B1",
+       "B2",
+       "B3",
+       "C2",
+       "D1",
+       "D6"
+      ],
+      "know": [
+       "A2",
+       "D2"
+      ]
+     }
+    },
+    "medium": {
+     "example": "Intercom",
+     "what_it_is": "Customer-support software: one Rails program running hundreds of workloads across thousands of machines, holding hundreds of terabytes of customer conversations.",
+     "parts": [
+      {
+       "part": "Rails monolith",
+       "does": "Runs the product's logic and picks which database to use."
+      },
+      {
+       "part": "Aurora MySQL clusters (Amazon's hosted MySQL database)",
+       "does": "Thirteen database clusters in the US region hold the main data."
+      },
+      {
+       "part": "Functional shards",
+       "does": "Put some kinds of data, such as conversations, in their own databases."
+      },
+      {
+       "part": "Customer shards",
+       "does": "Split large tables by customer across machines."
+      },
+      {
+       "part": "ProxySQL",
+       "does": "Sits in front of write databases and shares connections."
+      },
+      {
+       "part": "Vitess (run by PlanetScale)",
+       "does": "The new database layer, which handles routing, sharding and upgrades."
+      },
+      {
+       "part": "Materialized views",
+       "does": "Stored query results that make costly reads about 90% faster."
+      }
+     ],
+     "flow": "A request reaches the Rails app, which finds the right cluster and customer shard; adding one comment touches three databases. Vitess is moving that routing out of the app and into the database layer.",
+     "tricky": [
+      {
+       "what": "The app must know where every customer's data lives.",
+       "why": "Custom routing made a simple table change on shards take days and the largest tables take months, and data split across databases must still agree.",
+       "source_title": "Evolving Intercom's database infrastructure",
+       "url": "https://www.intercom.com/blog/evolving-intercoms-database-infrastructure",
+       "date": "2024-10-14",
+       "type": "primary"
+      },
+      {
+       "what": "Connections themselves are a scarce resource.",
+       "why": "Aurora allows 16,000 connections per machine and every running copy of the app connects to every cluster, while the Inbox database routinely needs about 135,000.",
+       "source_title": "Evolving Intercom's database infrastructure: Lessons and progress",
+       "url": "https://www.intercom.com/blog/evolving-intercoms-database-infrastructure-lessons-and-progress/",
+       "date": "2025-03-11",
+       "type": "primary"
+      },
+      {
+       "what": "Routine upkeep and disk limits reach customers.",
+       "why": "Upgrades and failovers (switching to a backup machine) caused 5 to 70 minutes of impact, and read copies hitting disk limits slowed the Inbox 1.5 to 3 times.",
+       "source_title": "Evolving Intercom's database infrastructure",
+       "url": "https://www.intercom.com/blog/evolving-intercoms-database-infrastructure",
+       "date": "2024-10-14",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A2",
+       "B1",
+       "B2",
+       "B3",
+       "D1",
+       "D2",
+       "D6"
+      ]
+     },
+     "inferred": false
+    },
+    "difficult": {
+     "example": "Stripe",
+     "what_it_is": "Payments for internet businesses: one API (a way for programs to call each other) in front of banks and card networks, handling $1 trillion in 2023 by its own count.",
+     "parts": [
+      {
+       "part": "Payments API",
+       "does": "Takes requests from businesses."
+      },
+      {
+       "part": "Partner connections",
+       "does": "Talk to banks, card networks and local payment methods."
+      },
+      {
+       "part": "DocDB proxies",
+       "does": "Route each query to the right shard and limit overload."
+      },
+      {
+       "part": "Chunk metadata service",
+       "does": "Records which shard holds which data."
+      },
+      {
+       "part": "Database shards",
+       "does": "Over 2,000 groups of machines, each keeping copies, hold petabytes of financial data."
+      },
+      {
+       "part": "Data Movement Platform",
+       "does": "Moves data between shards while traffic continues."
+      },
+      {
+       "part": "Ledger",
+       "does": "A log, only ever added to, of money movements in double-entry form (every movement is a matching credit and debit)."
+      },
+      {
+       "part": "Data Quality Platform",
+       "does": "Scores completeness and lateness, and flags stuck balances."
+      }
+     ],
+     "flow": "A charge enters the API, is stored through the proxies and goes out to banks and networks. Each step becomes a Ledger event: money sits in a clearing account (a holding balance) until a matching release arrives, and anything left over signals a problem.",
+     "tricky": [
+      {
+       "what": "Money events arrive late, out of order or not at all.",
+       "why": "Creation and release events come from separate systems, and a missing or mislabelled release strands funds in a clearing account.",
+       "source_title": "Ledger: Stripe's system for tracking and validating money movement",
+       "url": "https://stripe.dev/blog/ledger-stripe-system-for-tracking-and-validating-money-movement",
+       "date": "2024-02-16",
+       "type": "primary"
+      },
+      {
+       "what": "The truth depends on outsiders.",
+       "why": "Banks and networks differ in format, timing and notion of correct, so 99.99% of dollar volume takes up to four days to verify. That figure is Stripe's own.",
+       "source_title": "Ledger: Stripe's system for tracking and validating money movement",
+       "url": "https://stripe.dev/blog/ledger-stripe-system-for-tracking-and-validating-money-movement",
+       "date": "2024-02-16",
+       "type": "primary"
+      },
+      {
+       "what": "You cannot edit history.",
+       "why": "The Ledger is immutable (never edited), so a fix means reversing and reprocessing, often by republishing from source systems after a two-step review.",
+       "source_title": "Ledger: Stripe's system for tracking and validating money movement",
+       "url": "https://stripe.dev/blog/ledger-stripe-system-for-tracking-and-validating-money-movement",
+       "date": "2024-02-16",
+       "type": "primary"
+      },
+      {
+       "what": "Moving data under live traffic.",
+       "why": "At over 5 million queries a second, switching a data chunk to a new shard must finish in about two seconds so client retries can cover it, and the copy must match exactly. The uptime claim in the title is Stripe's own.",
+       "source_title": "How Stripe's document databases supported 99.999% uptime with zero-downtime data migrations",
+       "url": "https://stripe.dev/blog/how-stripes-document-databases-supported-99.999-uptime-with-zero-downtime-data-migrations",
+       "date": "2024-06-06",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A2",
+       "B1",
+       "B2",
+       "B3",
+       "D2",
+       "D3",
+       "D6"
+      ]
+     },
+     "inferred": false
+    }
+   },
+   "what_changes_as_it_grows": "It moves from one transaction in one database, to shards the software must route to, to an audit trail that reconciles with banks days later.",
+   "first_read_questions": [
+    "What is the source of truth, and can it be rebuilt?",
+    "What happens if the same request arrives twice?",
+    "How would they find out a number is wrong, and how long would that take?"
+   ],
+   "confidence": "High: detailed primary posts; Stripe's uptime and accuracy figures are self-reported."
+  },
+  {
+   "name": "Live shared spaces",
+   "hardest_job": "Make everyone see the same thing within about a second.",
+   "how_to_recognize": "Other people's typing, cursors or messages appear on your screen without you refreshing.",
+   "sizes": {
+    "simple": {
+     "example": "A basic Excalidraw-style shared whiteboard",
+     "what_it_is": "A drawing board shared through a small relay server; Excalidraw publishes its own room server as open source, and a basic copy is buildable. The parts below are a typical design, inferred.",
+     "parts": [
+      {
+       "part": "Browser canvas",
+       "does": "Draws shapes and holds the local copy."
+      },
+      {
+       "part": "WebSocket connection (a link that stays open so the server can push updates)",
+       "does": "Carries changes both ways."
+      },
+      {
+       "part": "Room server",
+       "does": "Relays each change to everyone else in the room."
+      },
+      {
+       "part": "Merge rule",
+       "does": "Decides what wins when two people change the same shape."
+      },
+      {
+       "part": "Saved copy",
+       "does": "Keeps the drawing after people leave."
+      }
+     ],
+     "blocks": {
+      "do": [
+       "A1",
+       "B1",
+       "B2",
+       "B3",
+       "C2",
+       "D1"
+      ],
+      "know": [
+       "A3",
+       "D2",
+       "D6"
+      ]
+     }
+    },
+    "medium": {
+     "example": "Slack",
+     "what_it_is": "Work chat that delivers messages worldwide in about 500 milliseconds to tens of millions of connected clients.",
+     "parts": [
+      {
+       "part": "Webapp API",
+       "does": "Accepts messages and handles client start-up."
+      },
+      {
+       "part": "Admin servers",
+       "does": "Find which channel server owns a channel."
+      },
+      {
+       "part": "Channel servers",
+       "does": "Hold channels in memory, assigned by consistent hashing (a way to place items so few move when servers change)."
+      },
+      {
+       "part": "Gateway servers",
+       "does": "Hold users' open connections, in many regions."
+      },
+      {
+       "part": "Presence servers",
+       "does": "Track who is online."
+      },
+      {
+       "part": "Memcached and Vitess",
+       "does": "Serve start-up data such as channel lists."
+      },
+      {
+       "part": "Traffic controls (Envoy)",
+       "does": "Shift traffic away from a failing data centre."
+      }
+     ],
+     "flow": "A message goes to the Webapp API, which uses an admin server to find the owning channel server. That server sends it to every subscribed gateway worldwide, and each gateway pushes it to connected clients.",
+     "tricky": [
+      {
+       "what": "Servers hold live state, so replacing one is visible.",
+       "why": "A replacement takes under 20 seconds, during which delivery is slower for those channels, and reminders and scheduled messages create spikes at the top of each hour.",
+       "source_title": "Real-time Messaging",
+       "url": "https://slack.engineering/real-time-messaging/",
+       "date": "2023-04-11",
+       "type": "primary"
+      },
+      {
+       "what": "An empty cache can trap the system in failure.",
+       "why": "In February 2022 a routine upgrade emptied cache nodes, each miss became a query to every database shard, queries timed out and the cache could never refill, so engineers had to throttle client start-ups.",
+       "source_title": "Slack's Incident on 2-22-22",
+       "url": "https://slack.engineering/slacks-incident-on-2-22-22/",
+       "date": "2022-04-26",
+       "type": "primary"
+      },
+      {
+       "what": "Half-broken data centres are harder than dead ones.",
+       "why": "One bad network link meant different servers disagreed about what was healthy, so Slack rebuilt around moving all traffic out of one data-centre zone within 5 minutes, with no user-visible errors.",
+       "source_title": "Slack's Migration to a Cellular Architecture",
+       "url": "https://slack.engineering/slacks-migration-to-a-cellular-architecture/",
+       "date": "2023-08-22",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A3",
+       "A4",
+       "B1",
+       "B3",
+       "D1",
+       "D2"
+      ]
+     },
+     "inferred": false
+    },
+    "difficult": {
+     "example": "Figma",
+     "what_it_is": "A design tool in the browser where many people edit one file at once, with its renderer written in C++ (a fast systems language) and compiled to WebAssembly (a way to run compiled code in browsers).",
+     "parts": [
+      {
+       "part": "Browser renderer",
+       "does": "Draws the canvas through the graphics chip, with a fallback for failing devices."
+      },
+      {
+       "part": "Multiplayer server",
+       "does": "Keeps each open file in memory and decides order and conflicts."
+      },
+      {
+       "part": "Checkpoints in cloud storage",
+       "does": "Save the whole file every 30 to 60 seconds."
+      },
+      {
+       "part": "Journal",
+       "does": "A durable log of every change since the last checkpoint."
+      },
+      {
+       "part": "LiveGraph edge",
+       "does": "Handles clients' live subscriptions to non-canvas data."
+      },
+      {
+       "part": "LiveGraph cache",
+       "does": "Holds query results, shared across users."
+      },
+      {
+       "part": "Invalidator",
+       "does": "Reads database changes and marks affected cached answers as wrong."
+      },
+      {
+       "part": "Sharded Postgres",
+       "does": "Holds product data outside the canvas, split by a hashed key."
+      }
+     ],
+     "flow": "Canvas edits travel over a WebSocket about 30 times a second to the file's multiplayer server, which orders them, broadcasts them and writes them to the journal. Other data lives in Postgres, whose write-ahead log (its running list of changes) drives cache invalidation (marking stored answers as out of date) so that clients re-fetch.",
+     "tricky": [
+      {
+       "what": "A fast in-memory server must not lose work.",
+       "why": "Checkpoints alone could lose 60 seconds of edits, and two servers could both believe they own a file (split brain), so Figma added a journal and a lock, checked against about 400,000 checkpoint comparisons.",
+       "source_title": "Making multiplayer more reliable",
+       "url": "https://www.figma.com/blog/making-multiplayer-more-reliable/",
+       "date": "2022-10-20",
+       "type": "primary"
+      },
+      {
+       "what": "Every deploy could stampede the database.",
+       "why": "The cache lived inside the servers and was wiped on each deploy, so all clients reconnected at once (a thundering herd). Separating cache from invalidation fixed that, but no invalidation may ever be skipped.",
+       "source_title": "Keeping it 100(x) with real-time data at scale",
+       "url": "https://www.figma.com/blog/livegraph-real-time-data-at-scale/",
+       "date": "2024-05-17",
+       "type": "primary"
+      },
+      {
+       "what": "Splitting the database removes its guarantees.",
+       "why": "Foreign keys (rules linking rows across tables) and unique indexes stop working across shards, and writes can half succeed; the first sharded table took about nine months.",
+       "source_title": "How Figma's databases team lived to tell the scale",
+       "url": "https://www.figma.com/blog/how-figmas-databases-team-lived-to-tell-the-scale/",
+       "date": "2024-03-14",
+       "type": "primary"
+      },
+      {
+       "what": "Drawing depends on graphics chips you cannot test all of.",
+       "why": "Devices can fail mid-session on WebGPU (a newer browser graphics interface), so Figma built a live fallback to the older one and blocked devices that fell back too often.",
+       "source_title": "Figma Rendering: Powered by WebGPU",
+       "url": "https://www.figma.com/blog/figma-rendering-powered-by-webgpu/",
+       "date": "2025-09-18",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A3",
+       "A4",
+       "B1",
+       "B2",
+       "B3",
+       "D1",
+       "D2",
+       "D7"
+      ]
+     },
+     "inferred": false
+    }
+   },
+   "what_changes_as_it_grows": "It moves from one relay rebroadcasting to a room, to fleets of servers holding live state, to a per-document authority with durable logs and a separate live-query cache.",
+   "first_read_questions": [
+    "Who decides the order when two people act at once?",
+    "What is lost if a server dies mid-edit?",
+    "What happens when everyone reconnects at the same moment?"
+   ],
+   "confidence": "High: Slack and Figma publish detailed, dated primary posts, including one postmortem."
+  },
+  {
+   "name": "Marketplaces and logistics",
+   "hardest_job": "Match changing supply to demand fairly, often in the physical world.",
+   "how_to_recognize": "Two sides, such as buyers and sellers or riders and drivers, rely on it to find each other, and what is available keeps changing.",
+   "sizes": {
+    "simple": {
+     "example": "A small rental marketplace on Sharetribe",
+     "what_it_is": "A two-sided listing site on a hosted marketplace builder that can be extended with custom code; the parts below are typical rather than Sharetribe's published design.",
+     "parts": [
+      {
+       "part": "Listings",
+       "does": "Let sellers describe what they offer."
+      },
+      {
+       "part": "Search and filters",
+       "does": "Let buyers narrow by place, date and price."
+      },
+      {
+       "part": "Booking calendar",
+       "does": "Prevents selling the same date twice."
+      },
+      {
+       "part": "Split payments",
+       "does": "Charge the buyer, pay the seller and keep a fee."
+      },
+      {
+       "part": "Messaging",
+       "does": "Lets the two sides talk."
+      },
+      {
+       "part": "Reviews",
+       "does": "Build trust between strangers."
+      }
+     ],
+     "blocks": {
+      "do": [
+       "A1",
+       "B2",
+       "B3",
+       "C2",
+       "D1",
+       "D6"
+      ],
+      "know": [
+       "A3",
+       "B1",
+       "D2"
+      ]
+     }
+    },
+    "medium": {
+     "example": "Airbnb",
+     "what_it_is": "A short-stay marketplace. Its search stack is published recently; I found no in-window write-up of booking and calendars, so that path is inferred.",
+     "parts": [
+      {
+       "part": "Root search service",
+       "does": "Sends a search out to many leaf services and combines the results."
+      },
+      {
+       "part": "Leaf services",
+       "does": "Run retrieval and first-stage ranking on their share of homes."
+      },
+      {
+       "part": "Retrieval model",
+       "does": "Cuts tens of thousands of homes to the top candidates using embeddings."
+      },
+      {
+       "part": "First-stage ranker",
+       "does": "Scores each candidate with a heavier model."
+      },
+      {
+       "part": "Set re-ranker",
+       "does": "Picks the final results together rather than one by one."
+      },
+      {
+       "part": "Availability and price store",
+       "does": "A compact, frequently refreshed record for flexible-date search."
+      },
+      {
+       "part": "Final filter",
+       "does": "Checks true availability and price before results return."
+      },
+      {
+       "part": "Booking and payments (inferred)",
+       "does": "Lock the dates and take the money."
+      }
+     ],
+     "flow": "A search fans out from the root to leaves, which retrieve and rank; the root re-ranks the set, and a final check confirms availability and price. Booking then locks the dates and charges the guest (inferred).",
+     "tricky": [
+      {
+       "what": "The stock changes faster than the index.",
+       "why": "Listings update about 10,000 times a second while listing embeddings refresh daily, so retrieval works on yesterday's data and later stages must correct it.",
+       "source_title": "Applying Embedding-Based Retrieval to Airbnb Search",
+       "url": "https://arxiv.org/abs/2601.06873",
+       "date": "2026-01-11",
+       "type": "primary"
+      },
+      {
+       "what": "Flexible dates multiply the search.",
+       "why": "Three days either way gives 49 date combinations, so Airbnb chose a more stable embedding-index method over a higher-recall one (recall: the share of good results found) that coped badly with constant updates.",
+       "source_title": "Applying Embedding-Based Retrieval to Airbnb Search",
+       "url": "https://arxiv.org/abs/2601.06873",
+       "date": "2026-01-11",
+       "type": "primary"
+      },
+      {
+       "what": "A purchase is the end of a weeks-long journey.",
+       "why": "People search for weeks, so training on individual searches over-represented the end of the journey and Airbnb switched to sampling by trip.",
+       "source_title": "Applying Embedding-Based Retrieval to Airbnb Search",
+       "url": "https://arxiv.org/abs/2601.06873",
+       "date": "2026-01-11",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A3",
+       "B1",
+       "B3",
+       "C1",
+       "D1",
+       "D2",
+       "D4"
+      ]
+     },
+     "inferred": true
+    },
+    "difficult": {
+     "example": "Uber",
+     "what_it_is": "Ride-hailing and delivery. Recent posts cover pieces such as matching values, arrival-time prediction and caching; the last full dispatch write-ups I found predate November 2021, so they are excluded and the overall flow is inferred.",
+     "parts": [
+      {
+       "part": "Rider and driver apps (inferred)",
+       "does": "Send location and requests, and receive offers."
+      },
+      {
+       "part": "Matching system",
+       "does": "Pairs riders with nearby drivers in real time."
+      },
+      {
+       "part": "Value model",
+       "does": "Estimates how good each place and time is for a driver, using reinforcement learning (learning from the long-run results of actions)."
+      },
+      {
+       "part": "Routing engine",
+       "does": "Gives a first arrival-time estimate from maps and traffic."
+      },
+      {
+       "part": "DeepETA",
+       "does": "A neural network that corrects the routing estimate."
+      },
+      {
+       "part": "Docstore",
+       "does": "Uber's main online database, holding tens of petabytes."
+      },
+      {
+       "part": "CacheFront",
+       "does": "A Redis cache built into Docstore, serving over 150 million rows a second at peak."
+      },
+      {
+       "part": "Flux",
+       "does": "Reads the database's change log and refreshes the cache."
+      }
+     ],
+     "flow": "A request finds candidate drivers, with pick-up times from the routing engine corrected by DeepETA, and matching picks pairs, nudged by what each match does to future supply. Trip and account data go through Docstore and its cache (the order here is inferred).",
+     "tricky": [
+      {
+       "what": "The best match now can hurt the next hour.",
+       "why": "A greedy match (taking the best option right now) fixes this moment but can leave idle drivers or shortages elsewhere; Uber reported 0.52% higher driver earnings from a learned value signal across over 400 cities.",
+       "source_title": "Reinforcement Learning for Modeling Marketplace Balance",
+       "url": "https://www.uber.com/blog/reinforcement-learning-for-modeling-marketplace-balance/",
+       "date": "2025-07-02",
+       "type": "primary"
+      },
+      {
+       "what": "Predictions must be accurate and nearly instant.",
+       "why": "DeepETA is Uber's most-called model and must answer within milliseconds. It predicts only the routing engine's error, and because the most accurate design was too slow the team used a cheaper variant.",
+       "source_title": "DeepETA: How Uber Predicts Arrival Times Using Deep Learning",
+       "url": "https://www.uber.com/us/en/blog/deepeta-how-uber-predicts-arrival-times/",
+       "date": "2022-02-10",
+       "type": "primary"
+      },
+      {
+       "what": "Caching trades speed for stale answers.",
+       "why": "A failed invalidation can leave old data in place for a whole expiry period, and a service might not see its own write. Fixing this required changes to how the database finishes a write.",
+       "source_title": "How Uber Serves over 150 Million Reads per Second from Integrated Cache with Stronger Consistency Guarantees",
+       "url": "https://www.uber.com/us/en/blog/how-uber-serves-over-150-million-reads/",
+       "date": "2025-08-26",
+       "type": "primary"
+      },
+      {
+       "what": "A/B tests contaminate themselves.",
+       "why": "Treating one rider changes the drivers available to another, so platforms use switchback tests (alternating treatment by time period). Error then depends on carryover, cycles and overlapping experiments. Uber's earnings result came from such tests; this paper's data is from an unnamed ride-sharing platform.",
+       "source_title": "Data-Driven Switchback Experiments: Theoretical Tradeoffs and Empirical Bayes Designs",
+       "url": "https://arxiv.org/abs/2406.06768",
+       "date": "2024-06-10",
+       "type": "expert"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A3",
+       "B1",
+       "B3",
+       "C1",
+       "D2",
+       "D3",
+       "D4",
+       "D7"
+      ]
+     },
+     "inferred": true
+    }
+   },
+   "what_changes_as_it_grows": "It moves from a search box and a calendar, to ranked search over changing stock, to continuous optimisation where each decision reshapes tomorrow's data.",
+   "first_read_questions": [
+    "What is scarce, and what happens when one side runs out?",
+    "How do they test a change when treating one user affects another?",
+    "What does a stale listing or a wrong arrival time cost?"
+   ],
+   "confidence": "Low: booking and dispatch internals predate the window; recent posts cover pieces."
+  },
+  {
+   "name": "Streaming media",
+   "hardest_job": "Deliver heavy video or audio without stutter on any network.",
+   "how_to_recognize": "You are mostly watching or listening, and you notice buffering and quality drops immediately.",
+   "sizes": {
+    "simple": {
+     "example": "A private clip-sharing site on Mux",
+     "what_it_is": "A small site where people upload short videos and a paid service handles encoding and delivery; the parts are a typical design, not a named product's.",
+     "parts": [
+      {
+       "part": "Upload page",
+       "does": "Sends the file straight to the video service."
+      },
+      {
+       "part": "Video service (Mux)",
+       "does": "Re-encodes the file into several qualities (transcoding) and hosts it."
+      },
+      {
+       "part": "Player",
+       "does": "Switches quality as the viewer's connection changes."
+      },
+      {
+       "part": "Database",
+       "does": "Lists videos and owners."
+      },
+      {
+       "part": "Signed links",
+       "does": "Stop strangers watching private clips."
+      }
+     ],
+     "blocks": {
+      "do": [
+       "A1",
+       "B2",
+       "B3",
+       "C2",
+       "D1"
+      ],
+      "know": [
+       "B1",
+       "D2",
+       "D6"
+      ]
+     }
+    },
+    "medium": {
+     "example": "Twitch",
+     "what_it_is": "Live streaming with hundreds of thousands of simultaneous channels and over 2.5 million average viewers, by its own figures.",
+     "parts": [
+      {
+       "part": "Points of presence",
+       "does": "Nearly 100 small sites that receive streams close to broadcasters."
+      },
+      {
+       "part": "Intelligest media proxy",
+       "does": "Takes in each stream and asks where to send it."
+      },
+      {
+       "part": "Routing service",
+       "does": "Picks an origin (a large central site) for each stream."
+      },
+      {
+       "part": "Capacitor",
+       "does": "Watches spare processing capacity at each origin."
+      },
+      {
+       "part": "The Well",
+       "does": "Watches Twitch's private long-distance network links."
+      },
+      {
+       "part": "Origin data centres",
+       "does": "Transcode streams, each holding hundreds to thousands of servers."
+      },
+      {
+       "part": "Replication tree",
+       "does": "Passes video from origins out towards viewers."
+      }
+     ],
+     "flow": "A broadcaster's stream reaches the nearest point of presence, whose proxy asks the routing service for an origin given live capacity data, then forwards it over the private network. The origin transcodes it and a replication tree carries it to viewers.",
+     "tricky": [
+      {
+       "what": "Demand peaks at different times around the world.",
+       "why": "Origins sized for their own region sit idle off-peak, so Twitch routes streams across regions and plans for the global peak, which is much smaller than the sum of regional peaks.",
+       "source_title": "Ingesting Live Video Streams at Global Scale",
+       "url": "https://blog.twitch.com/en/2022/04/26/ingesting-live-video-streams-at-global-scale/",
+       "date": "2022-04-26",
+       "type": "primary"
+      },
+      {
+       "what": "Every routing choice juggles several limits.",
+       "why": "It must fill processors while keeping network links and uneven origin sites under limits, so a slow offline plan gave way to a randomised greedy method fed by live data.",
+       "source_title": "Ingesting Live Video Streams at Global Scale",
+       "url": "https://blog.twitch.com/en/2022/04/26/ingesting-live-video-streams-at-global-scale/",
+       "date": "2022-04-26",
+       "type": "primary"
+      },
+      {
+       "what": "Transcoding cost shapes the product.",
+       "why": "Every stream needs re-encoding in real time for many devices, which is why Twitch prototyped servers using ASICs (chips built for one job) at over 10 times the scale of its previous setup.",
+       "source_title": "Twitch State of Engineering 2023",
+       "url": "https://blog.twitch.com/en/2023/09/28/twitch-state-of-engineering-2023/",
+       "date": "2023-09-28",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A3",
+       "B1",
+       "B3",
+       "D2",
+       "D7"
+      ]
+     },
+     "inferred": false
+    },
+    "difficult": {
+     "example": "Netflix (including live events)",
+     "what_it_is": "Video streaming with its own delivery network placed inside internet providers, now extended to live events; the Tyson-Paul fight peaked at 65 million concurrent streams by Netflix's count.",
+     "parts": [
+      {
+       "part": "Venue feeds and broadcast facility",
+       "does": "Bring in redundant signals from an event."
+      },
+      {
+       "part": "Cloud ingest and transcoding",
+       "does": "Run in two cloud regions and produce many formats in 2-second segments (short chunks of video)."
+      },
+      {
+       "part": "Custom packager",
+       "does": "Prepares segments, encryption and playlists for existing devices."
+      },
+      {
+       "part": "Live Origin",
+       "does": "Stores segments, picks valid ones and absorbs traffic floods."
+      },
+      {
+       "part": "Open Connect",
+       "does": "Netflix's CDN (servers near viewers holding copies of content), including its own servers inside internet providers."
+      },
+      {
+       "part": "Device players",
+       "does": "Fetch segments and choose quality."
+      },
+      {
+       "part": "Update path",
+       "does": "Sends small broadcast messages that tell devices to refresh recommendations."
+      },
+      {
+       "part": "Monitoring and control room",
+       "does": "Process up to 38 million events a second and steer failover."
+      }
+     ],
+     "flow": "A venue feed enters the cloud, is transcoded and packaged in redundant pipelines, and lands in Live Origin. Open Connect servers pull segments and serve devices, while monitoring and a small broadcast path run alongside.",
+     "tricky": [
+      {
+       "what": "Live viewers arrive all at once.",
+       "why": "On-demand viewing is spread out, but a live start is a flood: retries alone multiplied load about tenfold, and Netflix load-tested up to 100,000 starts a second.",
+       "source_title": "Netflix's Masterclass: Engineering Live Streaming at Scale",
+       "url": "https://streaminglearningcenter.com/encoding/netflixs-masterclass-engineering-live-streaming-at-scale.html",
+       "date": "2026-01-19",
+       "type": "expert"
+      },
+      {
+       "what": "Storage built for on-demand could not keep up.",
+       "why": "Segments in plain cloud storage were throttled past about 100 requests a second per event, so Netflix built an origin that also hides bad segments and absorbs floods of requests for segments not yet published.",
+       "source_title": "Netflix's Masterclass: Engineering Live Streaming at Scale",
+       "url": "https://streaminglearningcenter.com/encoding/netflixs-masterclass-engineering-live-streaming-at-scale.html",
+       "date": "2026-01-19",
+       "type": "expert"
+      },
+      {
+       "what": "Old devices limit every choice.",
+       "why": "Many devices could not handle UDP-based protocols (fast delivery without guarantees), so live video had to use ordinary web requests, which constrains how low the delay can go (the last part is my inference).",
+       "source_title": "Netflix's Masterclass: Engineering Live Streaming at Scale",
+       "url": "https://streaminglearningcenter.com/encoding/netflixs-masterclass-engineering-live-streaming-at-scale.html",
+       "date": "2026-01-19",
+       "type": "expert"
+      },
+      {
+       "what": "Updating every screen at once is its own stampede.",
+       "why": "Recommendation changes during an event must reach over 100 million devices in under a minute, so devices fetch data early and a tiny broadcast message then triggers the switch.",
+       "source_title": "From On-Demand to Live : Netflix Streaming to 100 Million Devices in under 1 Minute",
+       "url": "https://www.infoq.com/news/2025/12/netflix-live-streaming-pipeline/",
+       "date": "2025-12-05",
+       "type": "press"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A4",
+       "B1",
+       "B3",
+       "D2",
+       "D3",
+       "D6",
+       "D7"
+      ]
+     },
+     "inferred": false
+    }
+   },
+   "what_changes_as_it_grows": "It moves from paying a vendor to encode and deliver, to running your own ingest and routing, to placing servers inside internet providers and surviving live floods.",
+   "first_read_questions": [
+    "Is it on-demand or live, and how much delay is acceptable?",
+    "Who pays for encoding and delivery, and per what?",
+    "What is the oldest device that must still work?"
+   ],
+   "confidence": "Medium: Twitch is primary; Netflix's blog read through excerpts and secondary coverage."
+  },
+  {
+   "name": "Data platforms",
+   "hardest_job": "Answer any question over huge history, quickly and cheaply.",
+   "how_to_recognize": "People write queries or open dashboards against it, and no customer's purchase is waiting on the answer.",
+   "sizes": {
+    "simple": {
+     "example": "A team metrics site with dbt, DuckDB and Evidence",
+     "what_it_is": "Scheduled SQL models over exported data, published as a small reports site;.",
+     "parts": [
+      {
+       "part": "Extract script",
+       "does": "Pulls source data on a schedule."
+      },
+      {
+       "part": "DuckDB",
+       "does": "A single-file database built for analysis."
+      },
+      {
+       "part": "dbt",
+       "does": "Runs and tests SQL models in order."
+      },
+      {
+       "part": "Evidence",
+       "does": "Turns SQL inside Markdown (plain-text) files into report pages."
+      },
+      {
+       "part": "Scheduler",
+       "does": "Runs the steps daily."
+      },
+      {
+       "part": "Git and hosting",
+       "does": "Track changes and publish the site."
+      }
+     ],
+     "blocks": {
+      "do": [
+       "A1",
+       "B2",
+       "B3",
+       "C2",
+       "D3"
+      ],
+      "know": [
+       "B1",
+       "D1",
+       "D2"
+      ]
+     }
+    },
+    "medium": {
+     "example": "PostHog",
+     "what_it_is": "Open-source product analytics. Its handbook and docs are unusually open, but most pages carry no date.",
+     "parts": [
+      {
+       "part": "SDKs (libraries added to customers' apps)",
+       "does": "Send events from apps and sites."
+      },
+      {
+       "part": "Capture service (written in Rust, a fast systems language)",
+       "does": "Accepts events quickly and writes them to Kafka."
+      },
+      {
+       "part": "Ingestion worker (written in Node.js, JavaScript for servers)",
+       "does": "Runs customer transformations and works out which person each event belongs to."
+      },
+      {
+       "part": "Postgres",
+       "does": "The source of truth for people's profiles."
+      },
+      {
+       "part": "ClickHouse (a database that stores data by column)",
+       "does": "Holds events and answers analytical queries."
+      },
+      {
+       "part": "Clusters by workload",
+       "does": "Separate interactive queries, ingestion, exports and more."
+      },
+      {
+       "part": "Storage tiers",
+       "does": "Keep recent data on fast local disks and older data on cheaper ones."
+      },
+      {
+       "part": "HogQL",
+       "does": "A query layer that rewrites property lookups to use faster columns."
+      }
+     ],
+     "flow": "An app's event goes to the capture service, then Kafka, then the worker, which looks up or creates the person in Postgres. A second Kafka topic feeds ClickHouse, and dashboards query it through HogQL.",
+     "tricky": [
+      {
+       "what": "Working out who a user is, after the fact.",
+       "why": "An anonymous visitor later logs in and the two people must merge, while updates apply in arrival order rather than event time, so late events can overwrite newer values.",
+       "source_title": "Ingestion pipeline (PostHog docs)",
+       "url": "https://posthog.com/docs/how-posthog-works/ingestion-pipeline",
+       "date": "undated",
+       "type": "primary"
+      },
+      {
+       "what": "Flexible customer data is slow to query.",
+       "why": "Properties stored as JSON (a flexible text format) needed parsing on every query, and joins caused timeouts for big customers; pulling common fields into columns gave a 55% average speedup, and changing sort order on billions of rows took weeks.",
+       "source_title": "The secrets of PostHog query performance",
+       "url": "https://posthog.com/blog/secrets-of-posthog-query-performance",
+       "date": "2022-03-22",
+       "type": "primary"
+      },
+      {
+       "what": "The database hates changing old rows.",
+       "why": "ClickHouse is built for data that is only ever added to, so updates and deletes are costly, and one heavy export can stall people's dashboards unless workloads run on separate clusters.",
+       "source_title": "How PostHog runs ClickHouse at scale (handbook)",
+       "url": "https://posthog.com/handbook/engineering/clickhouse/clusters",
+       "date": "undated",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4",
+       "D3"
+      ],
+      "know": [
+       "A4",
+       "B1",
+       "B3",
+       "D2"
+      ]
+     },
+     "inferred": false
+    },
+    "difficult": {
+     "example": "Snowflake",
+     "what_it_is": "A cloud data warehouse that separates storage from computing, so many independent clusters can read the same data. The founding architecture paper is outside the window; recent official docs and one 2025 paper cover it.",
+     "parts": [
+      {
+       "part": "Cloud services layer",
+       "does": "Handles login, access rules, metadata and query planning."
+      },
+      {
+       "part": "Metadata service",
+       "does": "Stores minimum and maximum values for each column in each data chunk."
+      },
+      {
+       "part": "Virtual warehouses",
+       "does": "Independent compute clusters that run the queries."
+      },
+      {
+       "part": "Micro-partitions",
+       "does": "Compressed column-oriented chunks of 50 to 500 MB in cloud storage."
+      },
+      {
+       "part": "Pruning",
+       "does": "Skips chunks that cannot match, at planning and during the run."
+      },
+      {
+       "part": "Snowpipe",
+       "does": "Loads incoming files and streams."
+      },
+      {
+       "part": "Staged release system",
+       "does": "Rolls software out in phases across regions."
+      }
+     ],
+     "flow": "SQL arrives at cloud services, which plans it and uses metadata to list only the chunks that could match. A virtual warehouse reads those chunks from cloud storage, skips more while running and returns the result.",
+     "tricky": [
+      {
+       "what": "Speed depends on how data happens to be laid out.",
+       "why": "Pruning skipped 99.4% of chunks overall, yet about 27% of filtered queries got no reduction, because overlapping value ranges in unsorted data defeat it.",
+       "source_title": "Pruning in Snowflake: Working Smarter, Not Harder",
+       "url": "https://arxiv.org/abs/2504.11540",
+       "date": "2025-04-15",
+       "type": "primary"
+      },
+      {
+       "what": "Standard benchmarks mislead.",
+       "why": "Pruning averaged only 28.7% on TPC-H (a standard database benchmark), far below real customer workloads, because real queries are much more selective than benchmarks assume.",
+       "source_title": "Pruning in Snowflake: Working Smarter, Not Harder",
+       "url": "https://arxiv.org/abs/2504.11540",
+       "date": "2025-04-15",
+       "type": "primary"
+      },
+      {
+       "what": "Shared metadata lets regions fail together.",
+       "why": "In December 2025 a schema change (a change to table structure) that older software could not read broke 10 of 23 regions for 13 hours despite staged rollout. The explanation of why staging failed is an analyst's view; I did not read Snowflake's full root-cause report.",
+       "source_title": "Snowflake software update caused 13-hour outage across 10 regions",
+       "url": "https://www.networkworld.com/article/4109595/snowflake-software-update-caused-13-hour-outage-across-10-regions-2.html",
+       "date": "2025-12-19",
+       "type": "press"
+      },
+      {
+       "what": "Attackers simply logged in.",
+       "why": "About 165 organisations were potentially exposed through stolen passwords on accounts with no second login factor; ordinary SQL commands then copied the data out, so it looked like normal use. Snowflake's own systems were not breached.",
+       "source_title": "UNC5537 Targets Snowflake Customer Instances for Data Theft and Extortion",
+       "url": "https://cloud.google.com/blog/topics/threat-intelligence/unc5537-snowflake-data-theft-extortion",
+       "date": "2024-06-10",
+       "type": "expert"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4",
+       "D3"
+      ],
+      "know": [
+       "A3",
+       "A4",
+       "B1",
+       "B3",
+       "D2",
+       "D6"
+      ]
+     },
+     "inferred": false
+    }
+   },
+   "what_changes_as_it_grows": "It moves from a single-file database you query yourself, to an ingest pipeline with clusters per workload, to a shared service where metadata and cost control are the product.",
+   "first_read_questions": [
+    "Are storage and compute separate, and who pays when a query is bad?",
+    "How late is the data, and what breaks if events arrive out of order?",
+    "What must be updated or deleted, given that these stores dislike it?"
+   ],
+   "confidence": "Medium: PostHog pages mostly undated; Snowflake outage read via press, report unread."
+  },
+  {
+   "name": "Platforms for builders",
+   "hardest_job": "Stay up and isolated while other people's software depends on you.",
+   "how_to_recognize": "Its customers are developers, and when it fails, other companies' products fail too.",
+   "sizes": {
+    "simple": {
+     "example": "A small Webhook.site-style request inbox",
+     "what_it_is": "A service that gives each user a unique web address and shows every request sent to it; small, yet other people's code depends on it. The parts below are a typical design, not Webhook.site's published one.",
+     "parts": [
+      {
+       "part": "Unique addresses",
+       "does": "Give each user their own inbox."
+      },
+      {
+       "part": "Capture endpoint",
+       "does": "Records any request it receives."
+      },
+      {
+       "part": "Storage",
+       "does": "Keeps recent requests per user."
+      },
+      {
+       "part": "Viewer page",
+       "does": "Shows requests as they arrive."
+      },
+      {
+       "part": "API keys",
+       "does": "Identify callers."
+      },
+      {
+       "part": "Rate limits",
+       "does": "Stop one user's traffic from hurting the others."
+      }
+     ],
+     "blocks": {
+      "do": [
+       "A1",
+       "B1",
+       "B2",
+       "B3",
+       "C2",
+       "D6"
+      ],
+      "know": [
+       "D1",
+       "D2"
+      ]
+     }
+    },
+    "medium": {
+     "example": "Supabase",
+     "what_it_is": "A hosted back end (the server side of an app) built from open-source parts around one Postgres database per project; often what agent-built apps run on.",
+     "parts": [
+      {
+       "part": "Envoy gateway",
+       "does": "Receives requests and sends them to the right service."
+      },
+      {
+       "part": "GoTrue",
+       "does": "Manages users and issues login tokens."
+      },
+      {
+       "part": "PostgREST",
+       "does": "Turns database tables into a web API."
+      },
+      {
+       "part": "Realtime",
+       "does": "Pushes database changes and presence over WebSockets."
+      },
+      {
+       "part": "Storage API",
+       "does": "Stores files, with their details kept in Postgres."
+      },
+      {
+       "part": "Edge Functions",
+       "does": "Run custom JavaScript or TypeScript code."
+      },
+      {
+       "part": "Supavisor",
+       "does": "Shares a limited set of database connections among many clients."
+      },
+      {
+       "part": "Postgres",
+       "does": "Holds the data and enforces row-level security (rules on which rows each user may see)."
+      }
+     ],
+     "flow": "A request reaches the gateway and goes to auth, the data API, Realtime or Storage, all of which share the project's Postgres. Row-level security then decides which rows that user's token may touch.",
+     "tricky": [
+      {
+       "what": "Every database connection costs memory.",
+       "why": "Postgres cannot hold huge numbers of direct connections, so a separate go-between that shares connections is needed, at a cost of about 2 ms per query. Vendor benchmark on the vendor's own setup with a trivial query, so read the 1-million-connection headline as marketing.",
+       "source_title": "Supavisor: Scaling Postgres to 1 Million Connections",
+       "url": "https://supabase.com/blog/supavisor-1-million",
+       "date": "2023-08-11",
+       "type": "vendor"
+      },
+      {
+       "what": "Safety depends on rules the customer writes.",
+       "why": "Browser apps talk to the database with a public key, so missing row rules expose data: a scan found 170 of 1,645 apps built with one AI tool exposed. The flaw was reported in that tool, Lovable, not in Supabase's own code.",
+       "source_title": "Statement on CVE-2025-48757",
+       "url": "https://mattpalmer.io/posts/statement-on-CVE-2025-48757/",
+       "date": "2025-05-29",
+       "type": "expert"
+      },
+      {
+       "what": "AI tools can step around those rules.",
+       "why": "An AI agent connected with a full-access key bypasses row rules, so a support ticket containing hidden instructions could make it copy private tokens back out. Supabase's docs recommend a read-only mode.",
+       "source_title": "Supabase MCP can leak your entire SQL database",
+       "url": "https://simonwillison.net/2025/Jul/6/supabase-mcp-lethal-trifecta/",
+       "date": "2025-07-06",
+       "type": "expert"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A4",
+       "B1",
+       "B3",
+       "D1",
+       "D2",
+       "D5",
+       "D6"
+      ]
+     },
+     "inferred": false
+    },
+    "difficult": {
+     "example": "Amazon Web Services (S3 and DynamoDB)",
+     "what_it_is": "Amazon's cloud, seen through two services: S3 stores files on a vast fleet of hard disks, and DynamoDB is a key-value database (one that finds items by a single key) that much of AWS itself relies on.",
+     "parts": [
+      {
+       "part": "S3 front end",
+       "does": "Receives requests from customers."
+      },
+      {
+       "part": "Namespace service",
+       "does": "Records which objects (stored files) exist and where they are."
+      },
+      {
+       "part": "Storage fleet",
+       "does": "Hard disks holding fragments of each object, spread widely."
+      },
+      {
+       "part": "Background services",
+       "does": "Replicate, repair and move data between tiers."
+      },
+      {
+       "part": "DynamoDB",
+       "does": "Key-value database with predictable response times; it peaked at 89.2 million requests a second in 2021."
+      },
+      {
+       "part": "DNS Planner and Enactors",
+       "does": "Generate DynamoDB's address plans and apply them to DNS."
+      },
+      {
+       "part": "EC2 lease manager",
+       "does": "Tracks the physical machines behind EC2, Amazon's rented virtual servers, and depends on DynamoDB."
+      }
+     ],
+     "flow": "A client looks up a regional name in DNS, reaches the service's front end and is routed to the storage holding its data. Internal services use the same paths, so EC2's lease manager depends on DynamoDB, and networking and load balancers (which spread traffic across servers) depend on EC2.",
+     "tricky": [
+      {
+       "what": "Automation raced against itself.",
+       "why": "In a race condition (a bug that depends on which step happens first), a delayed worker applied an old DNS plan just as a cleanup deleted it, leaving DynamoDB's address with no entries until people intervened. Failure on 19-20 October 2025.",
+       "source_title": "Summary of the Amazon DynamoDB Service Disruption in the Northern Virginia (US-EAST-1) Region",
+       "url": "https://aws.amazon.com/message/101925/",
+       "date": "undated (event 2025-10-19 to 2025-10-20)",
+       "type": "primary"
+      },
+      {
+       "what": "Recovery can be worse than the fault.",
+       "why": "DynamoDB's core problem lasted under 3 hours, but when it returned EC2's lease manager was swamped by retries and stopped making progress, and launches stayed impaired for about 14 hours in all.",
+       "source_title": "Summary of the Amazon DynamoDB Service Disruption in the Northern Virginia (US-EAST-1) Region",
+       "url": "https://aws.amazon.com/message/101925/",
+       "date": "undated (event 2025-10-19 to 2025-10-20)",
+       "type": "primary"
+      },
+      {
+       "what": "Disks are not getting faster.",
+       "why": "A hard drive still does about 120 operations a second while capacity keeps growing, so S3 must spread each customer's data over many drives to avoid hot spots (overloaded drives) that slow everyone.",
+       "source_title": "Building and operating a pretty big storage system called S3",
+       "url": "https://www.allthingsdistributed.com/2023/07/building-and-operating-a-pretty-big-storage-system.html",
+       "date": "2023-07-27",
+       "type": "primary"
+      },
+      {
+       "what": "Predictable speed despite noisy neighbours (other customers' heavy traffic).",
+       "why": "Customers rely on steady response times at any size, so DynamoDB's design kept changing to handle fairness and uneven traffic across partitions (pieces of a table). I read the abstract, not the full paper.",
+       "source_title": "Amazon DynamoDB: A Scalable, Predictably Performant, and Fully Managed NoSQL Database Service",
+       "url": "https://www.usenix.org/conference/atc22/presentation/elhemali",
+       "date": "2022-07",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A2",
+       "A3",
+       "A4",
+       "B1",
+       "B2",
+       "B3",
+       "D2",
+       "D6"
+      ]
+     },
+     "inferred": false
+    }
+   },
+   "what_changes_as_it_grows": "It moves from one small service you can restart, to many tenants (customers sharing one system) on assembled open-source parts, to chains of internal dependencies where recovery itself causes outages.",
+   "first_read_questions": [
+    "What do tenants share, and what stops one from hurting another?",
+    "What does the service itself depend on?",
+    "What happens during recovery, when everyone retries?"
+   ],
+   "confidence": "High: AWS postmortem and S3 talk are strong; Supabase evidence partly vendor-written."
+  },
+  {
+   "name": "AI apps and agents",
+   "hardest_job": "Get dependable work from a costly model that can be wrong.",
+   "how_to_recognize": "You describe what you want in plain language, and the answer or action comes from a model.",
+   "sizes": {
+    "simple": {
+     "example": "AnythingLLM (chat with your documents)",
+     "what_it_is": "An open-source assistant that answers from documents you add, using RAG (retrieving relevant passages and giving them to the model). The parts below are a typical design for this kind of tool.",
+     "parts": [
+      {
+       "part": "Document loader",
+       "does": "Reads and splits your files into passages."
+      },
+      {
+       "part": "Embedding step",
+       "does": "Turns each passage into numbers."
+      },
+      {
+       "part": "Vector store",
+       "does": "Finds passages close to a question."
+      },
+      {
+       "part": "Language model",
+       "does": "Writes the answer from those passages, locally or through an API."
+      },
+      {
+       "part": "Chat screen",
+       "does": "Takes questions and shows answers."
+      },
+      {
+       "part": "Test questions",
+       "does": "A list of known answers you check after each change."
+      }
+     ],
+     "blocks": {
+      "do": [
+       "A1",
+       "B2",
+       "B3",
+       "C2",
+       "D5"
+      ],
+      "know": [
+       "B1",
+       "C1",
+       "D1",
+       "D4",
+       "D6"
+      ]
+     }
+    },
+    "medium": {
+     "example": "OpenAI Codex CLI (coding agent)",
+     "what_it_is": "A coding agent that runs on your machine, reads and edits code and runs commands, repeating until the task is done.",
+     "parts": [
+      {
+       "part": "Agent loop",
+       "does": "Calls the model, runs what it asks for, adds the result, repeats."
+      },
+      {
+       "part": "Prompt builder",
+       "does": "Assembles system rules, tool descriptions, project instructions and history."
+      },
+      {
+       "part": "Responses API",
+       "does": "Runs the model on OpenAI's servers."
+      },
+      {
+       "part": "Tools",
+       "does": "Shell commands (commands typed to the operating system) and outside tools connected through MCP (a standard for linking tools to AI agents)."
+      },
+      {
+       "part": "Sandbox",
+       "does": "Limits what shell commands can touch."
+      },
+      {
+       "part": "AGENTS.md files",
+       "does": "Carry project instructions."
+      },
+      {
+       "part": "Prompt cache",
+       "does": "Reuses work when a prompt begins exactly like the last one."
+      },
+      {
+       "part": "Compaction",
+       "does": "Shrinks the history when it nears the context window (the most text a model can read at once)."
+      }
+     ],
+     "flow": "Your request plus project instructions form a prompt, and the model replies with text or a tool request. The harness (the program wrapped around the model) runs the tool, appends the output and calls the model again, until a final message ends the turn.",
+     "tricky": [
+      {
+       "what": "Every step resends the whole conversation.",
+       "why": "Total data sent grows with the square of the conversation length unless the prompt cache hits, and that needs an exact matching start, so even tool ordering can break it. Page blocked my tools; read through excerpts and summaries.",
+       "source_title": "Unrolling the Codex agent loop",
+       "url": "https://openai.com/index/unrolling-the-codex-agent-loop/",
+       "date": "2026-01-23",
+       "type": "primary"
+      },
+      {
+       "what": "Long tasks lose the thread and declare victory early.",
+       "why": "Agents ran out of context mid-feature, left poor handoffs and marked work done without a real end-to-end check, so state must live outside the model, in files and git. Evidence is from Anthropic's own agent, a peer product.",
+       "source_title": "Effective harnesses for long-running agents",
+       "url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
+       "date": "2025-11-26",
+       "type": "primary"
+      },
+      {
+       "what": "An agent with tools can be turned against you.",
+       "why": "Models cannot reliably separate instructions from content, so private data, untrusted content and a way to send data out make a dangerous mix; a sandbox on shell commands does not cover outside tools.",
+       "source_title": "The lethal trifecta for AI agents: private data, untrusted content, and external communication",
+       "url": "https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/",
+       "date": "2025-06-16",
+       "type": "expert"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4",
+       "C2",
+       "D5"
+      ],
+      "know": [
+       "A4",
+       "B3",
+       "C1",
+       "D4",
+       "D6"
+      ]
+     },
+     "inferred": false
+    },
+    "difficult": {
+     "example": "ChatGPT",
+     "what_it_is": "A consumer AI assistant; OpenAI reports about 800 million users across ChatGPT and its API. It has not published a full architecture, so the overall picture is inferred from separate disclosures.",
+     "parts": [
+      {
+       "part": "Web and phone apps",
+       "does": "Carry conversations and stream replies."
+      },
+      {
+       "part": "Model servers (inferred)",
+       "does": "Run the model on large groups of AI chips."
+      },
+      {
+       "part": "Kubernetes clusters (software that runs programs across many machines)",
+       "does": "Host the services and let them find each other."
+      },
+      {
+       "part": "Postgres primary",
+       "does": "One main database copy that accepts all its writes."
+      },
+      {
+       "part": "Read replicas",
+       "does": "Nearly 50 read-only copies across regions serve reads."
+      },
+      {
+       "part": "Cosmos DB",
+       "does": "A sharded database that takes new and write-heavy workloads."
+      },
+      {
+       "part": "Connection pools and caches",
+       "does": "Protect the database from overload."
+      },
+      {
+       "part": "Training and evaluation",
+       "does": "Produce model updates and decide whether they ship."
+      }
+     ],
+     "flow": "A message reaches the app's services, which load account and conversation data and call a model server that streams the reply (inferred). Model updates arrive separately, through training, evaluation and rollout.",
+     "tricky": [
+      {
+       "what": "A model can pass the checks and still be wrong.",
+       "why": "An April 2025 update added thumbs-up data to training, weakening the signal that held flattery in check. Offline tests and an A/B test looked fine, testers' unease was overruled, and it was rolled back within days. Page blocked my tools; read through excerpts and Georgetown's brief of 2025-07-30.",
+       "source_title": "Expanding on what we missed with sycophancy",
+       "url": "https://openai.com/index/expanding-on-sycophancy/",
+       "date": "2025-05-02",
+       "type": "primary"
+      },
+      {
+       "what": "A small monitoring change took everything down.",
+       "why": "A new telemetry service (one that collects system measurements) overloaded Kubernetes' management servers in large clusters, which broke service lookup. Cached addresses hid the problem for about 20 minutes, and staging (test) clusters were too small to show it.",
+       "source_title": "API, ChatGPT & Sora Facing Issues (OpenAI status incident report)",
+       "url": "https://status.openai.com/incidents/ctrsv3lwd797",
+       "date": "2024-12-11",
+       "type": "primary"
+      },
+      {
+       "what": "One database stays simple only under strict rules.",
+       "why": "All Postgres writes go through a single machine and every update copies a whole row, so new tables are banned, schema changes time out after 5 seconds, and one 12-table generated query caused several serious incidents.",
+       "source_title": "How OpenAI is scaling the PostgreSQL database to 800 million users",
+       "url": "https://venturebeat.com/data/how-openai-is-scaling-the-postgresql-database-to-800-million-users",
+       "date": "2026-01-23",
+       "type": "press"
+      },
+      {
+       "what": "Serving bugs look like the model getting worse.",
+       "why": "At a peer, Anthropic, three bugs in routing, chip setup and a compiler (software that turns code into machine instructions) showed different symptoms on different hardware, and evaluations missed them because models often recover from small errors.",
+       "source_title": "A postmortem of three recent issues",
+       "url": "https://www.anthropic.com/engineering/a-postmortem-of-three-recent-issues",
+       "date": "2025-09-17",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4",
+       "C2"
+      ],
+      "know": [
+       "B1",
+       "B3",
+       "C1",
+       "D1",
+       "D2",
+       "D4",
+       "D5",
+       "D6"
+      ]
+     },
+     "inferred": true
+    }
+   },
+   "what_changes_as_it_grows": "It moves from one model call over your documents, to a loop that acts with tools and must be contained, to fleets where one training tweak changes behaviour for everyone.",
+   "first_read_questions": [
+    "What can it do without asking, and what stops a bad instruction hidden in content?",
+    "How do they know a new model is better, beyond a demo?",
+    "What does one request cost, and who absorbs it?"
+   ],
+   "confidence": "Medium: OpenAI pages blocked; read through excerpts, status page and press."
+  },
+  {
+   "name": "Software on your device",
+   "hardest_job": "Work well on hardware you cannot see or fix quickly.",
+   "how_to_recognize": "You install or update it, and it keeps running on your own phone, laptop or browser, often offline.",
+   "sizes": {
+    "simple": {
+     "example": "Loop Habit Tracker",
+     "what_it_is": "A free, open-source Android habit tracker that works offline with no account.",
+     "parts": [
+      {
+       "part": "Screens",
+       "does": "Show habits, scores and history."
+      },
+      {
+       "part": "Local database",
+       "does": "Keeps data on the phone."
+      },
+      {
+       "part": "Reminders",
+       "does": "Notify at chosen times."
+      },
+      {
+       "part": "Widgets",
+       "does": "Show habits on the home screen."
+      },
+      {
+       "part": "Export",
+       "does": "Writes data to CSV or SQLite files."
+      },
+      {
+       "part": "Store release",
+       "does": "Ships updates through app stores."
+      }
+     ],
+     "blocks": {
+      "do": [
+       "A1",
+       "B2",
+       "B3",
+       "C2",
+       "D7"
+      ],
+      "know": [
+       "A4",
+       "D1",
+       "D6"
+      ]
+     }
+    },
+    "medium": {
+     "example": "Visual Studio Code",
+     "what_it_is": "A desktop code editor built with web technology on Electron (a toolkit for desktop apps), split into several processes (separately running programs).",
+     "parts": [
+      {
+       "part": "Main process",
+       "does": "One per app; handles user input."
+      },
+      {
+       "part": "Renderer process",
+       "does": "One per window; draws the interface."
+      },
+      {
+       "part": "Extension host",
+       "does": "Runs extensions apart from the interface."
+      },
+      {
+       "part": "Shared process",
+       "does": "Does background jobs such as installing extensions."
+      },
+      {
+       "part": "Remote host",
+       "does": "Runs extensions in a container or on another machine when needed."
+      },
+      {
+       "part": "Web host",
+       "does": "Runs extensions in a browser for vscode.dev."
+      },
+      {
+       "part": "Extension Marketplace",
+       "does": "Distributes third-party extensions and updates."
+      }
+     ],
+     "flow": "Input reaches the main process and the window's renderer, while extensions run in their own host, loading only when needed. In remote setups that host moves to a container or remote machine while the interface stays local.",
+     "tricky": [
+      {
+       "what": "Adding security to a program not built for it.",
+       "why": "Sandboxing (restricting what code can reach) the interface meant moving everything that needed direct system access to other processes, one monthly release at a time, from early 2020 to a planned early 2023 finish.",
+       "source_title": "Migrating VS Code to Process Sandboxing",
+       "url": "https://code.visualstudio.com/blogs/2022/11/28/vscode-sandbox",
+       "date": "2022-11-28",
+       "type": "primary"
+      },
+      {
+       "what": "Strangers' code must not slow the editor.",
+       "why": "Extensions run separately and load lazily to protect start-up and typing, and one extension may need to run locally, remotely or in a browser, which is why they declare where they belong.",
+       "source_title": "Extension Host (VS Code API docs)",
+       "url": "https://code.visualstudio.com/api/advanced-topics/extension-host",
+       "date": "2026-11-04 (page's last-updated date)",
+       "type": "primary"
+      },
+      {
+       "what": "Approved extensions can turn malicious later.",
+       "why": "In December 2025 attackers listed 24 fake extensions on two marketplaces; after passing review an extension can ship a harmful update, and stolen logins let the attack spread to other packages.",
+       "source_title": "GlassWorm Returns with 24 Malicious Extensions Impersonating Popular Developer Tools",
+       "url": "https://thehackernews.com/2025/12/glassworm-returns-with-24-malicious.html",
+       "date": "2025-12-02",
+       "type": "press"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A4",
+       "B2",
+       "B3",
+       "D1",
+       "D6",
+       "D7"
+      ]
+     },
+     "inferred": false
+    },
+    "difficult": {
+     "example": "Google Chrome",
+     "what_it_is": "The Chromium-based browser, which treats every page as untrusted code and ships to desktop, Android and iOS. Chrome documents its rendering design publicly.",
+     "parts": [
+      {
+       "part": "Browser process",
+       "does": "Draws browser controls and routes input."
+      },
+      {
+       "part": "Render processes",
+       "does": "Usually one per site; run its scripts and lay out its pages."
+      },
+      {
+       "part": "Viz process and graphics thread",
+       "does": "Combine frames from all processes and draw them."
+      },
+      {
+       "part": "Rendering pipeline",
+       "does": "Twelve stages from style and layout to final drawing."
+      },
+      {
+       "part": "V8",
+       "does": "Runs JavaScript, using compilers that generate code while it runs."
+      },
+      {
+       "part": "V8 sandbox",
+       "does": "Walls off V8's memory from the rest of the process."
+      },
+      {
+       "part": "Site isolation",
+       "does": "Keeps different sites in different processes."
+      },
+      {
+       "part": "Release channels",
+       "does": "Canary, Dev, Beta, Stable and Extended Stable versions."
+      }
+     ],
+     "flow": "The browser process routes a page and its input to a per-site render process, whose main thread (one line of execution inside a process) runs scripts and layout while a second thread handles scrolling. The Viz process combines frames from all processes and draws them through the graphics chip.",
+     "tricky": [
+      {
+       "what": "The JavaScript engine's speed tricks are its weak point.",
+       "why": "All Chrome attacks caught in the wild from 2021 to 2023 began with memory corruption (a bug overwriting memory it should not touch) in a render process, about 60% of them in V8, and many are subtle logic bugs that memory-safe languages (ones designed to prevent such errors) do not stop.",
+       "source_title": "The V8 Sandbox",
+       "url": "https://v8.dev/blog/sandbox",
+       "date": "2024-04-04",
+       "type": "primary"
+      },
+      {
+       "what": "Security competes with memory.",
+       "why": "Site isolation is always on for desktop but only applied when possible on phones, and memory pressure can merge tabs of one site into a shared process.",
+       "source_title": "RenderingNG architecture",
+       "url": "https://developer.chrome.com/docs/chromium/renderingng-architecture",
+       "date": "undated",
+       "type": "primary"
+      },
+      {
+       "what": "You cannot trust the graphics hardware.",
+       "why": "Bugs in drivers (the graphics chip's control software) can make acceleration fail, so Chrome falls back to doing the work on the main processor, and separate threads keep the browser responsive when the graphics chip stalls.",
+       "source_title": "RenderingNG architecture",
+       "url": "https://developer.chrome.com/docs/chromium/renderingng-architecture",
+       "date": "undated",
+       "type": "primary"
+      },
+      {
+       "what": "Shipping faster without breaking the web.",
+       "why": "From September 2026 stable versions arrive every two weeks on all platforms, with security updates weekly, while managed fleets stay on an 8-week track, so several versions are live at once (my inference).",
+       "source_title": "Get features faster with Chrome's two-week release cycle",
+       "url": "https://developer.chrome.com/blog/chrome-two-week-release",
+       "date": "2026-03-03",
+       "type": "primary"
+      }
+     ],
+     "blocks": {
+      "do": [
+       "B4"
+      ],
+      "know": [
+       "A4",
+       "B2",
+       "B3",
+       "D1",
+       "D6",
+       "D7"
+      ]
+     },
+     "inferred": false
+    }
+   },
+   "what_changes_as_it_grows": "It moves from one app on one system, to a multi-process app running strangers' extensions, to an engine that assumes every page is hostile and ships every two weeks.",
+   "first_read_questions": [
+    "What runs on the device, and what needs a server?",
+    "How fast can a bad release be pulled back?",
+    "What can third-party code or content reach on this machine?"
+   ],
+   "confidence": "Medium: Chrome docs strong but partly undated; extension attack evidence is press."
+  }
+ ],
+ "common_blocks": {
+  "in_nearly_every_kind": [
+   "A1",
+   "B1",
+   "B2",
+   "B3",
+   "B4",
+   "C2",
+   "D1",
+   "D2",
+   "D6"
+  ],
+  "what_each_kind_adds": "These nine blocks take 72% of all do and know marks, and each kind adds only 2 to 6 others, nearly all at know level: Feeds A3 A4 C1 D3 D4; Search A3 A4 C1 D3 D4 D5; Records A2 D3; Live spaces A3 A4 D7; Marketplaces A3 C1 D3 D4 D7; Media A3 A4 D3 D7; Data A3 A4 D3 (do); Platforms A2 A3 A4 D5; AI A4 C1 D4 D5 (do D5); Devices A4 D7 (do D7). So the blocks barely separate the kinds: A1, B2 and B3 are do only at simple size, C2 likewise outside AI, B4 is do at every medium and difficult size, and what really differs is which failure to expect, which this list hides inside B4 and B1."
+ },
+ "not_on_block_list": [
+  "Experiment design under interference (switchback tests, carryover, gaps between offline and live results). Seen at Uber, Instagram and in the ChatGPT flattery rollback; the reader's statistics help, but no block owns product experimentation.",
+  "Optimisation and operations research (matching, constrained routing, capacity allocation). Central to Uber and Twitch; A3 covers algorithms in general, not this discipline.",
+  "Media engineering (codecs, the formats that compress video; adaptive quality; packaging; copy protection). Central to Twitch and Netflix; no block covers it.",
+  "Graphics and rendering (graphics-chip pipelines, drawing stages, device fallbacks). Central to Figma and Chrome; only partly A4 or D7.",
+  "Compilers and language runtimes (code generated while running, memory clean-up pauses, AI-chip compilers). Caused real failures at Chrome, Bluesky and Anthropic; a stretch for A4.",
+  "Domain rules for money and regulated data (double-entry accounting, clearing, bank reconciliation, keeping data in one region). Central to Stripe and present at PostHog; these are domains, not CS blocks.",
+  "Trust, safety and moderation (labelers, spam scoring, content filters, bot abuse). D6 covers attacks on systems, not judgments about content or behaviour.",
+  "Cost and capacity reasoning (cost per request, disk and chip limits, capacity quotas). Shaped decisions at Instagram, Intercom, S3 and Twitch; D2 touches it, but it runs through every kind and every size above simple.",
+  "Physical and commercial infrastructure (deals with internet providers, private long-distance networks, data-centre placement, hard-disk physics). Seen at Netflix, Twitch and AWS; B1 and D2 cover the software side, not this.",
+  "Information retrieval as a field (indexes, click signals, judging relevance). Split awkwardly across A3 and D4, though it is central to Search and close to the reader's career.",
+  "Geospatial and map data (routing engines, travel-time data). Core to Uber; in-window evidence on it is thin."
+ ]
+}

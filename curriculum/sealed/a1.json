@@ -1,0 +1,381 @@
+{
+  "block": "A1",
+  "withdraw_bank": [
+    {
+      "id": "a1-r-01",
+      "kind": "recall",
+      "prompt": "Your machine has more than one <span class=\"mo\">python3</span> installed. One command lists every <span class=\"mo\">python3</span> your shell can find, in the order it searches, instead of only the first. Write that one command.",
+      "accept_sha256": [
+        "dc41e4be3e12a996aa7125537c76c1866180442d5c59732a08f1a5bd67f223c6",
+        "e1a61b9e9006a5edab24e256b624cf01261135ddeb4b974ba1b3e6ab75fa3ea3",
+        "db6835e807e672ca5241ad1c2e16a570b57f2c3227667a4236ac36d489450ba5",
+        "425aab3e98b4cd04621581b427cb7e5c38c52f549bf44657fd15c33c0d61c5c5"
+      ],
+      "normalise": "lower",
+      "explain": "<span class=\"mo\">which -a python3</span> lists every match, in search order. <span class=\"mo\">which python3</span> prints only the first one, and the first one is the one that runs.",
+      "earliest_session": 1,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-02",
+      "kind": "recall",
+      "prompt": "The shell looks through a list of folders, in order, to find the program you typed, and runs the first match it finds. Name that list. One word.",
+      "accept_sha256": [
+        "a0af9f865bf637e6736817f4ce552e4cdf7b8c36ea75bc254c1d1f0af744b5bf",
+        "78ad0d4dec8f077f1e5f3926d066c4e0ea9764e57449ee7f3ead9e22daf39b38",
+        "b427acb96a637c25c861448eed0411048fbe5772481c899bb7d53f432d6701d2",
+        "fb734224bfdd1cd2462a9d611efa6c79085c5124aa1d0059eb3adfd9c32ffce3",
+        "a9db39090752dcb96dcbe258056cd145f62622630c94746cb92fb943ffc6f258"
+      ],
+      "normalise": "lower",
+      "explain": "The list is <span class=\"mo\">PATH</span>. The shell searches its folders in order and runs the first match, which is how two installs of the same program can both be present while only one of them ever runs.",
+      "earliest_session": 1,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-03",
+      "kind": "recall",
+      "prompt": "One command asks the machine itself which architecture it is — not which architecture a Python was built for. Write that one command.",
+      "accept_sha256": [
+        "ea82fe82924bbdcd34f9642d3e79470eefa35f2308a6d85ad9cadf20051f1b2d",
+        "d54f6eb7f8932ccd3f87909e72b46597a48344fcd6e6f5b26decc93dc58bf84b",
+        "890cabe271136403326f8252c59cfdd47160fa63fe7a37801d3bffc1dbbf03f3",
+        "3d7bd5d2c270dfaf6b70ed0a7759f1e5bedfe113504e087dbf260f7da5183b13"
+      ],
+      "normalise": "lower",
+      "explain": "<span class=\"mo\">uname -m</span> reports the machine’s own architecture. <span class=\"mo\">platform.machine()</span> reports what the running Python was built for, and on this machine the two answers can differ.",
+      "earliest_session": 1,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-04",
+      "kind": "recall",
+      "prompt": "Write the one command that creates a virtual environment in a folder named <span class=\"mo\">.venv</span> inside the folder you are in now.",
+      "accept_sha256": [
+        "bff877488618db6edb7b3ca9103b38efacf40dc2099655e310b2e9604cf83ee9",
+        "5e3f7560795167329cbcf02a8a3e4b83f9f045b87cc981b68ad9823d5b84d166",
+        "bf81aa729c80d49000ea8db3662f0d271f5fd788580018d293ff8e108a08faca",
+        "a4bf1d62ac93f1c17775cf4c6d631f627739a7b494b74db0ebfde6e4c7ce1c80"
+      ],
+      "normalise": "lower",
+      "explain": "<span class=\"mo\">python3 -m venv .venv</span> builds the environment with the <span class=\"mo\">python3</span> that runs the command, and the environment keeps that Python. It does not go looking for a newer or a native one.",
+      "earliest_session": 1,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-05",
+      "kind": "recall",
+      "prompt": "A script stops and Python prints an error. The last line of it says what went wrong. The lines above give the file, and one more thing you need in order to look at the right code. Name that one thing. Two words at most.",
+      "accept_sha256": [
+        "e943b098c683b19d7feb66872088929d4db9e96dc673f92a8a1fdd8ab7aa5795",
+        "5834fc3f2024a63a3627b2671c49634615a368af7e4701da5f419d2098a918a0",
+        "38a9c1e721584da284b90ceea4ed7eb8db15ac4ea86c2c75ec925d5f8799fcf0",
+        "366ffdeec8bf5dda2d1466824dc275769cba0e8c5fc0b50af8c58abc4fe9fff7"
+      ],
+      "normalise": "lower",
+      "explain": "They give the line number. Read what Python printed from the bottom up: the last line is what went wrong, the lines above it are where — the file and the line.",
+      "earliest_session": 1,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-06",
+      "kind": "recall",
+      "prompt": "Write the one command that prints the folder you are in now.",
+      "accept_sha256": [
+        "a1159e9df3670d549d04524532629f5477ceb7deec9b45e47e8c009506ecb2c8",
+        "cba32b2177c9d547f7020e1599ce1bde2e40173064e4ad9252922fe641d22f9a",
+        "e1467a2e45f334e25de0decbe753419eab6e85a2938b38e01e04ce22fcbf6198"
+      ],
+      "normalise": "lower",
+      "explain": "<span class=\"mo\">pwd</span> prints the folder you are in — the folder your next command will act in.",
+      "earliest_session": 1,
+      "smoke": true
+    },
+    {
+      "id": "a1-r-07",
+      "kind": "recall",
+      "prompt": "SQL’s <span class=\"mo\">SUM(amount)</span> works over a set, and gives the same answer however the rows are arranged. The question “which row did the running total first pass 50 on” needs something a set does not have. Name it. One word.",
+      "accept_sha256": [
+        "3eeb7e96e59ce40f9cb1a089daba079fd699f6867a30f6634af8570967b2375a",
+        "cd6f6beb919ac128004da1067feb1007006d0c5c441bd9c9061e026df819f348",
+        "aa89d680fb0ad7ec311df2ac4606fd6d0f579f8119439463999427e558cc768c",
+        "eee949668040f46c7d28fb995e9cb3a3a97df66f4a4d51e756ad95f7086ceb79",
+        "bf37c7c208717d6de100ce851b48273f8d5d945c8dc64fc64372087ffcf88ba9"
+      ],
+      "normalise": "lower",
+      "explain": "It needs an order. A running total depends on the sequence the rows arrive in, so “the first row to cross 50” has no answer until the rows are in an order.",
+      "earliest_session": 2,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-08",
+      "kind": "recall",
+      "prompt": "A row arrives as a dictionary and is held in a name called <span class=\"mo\">row</span>. One of its fields is <span class=\"mo\">team</span>. Using that name, write the code that gets this row’s <span class=\"mo\">team</span> value out of it. One short piece of code.",
+      "accept_sha256": [
+        "a52348d21f90f664abe3c5b0c753d3d1e4b5b4b34e0f2cda5b274c059609a570",
+        "f4ef7d6309df2a1601749e0b5dff511a07ba8abc9859235dfb60b5cb8af6f08e",
+        "1a876411d12bbc7a62a84ac31599f12edf0e5084b305eb4c8927bca7d0bbaf89",
+        "2fbe6886f3fc7a62790731fae9a5044e5601aa2d812064b8240fa21f00fcf437"
+      ],
+      "normalise": "lower",
+      "explain": "<span class=\"mo\">row[\"team\"]</span> asks that one row for that one field. A loop runs it once per row, on one row at a time, which is the part SQL never asked you to do.",
+      "earliest_session": 2,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-09",
+      "kind": "recall",
+      "prompt": "You are in a loop over rows and the row you were looking for has been found. One keyword leaves the loop immediately, without touching the rows that are left. One word.",
+      "accept_sha256": [
+        "14ebe56a5008e7c251101e9e1fdbe281ab0a82bd6fa00a5cef746b9ee0dd31d1",
+        "26ccc8669f357f1125b76485e5d0516a1e34ec0e60297fb46c7daeb1a719b139"
+      ],
+      "normalise": "lower",
+      "explain": "<span class=\"mo\">break</span> leaves the loop at once, so the rows after it are never looked at. That is how you report the first row that meets a condition rather than the last one.",
+      "earliest_session": 2,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-10",
+      "kind": "recall",
+      "prompt": "You are looking at one row at a time, and only some of the rows interest you. One keyword runs the lines under it only when something is true, and skips them otherwise. One word.",
+      "accept_sha256": [
+        "935f68319d4f227e02bfd54a0ddf85b8a242e42a4277aa5ef5eaab691710924e",
+        "7123e48fbbf26f2342bd0b3d85999975541dc771cf4a35cbd7a94d6bdc9073b0",
+        "81593bf953d1b5c9dbb90a97e6fd1b15e6932bf30a83f9769e7b0458b37caba0"
+      ],
+      "normalise": "lower",
+      "explain": "<span class=\"mo\">if</span> runs the lines under it only when what you asked about that row is true. It is how one row out of six is acted on and the other five are passed over.",
+      "earliest_session": 2,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-11",
+      "kind": "recall",
+      "prompt": "A function works out a number, and its caller needs that number. One keyword hands it back out of the function. One word.",
+      "accept_sha256": [
+        "7187f0675eb3827939741acf7342ba78836ecec21a31ecf3f34a55309d3bee8a",
+        "f1559364353eb143133c96d228054ac3c047330d8931ccf5a29ff5962b554373"
+      ],
+      "normalise": "lower",
+      "explain": "<span class=\"mo\">return</span> hands the value back to the caller. Without it the function gives back nothing, and the caller ends up holding nothing instead of the number it asked for.",
+      "earliest_session": 3,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-12",
+      "kind": "recall",
+      "prompt": "A function builds a line, prints it, and returns nothing. The caller keeps what came back and calls <span class=\"mo\">.upper()</span> on it. Python stops. Name the exception on the last line of the traceback. One word.",
+      "accept_sha256": [
+        "9d867deca2a00f77eedcab8b9b51c344e68a85e5f4e2a65a2fc9d4c9dad9c792",
+        "16f55e1ffc58cdc8704a618c750aa832cd3ce94875309c3257a68dd85effba1c",
+        "644dca4a55c2933ab4aca3efa58b82972392610c08cf57571838e4318904e620"
+      ],
+      "normalise": "lower",
+      "explain": "<span class=\"mo\">AttributeError</span>. The function returned nothing, so the caller is holding <span class=\"mo\">None</span> — Python’s word for nothing — and <span class=\"mo\">None</span> has no <span class=\"mo\">.upper()</span>. The last line of a traceback always names the exception; the lines above name the file and the line.",
+      "earliest_session": 3,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-13",
+      "kind": "recall",
+      "prompt": "A column of whole numbers is held as a numpy <span class=\"mo\">int32</span>, and one value is <span class=\"mo\">2147483647</span>, the highest that type holds. One is added to it. What is printed? One number.",
+      "accept_sha256": [
+        "56bb3b3a6aa1747def7c225256374c5e73f2fc46555adc47ea16e2d782159387",
+        "6c6a9af8c54a6f4879af2a209cb394dc10db1b8908601126678fce72b56aa889",
+        "c9d4e90bf93a008a4a771bb1ab41e12272b90332051904b87d48a629aa79d9bf"
+      ],
+      "normalise": "lower",
+      "explain": "<span class=\"mo\">-2147483648</span>. The value wraps round to the bottom of the type: nothing is raised, nothing is printed as a warning, and the program ends normally. The only thing that catches it is a number you already expected.",
+      "earliest_session": 3,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-14",
+      "kind": "recall",
+      "prompt": "<span class=\"mo\">0.10 + 0.20 == 0.30</span> is <span class=\"mo\">False</span>, so money is never held as a float. Name the type from Python’s standard library that holds it exactly instead. One word.",
+      "accept_sha256": [
+        "3e6d4b43d473c69d919c7550b0468718a2e66daf934e0428b401e230c5d34d85",
+        "ae7954fcacc679d164f0d57e2fcdd478afbc7fd98fd43131c425c55a651fa23e",
+        "91418df8afded56f407299500b321e7658eeda5a10784f48208ddf4abcb653cf"
+      ],
+      "normalise": "lower",
+      "explain": "<span class=\"mo\">Decimal</span>, from the <span class=\"mo\">decimal</span> module. The other way is to count whole minor units — amounts in cents, as integers. Both avoid the float that makes <span class=\"mo\">0.10 + 0.20</span> miss <span class=\"mo\">0.30</span>.",
+      "earliest_session": 3,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-15",
+      "kind": "recall",
+      "prompt": "A list is held in a name called <span class=\"mo\">rows</span>. Write the first line of a loop that takes its rows one at a time, holding each one in a name called <span class=\"mo\">row</span>. One line of code.",
+      "accept_sha256": [
+        "016d1e4d9662c271873092212424cf912e959c6768d869847d5a78b9706bb8af",
+        "2013bd1eb395d56e069af00c72877710e7f1db199db15952e20ed24d1caf4e88",
+        "d36b1677ce2273b35dc124e9bd9a08e90dcca8d8b10421b975e9fbbc3da47ceb"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "<span class=\"mo\">for row in rows:</span> starts the loop. The lines under it run once for each row, in the order the list holds them, and <span class=\"mo\">row</span> holds a different row each time round.",
+      "earliest_session": 2,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-16",
+      "kind": "recall",
+      "prompt": "Python has no brackets to mark where a loop’s body starts and ends. What is done to the lines of the body so that Python knows they belong to the loop? One word.",
+      "accept_sha256": [
+        "446e447a7cbaba465b00c4d3f2b03eee50e3589f881a439e9b419883bf76e71b",
+        "7f113a182c02411f944152f53d04aa018cfe3f893b162e7989f07bd6fa09f902",
+        "a258f543b0a6d2a4676f8bbbeeba22987cf78355586a1c78528441f09bdf5271",
+        "45f8fce3a3c3b6eb3925a2de3e6e77b617065fd6133df7bd88fc790b0af74987",
+        "315f5171e3344f7fb7c40009c222eb8c8dbacac15a9ad6bac7ff7f12dc9f610d",
+        "0b4da57dad997b4e58183de4b3bebacd6906826e3400f60cdd7edb5fc43dc296",
+        "9526a91af100b291610b0fdf26ad903d8cb0c5ae710a0a8ed482ee409ca61d87",
+        "e05992ebb033492c9cf4ada136fac9b8b88decfce9bf17ed7ad72fbb83dc1d38",
+        "91c847ccbcd7207f9afb6b74ce7353638b86cc07aa1a231a6dc1188577e6f20f"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "Indentation. The lines of the body are pushed in by the same amount under the line that starts the loop. The first line that is not pushed in is no longer part of the body.",
+      "earliest_session": 2,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-17",
+      "kind": "recall",
+      "prompt": "A name called <span class=\"mo\">price</span> holds a number. Write the piece of code that asks whether <span class=\"mo\">price</span> is more than 100. One short piece of code.",
+      "accept_sha256": [
+        "14daf8f570be6b05452cfda2acf5f899e41e95919c403abc65b1221adb7a4308",
+        "b77b4b2d74d1bc181ec51f1fe4686409ea713f69447d30ed542c0e0b6b4c806e",
+        "4a9d65d46681112944cd73fd19bc363d37a8bfdb820efdb18416cf2c87212d11",
+        "48e05f3a98bf7df6fce564325a9f53eb2e6d03e341b2b592a4f292ea788ebef6",
+        "7e684babdfbc72f32f75340ddab14174107e4d56e125cf731adc0195694d45a2",
+        "f3706343d9fe269c058e01fef8b1666293f7f0978022c62cc9814cded353151a",
+        "9020dfacc3af5bcb9111c639335a1e9537a05ece622e4fa9794cad565b833e1e",
+        "d3375312cd204d1f2f4d5e8afa5dd5068f36408af22cd0348b37012af0016096",
+        "717f7019c1e336570e6a3ed41b48e4a11493347ef2e2b7df67062308a877694f",
+        "34b92eb229b5846671964b53c2f02e77d56efa9f888722e0ad0495faeae67462"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "<span class=\"mo\">price &gt; 100</span> asks a question whose answer is <span class=\"mo\">True</span> or <span class=\"mo\">False</span>. Written after <span class=\"mo\">if</span>, it decides whether the lines under the <span class=\"mo\">if</span> run or are skipped.",
+      "earliest_session": 2,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-18",
+      "kind": "recall",
+      "prompt": "A single <span class=\"mo\">=</span> gives a name a value. Write the symbol Python uses to ask whether two values are equal instead.",
+      "accept_sha256": [
+        "f16474a9900a44186e87098f5fcb153a1fab2e401e1a6db587168b204761b276",
+        "89edef857c0b897feddc8b7c05bf3514dd017e75bb23f85615ce37ac41f97196",
+        "9c234d9587b06d2a33f29d258aac005849f4d97787aefc79b74903035cb94e7f",
+        "68ebdd7392bd77ce3f455f6b602d10d3098840b7d4c7958cecca55292d0c7a66",
+        "5204c1268e79f5661600c50ee0b6dd7a2ddfa262d73bffd96c8ba579a502c99f",
+        "3bf94a4630af7fe85266d3146da4da99bcda7606ac08a623213d0221d784eaf0",
+        "aede6fe1e443f5b5420c69fb2d7f27dc9fe29b0a9a1de7fa4343307c2dedc96e"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "<span class=\"mo\">==</span> asks whether two values are equal, and the answer is <span class=\"mo\">True</span> or <span class=\"mo\">False</span>. A single <span class=\"mo\">=</span> asks nothing: it gives the name on its left the value on its right.",
+      "earliest_session": 2,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-19",
+      "kind": "recall",
+      "prompt": "A virtual environment already exists in a folder named <span class=\"mo\">.venv</span> inside the folder you are in now. Write the one command that switches your shell to it.",
+      "accept_sha256": [
+        "44351ac40d7cb3fa57a90bd0a2ff0d0e0f90dcf4de0c9f32b49d0f197d1e8300",
+        "faa96f363a117742b7731954eaecd83a6da9b704809c4550b43ca548d273ab3a",
+        "569b7fc74594405576763e78ef7d2163e5dbaff1f39e54843e8d3a5f08ff69a5",
+        "b34e926edc458eb6ecf9f770e74e7e4d0d75ea5b491e9bd8fe967ee0ed2b7504"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "<span class=\"mo\">source .venv/bin/activate</span> switches this shell to the environment. It puts the environment’s own folder first in <span class=\"mo\">PATH</span>, so from then on <span class=\"mo\">python3</span> finds the environment’s Python before any other.",
+      "earliest_session": 1,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-20",
+      "kind": "recall",
+      "prompt": "One command asks the machine which architecture it is. A Python can be asked a different question: what architecture was it built for? Write the short piece of Python code that answers it. It starts with <span class=\"mo\">platform</span>.",
+      "accept_sha256": [
+        "5bf984d87302d6981d288da43b8211331a43dd3adbc7d91b3f9a65ccc05606f5",
+        "283717079d14962294a0389e85bbdd4f3836caaae05f602e09f1b31cdbd37698",
+        "70486e208edb55680008276a6db13ab2d589854b9efcc07d26731db40c8651fb",
+        "ec1b5aefb5fb2798063869aacfe121f6d0f7abc29cbb201fd7d05a198988339d",
+        "c1518960ba0ce881601cc81a78aa278694377c54858efdf3cbbdc5b620432112",
+        "c6dc826377987780997a23f108f9dc277db1f7c5c05b970b1812103eab58511f",
+        "17b09289f9d325fdd7a3a698b3bb529faa9ff1b9d50f0219c0db1473f97c460a"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "<span class=\"mo\">platform.machine()</span> reports the architecture the running Python was built for. That can differ from what the machine says about itself, which is why the two are asked separately.",
+      "earliest_session": 1,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-21",
+      "kind": "recall",
+      "prompt": "A Python file named <span class=\"mo\">report.py</span> is in the folder you are in now. Write the one command that runs it.",
+      "accept_sha256": [
+        "39f5aa758dca7f769850afbdf0d7cd0995d745bd8ee92088ab4c51ca9b660ed3",
+        "9fbd8a914518561f3a189d3ed629011c289dd37152f519742ae405e496b1c979",
+        "e2cb4239a258bcf2dab3a9c9aff7111393a6d862b4674a9a6f3a2bd8721a657e",
+        "256fe8223acc8d9443bc224276a8bb3601ad9150ec20b6568f5a57d08bb81e46",
+        "3f88274ddb671a09389e692e4135e8e1811b9b45a67a100f1e0ee974acc2f123"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "<span class=\"mo\">python3 report.py</span> hands the file to Python, which runs its lines from the top down. <span class=\"mo\">python3</span> is a name your shell has to look up, and the first match it finds is the one that runs the file.",
+      "earliest_session": 1,
+      "smoke": false
+    },
+    {
+      "id": "a1-r-22",
+      "kind": "recall",
+      "prompt": "Write the one command that lists what is in the folder you are in now.",
+      "accept_sha256": [
+        "c7b68ac37f364473e922936708e7f43c293dd07b295171566c07ff5fe024fab9",
+        "f0f40cf78dab06e0d336e5ced925157780fdb4a376f454d6cc80f3d21bf10769",
+        "5c1fa7f4f5a9dc65179c7eb464b22c7d8f4c2582e2f5e3d375a62474e936bfc1",
+        "1de700c29687cae34561545f50d3c8b3d9afe88e04cc11069f8a6dc6e4ce9464",
+        "e1b09128c5cdce9600fb30d2f686871e0fa68acf819e61f43f11ef3ccef61529",
+        "bc12c6f36972982cc9b8cb5bcf6f8e881fa443e57a0739de2461fcc256ab661f",
+        "d01e78066fa5053b54cf4dcac6b7f576119d4da37dc6cb6f2482c91e13777808",
+        "90d1800bbe7061d96fca7c54d1509e7df57894f0f984994327b697ca04f0e27d"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "<span class=\"mo\">ls</span> lists what is in the folder you are in. <span class=\"mo\">pwd</span> says which folder that is; <span class=\"mo\">ls</span> says what it holds.",
+      "earliest_session": 1,
+      "smoke": false
+    }
+  ],
+  "variants": [
+    {
+      "after_part": "s02-lab-a",
+      "ask": "A list called <span class=\"mo\">orders</span> holds four numbers, in this order: <span class=\"mo\">5, 9, 2, 7</span>. A loop runs <span class=\"mo\">for order in orders</span>. The loop body is exactly two lines, in this order: first <span class=\"mo\">biggest = 0</span>, then <span class=\"mo\">if order &gt; biggest: biggest = order</span>. There is nothing else in the body, and nothing is set before the loop. After the loop ends, <span class=\"mo\">print(biggest)</span> runs. What does it show?",
+      "options": [
+        "<span class=\"mo\">9</span> — the largest of the four orders.",
+        "<span class=\"mo\">7</span> — the last order, because the body sets <span class=\"mo\">biggest</span> back to <span class=\"mo\">0</span> on every round.",
+        "<span class=\"mo\">0</span> — because <span class=\"mo\">biggest = 0</span> sits inside the loop, and the loop finishes by running it one last time."
+      ],
+      "correct": 1,
+      "explain": "The body runs once per order, so <span class=\"mo\">biggest = 0</span> runs four times. Each round compares one order against <span class=\"mo\">0</span> and keeps it, so at the end the name holds the last order, not the largest. A number that has to last the whole loop must be set before the loop starts."
+    },
+    {
+      "after_part": "s03-lab-a",
+      "ask": "A function takes two things and returns nothing. Its body is exactly two lines. First: <span class=\"mo\">label = label.upper()</span>, where <span class=\"mo\">.upper()</span> hands back an upper-case copy of the text and changes nothing. Then: <span class=\"mo\">settings[\"checked\"] = True</span>, which sets that key on the dictionary it was given. The caller sets <span class=\"mo\">name = \"ana\"</span> and <span class=\"mo\">config = {}</span>, calls the function with <span class=\"mo\">name</span> and <span class=\"mo\">config</span>, and then prints <span class=\"mo\">name</span> and <span class=\"mo\">config</span>. What does the print show?",
+      "options": [
+        "<span class=\"mo\">ANA</span> and <span class=\"mo\">{'checked': True}</span> — the function changed both of the things it was given.",
+        "<span class=\"mo\">ana</span> and <span class=\"mo\">{}</span> — it changed neither, because a function only ever works on its own copies.",
+        "<span class=\"mo\">ana</span> and <span class=\"mo\">{'checked': True}</span> — the dictionary changed and the text did not."
+      ],
+      "correct": 2,
+      "explain": "Assigning to <span class=\"mo\">label</span> points the function’s own name at a new string, and the caller’s <span class=\"mo\">name</span> still points at the old one. Setting a key changes the one dictionary both names point at, so the caller sees it straight away. What crosses out of a function is what you <span class=\"mo\">return</span>, plus anything you changed in place."
+    }
+  ]
+}

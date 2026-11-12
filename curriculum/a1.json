@@ -1,0 +1,911 @@
+{
+  "block": "A1",
+  "name": "Code & debugging",
+  "bars": {
+    "judge": {
+      "label": "Judge",
+      "says": "Tell whether code is right",
+      "borrowed_gate": 9,
+      "own_gate": 9
+    },
+    "build": {
+      "label": "Build",
+      "says": "Write it and fix what it hands you",
+      "borrowed_gate": 9,
+      "own_gate": 9
+    }
+  },
+  "sessions": [
+    {
+      "session": 1,
+      "title": "Get code to run at all",
+      "subtitle": "Write a file and run it. Break it, read what Python says, fix it. Then find out which Python has been running all along.",
+      "covers": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "parts": [
+        {
+          "id": "s01-lab-a",
+          "kind": "lab",
+          "shows": "Write, break, fix — and find out which Python",
+          "minutes": {
+            "learn": 45,
+            "predict": 3,
+            "attempt": 40,
+            "compare": 8,
+            "record": 4
+          },
+          "ai_allowed": true,
+          "why": "Until a file you wrote runs on your machine, nothing else here works. A1 asks whether you can read code, run it and fix it, so you do all three in the first hour, on three lines you wrote yourself. Nobody warns you about the last part. <span class=\"mo\">python3</span> is a name, not a file, and your shell has to look it up. On a Mac it can find more than one.",
+          "before_you_start": [
+            "⌘ space, type Terminal, return — a window opens with one line waiting; that line is the prompt.",
+            "mkdir ~/cs-core — makes a folder.",
+            "cd ~/cs-core — goes into it; nothing appears, which is right.",
+            "python3 hello.py — runs a file you wrote in that folder."
+          ],
+          "reading": [
+            {
+              "title": "Missing Semester, Lecture 1: The Shell",
+              "url": "https://missing.csail.mit.edu/2020/course-shell/",
+              "teaches": "moving around, running things, and what $PATH is",
+              "minutes": 30
+            },
+            {
+              "title": "Python docs — the venv tutorial, “Virtual Environments and Packages”",
+              "url": "https://docs.python.org/3/tutorial/venv.html",
+              "teaches": "a Python that belongs to one folder",
+              "minutes": 15
+            }
+          ],
+          "tasks": [
+            {
+              "name": "Write three lines, run them",
+              "brief": "Make <span class=\"mo\">hello.py</span>. Set a name to one value, print it, change it, print it again. Run it.",
+              "passes_when": "two different values come back, in the order you wrote them.",
+              "minutes": 10,
+              "guess": false
+            },
+            {
+              "name": "Break it on purpose",
+              "brief": "Delete one character — a quote, a bracket, a letter of <span class=\"mo\">print</span>. Run it. Read what Python says, out loud. Then put it back.",
+              "passes_when": "you can name the file and the line number from the error, without looking at your code.",
+              "minutes": 10,
+              "guess": true
+            },
+            {
+              "name": "Find out which Python",
+              "brief": "Four answers: (1) which <span class=\"mo\">python3</span> would run, (2) how many there are, (3) which one runs once you make an environment for this folder and switch to it, and (4) what architecture that Python is — and what your machine says it is.",
+              "passes_when": "you have all four answers under the commands that produced them, and can explain whether the machine and environment architectures agree.",
+              "minutes": 20,
+              "guess": true
+            }
+          ],
+          "reference_card": [
+            {
+              "label": "go to a folder, see what is in it",
+              "code": "cd ~/cs-core\npwd\nls"
+            },
+            {
+              "label": "make and edit a file",
+              "code": "nano hello.py    # ctrl-O then return saves, ctrl-X quits"
+            },
+            {
+              "label": "keep a value, change it, show it",
+              "code": "colour = \"red\"\nprint(colour)\ncolour = \"blue\""
+            },
+            {
+              "label": "run a file you wrote",
+              "code": "python3 hello.py"
+            },
+            {
+              "label": "which python3 would run, and all of them",
+              "code": "which python3\nwhich -a python3"
+            },
+            {
+              "label": "make a Python for this folder, and use it",
+              "code": "python3 -m venv .venv\nsource .venv/bin/activate"
+            },
+            {
+              "label": "ask the machine, then ask a Python",
+              "code": "uname -m\npython3 -c 'import platform; print(platform.machine())'"
+            }
+          ],
+          "reference_card_bans": [
+            "arm64",
+            "x86_64",
+            "/usr/local/bin/python3",
+            "/usr/bin/python3",
+            "pins the Python"
+          ],
+          "rules": [
+            "AI may explain, never write or debug.",
+            "nothing to install but Python itself",
+            "stuck 15 min is normal"
+          ],
+          "predict": {
+            "type": "choice",
+            "ask": "You have more than one Python installed. When you type <span class=\"mo\">python3</span>, one of them runs. If you use that one to build a virtual environment, which Python is in the environment?",
+            "options": [
+              "The newest one on the machine. A fresh environment should give you a fresh Python.",
+              "The one you built it with.",
+              "The system one, because that is the real Python and the others are copies."
+            ],
+            "correct": 1,
+            "why_prompt": "One line: why?"
+          },
+          "acceptance_checks": [
+            {
+              "id": "architectures",
+              "type": "paired",
+              "field": "stdout",
+              "pairs": [
+                {
+                  "name": "machine",
+                  "cue": "^\\s*(?:[^\\n]*?[$%]\\s*)?uname\\s+-m\\s*$",
+                  "value": "^(arm64e?|x86_64|i386)$"
+                },
+                {
+                  "name": "environment",
+                  "cue": "^\\s*(?:[^\\n]*?[$%]\\s*)?[^\\s]*python3\\s+-c\\s+.*platform\\.machine\\(\\).*$",
+                  "value": "^(arm64e?|x86_64|i386)$"
+                }
+              ],
+              "expect": {
+                "machine": "^arm64e?$",
+                "environment": "^(arm64e?|x86_64|i386)$"
+              }
+            }
+          ],
+          "verdicts": {
+            "architectures": {
+              "pass": "Both answers are under their commands. A native Python is accepted too, if you have already repaired the environment.",
+              "fail": "Look again at which command asked the machine and which asked Python. The answers must stay under the commands that produced them.",
+              "partial": "Paste each command and the answer below it. Both the machine and the Python in your environment have to be there.",
+              "missing": {
+                "machine": "I can see what a Python said, but not what the machine said. Run <span class=\"mo\">uname -m</span> too, and paste both.",
+                "environment": "I can see what the machine said, but not what a Python said from inside your environment. Run that one too, and paste both."
+              }
+            }
+          },
+          "receipt_fields": [],
+          "receipt_prompt": "Paste both architecture answers, commands and all — what <span class=\"mo\">uname -m</span> said, and what <span class=\"mo\">platform.machine()</span> said from inside your environment.",
+          "receipt_hint": "$ uname -m\n...\n$ python3 -c 'import platform; print(platform.machine())'\n...",
+          "compare": {
+            "mine_label": "Measured reference: machine and environment",
+            "mine": "$ uname -m\n<b>arm64</b>\n\n$ source .venv/bin/activate\n$ python3 -c 'import platform; print(platform.machine())'\n<b>x86_64</b>",
+            "theirs_label": "Measured reference: installed Pythons",
+            "theirs": "$ which -a python3\n/usr/local/bin/python3\n/usr/bin/python3\n\n$ /usr/bin/python3 --version\nPython <b>3.9.6</b>",
+            "note": "<strong>A virtual environment uses the Python you built it with. It does not search for a better one.</strong> The measured reference comes from the original setup: an Apple-silicon machine running Intel Python 3.12, with native Python 3.9 also installed. An environment made from that first Python inherited its Intel architecture. Your answers may differ. If both say arm64, that architecture mismatch is absent; check the Python version separately. <span class=\"mo\">which python3</span> shows the first match; <span class=\"mo\">which -a python3</span> shows them all.",
+            "after": "Use a native Python 3.12 from here on. The course has its own, and what follows sets this terminal up to use it. Then ask the two architecture questions again."
+          },
+          "labels": [
+            "I had it right, and for the right reason.",
+            "I assumed a new environment gets you a fresh, current Python.",
+            "I assumed there was only one python3 to begin with.",
+            "I assumed the version number told me which one it was.",
+            "I had it right, but was not sure why."
+          ],
+          "concepts": [
+            {
+              "term": "Virtual environment",
+              "anchor": "Like a folder-specific copy of a tool, rather than a search for the newest tool.",
+              "explain": "A virtual environment keeps the Python it was created from. It does not look for a newer one, and it does not look for one that suits this machine better."
+            },
+            {
+              "term": "PATH",
+              "anchor": "Like checking drawers in a fixed order and using the first matching tool.",
+              "explain": "PATH is an ordered list of folders. The shell looks in them one by one and runs the first match. <span class=\"mo\">which python3</span> names that match, and <span class=\"mo\">which -a python3</span> lists them all."
+            }
+          ],
+          "provenance": {
+            "level": "authored",
+            "courses": [
+              {
+                "name": "Missing Semester, Lecture 1: The Shell",
+                "url": "https://missing.csail.mit.edu/2020/course-shell/",
+                "kind": "lecture",
+                "checked": "2026-11-09"
+              },
+              {
+                "name": "Python docs — the venv tutorial, “Virtual Environments and Packages”",
+                "url": "https://docs.python.org/3/tutorial/venv.html",
+                "kind": "lecture",
+                "checked": "2026-11-09"
+              }
+            ],
+            "measured": {
+              "machine": "Darwin 24.6.0 arm64; PATH Python 3.12.2 x86_64; system Python 3.9.6",
+              "date": "2026-11-09"
+            }
+          },
+          "leak_guard": [
+            "the one you built it with",
+            "built it with"
+          ]
+        },
+        {
+          "id": "s01-interview-a",
+          "kind": "interview",
+          "shows": "Talk through someone else’s code",
+          "minutes": {
+            "attempt": 20
+          },
+          "ai_allowed": true,
+          "target": {
+            "kind": "program",
+            "path": "content/interviews/s01-check-env.py"
+          },
+          "brief": "An agent wrote this script from one sentence: “a script that checks my setup”. It runs, and it ends by printing Success.",
+          "questions": [
+            "Before you read it: if someone says “my Python setup is fine”, what would have to be true? Name the things a check would have to look at.",
+            "Still before you open it: what would you expect a script like this to tell you, and what could it leave out?",
+            "Now walk through it. It prints the same Success line whether the report worked or not. Say what that costs you, and name the one line you would change first."
+          ],
+          "looks_for": [
+            "Which interpreter answers, where it is, what version and architecture it is, and what is installed in it — several facts, not one.",
+            "A script like this reports on the Python that is running the script — which need not be the <span class=\"mo\">python3</span> your terminal finds — and it can easily say nothing about what is installed. Question 3 is where you see what this one does.",
+            "That the same Success line prints whether the report worked or raised, so the word carries no information; the line to change is the <span class=\"mo\">except Exception</span> that swallows the failure, which should let it through or say what failed."
+          ]
+        },
+        {
+          "id": "s01-withdraw-a",
+          "kind": "withdraw",
+          "shows": "No-help check",
+          "minutes": {
+            "attempt": 7,
+            "compare": 4,
+            "record": 2,
+            "resurface": 4
+          },
+          "ai_allowed": false,
+          "bar": "build",
+          "item_kind": "recall",
+          "labels": [
+            "I had it right, and for the right reason.",
+            "I assumed there was only one of it, so there was nothing to tell apart.",
+            "I knew the command but not what it answers.",
+            "I had read it and could not produce it cold.",
+            "I had it right, but was not sure why."
+          ]
+        }
+      ]
+    },
+    {
+      "session": 2,
+      "title": "Order and state",
+      "subtitle": "Six rows arrive in an order, and a count has to survive the loop. SQL never asked you where to put the counter.",
+      "covers": [
+        1,
+        2
+      ],
+      "parts": [
+        {
+          "id": "s02-lab-a",
+          "kind": "lab",
+          "shows": "Loop over six rows, count some, keep a running total",
+          "minutes": {
+            "learn": 65,
+            "predict": 4,
+            "attempt": 90,
+            "compare": 10,
+            "record": 5,
+            "resurface": 5
+          },
+          "ai_allowed": true,
+          "why": "A1’s own check describes a script an agent wrote: it turns a two-million-row export into a weekly revenue table, prints <span class=\"mo\">Success</span> every run, and this week’s total jumped 12% with no business reason. The middle of that script is a loop that keeps a number while it walks the rows. Where that number is set decides what the total ends up being — and neither version fails, so nothing tells you which one you have. You write that loop here, on six rows you can check by eye.",
+          "setup": "Six rows are waiting in a file called <span class=\"mo\">rows.py</span>: each one a name, a team and an amount. You will fetch that file, write a loop over the rows at the bottom of it, count some of them, and keep one number that has to last the whole loop. The rows never change.",
+          "reading": [
+            {
+              "title": "MIT 6.100L, Lecture 2: Strings, Input/Output, Branching — the lecture-notes PDF, the branching half",
+              "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/resources/mit6_100l_f22_lec02_pdf/",
+              "teaches": "asking whether something is true, and doing one thing only if it is",
+              "minutes": 25
+            },
+            {
+              "title": "MIT 6.100L, Lecture 3: Iteration — the lecture-notes PDF",
+              "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/resources/mit6_100l_f22_lec03_pdf/",
+              "teaches": "a loop, and a value that changes while it runs",
+              "minutes": 30
+            },
+            {
+              "title": "MIT 6.100L — Finger Exercise, Lecture 3",
+              "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/pages/finger-exercises/",
+              "teaches": "the one loop you write before this lab’s own",
+              "minutes": 10
+            }
+          ],
+          "tasks": [
+            {
+              "name": "Fetch the rows and print them",
+              "brief": "Fetch <span class=\"mo\">rows.py</span> into <span class=\"mo\">~/cs-core</span> with <span class=\"mo\">curl -O</span>, open it, and write a loop at the bottom that prints each person’s name.",
+              "passes_when": "six names, one per line, in the order the file has them.",
+              "minutes": 25,
+              "guess": false
+            },
+            {
+              "name": "Count the ones over twenty",
+              "brief": "Below that, count the rows whose amount is more than 20, and add those amounts up. Print the count, then the sum.",
+              "passes_when": "two numbers: how many rows are over 20, and what those rows add up to. No row counted twice.",
+              "minutes": 30,
+              "guess": true
+            },
+            {
+              "name": "Keep a total that survives the loop",
+              "brief": "Add the amounts up in the order the rows come. The moment the running total passes 50, print that row’s name and the total at that moment, and stop.",
+              "passes_when": "the name of the row where the total first passes 50, and the total it had reached at that row.",
+              "minutes": 35,
+              "guess": true
+            }
+          ],
+          "reference_card": [
+            {
+              "label": "make a folder and go into it",
+              "code": "mkdir -p ~/cs-core\ncd ~/cs-core"
+            },
+            {
+              "label": "fetch a file into this folder",
+              "code": "curl -O http://localhost:3000/labs/s02-lab-a/rows.py"
+            },
+            {
+              "label": "look at one thing after another",
+              "code": "for colour in colours:\n    print(colour)"
+            },
+            {
+              "label": "do something only when it is true",
+              "code": "if temperature > 30:\n    print(\"hot\")"
+            },
+            {
+              "label": "one field of one row",
+              "code": "row[\"colour\"]"
+            },
+            {
+              "label": "stop the loop here",
+              "code": "break"
+            }
+          ],
+          "reference_card_bans": [
+            "\\+=",
+            "count\\s*=\\s*count",
+            "total\\s*=\\s*total",
+            "sum\\(",
+            "amount",
+            "running total"
+          ],
+          "rules": [
+            "AI may explain, never write or debug.",
+            "stuck 15 min is normal"
+          ],
+          "predict": {
+            "type": "choice",
+            "ask": "These six rows come in a fixed order, and the loop’s body runs once for each of them. The body is two lines: first <span class=\"mo\">total = 0</span>, then it adds that row’s amount to <span class=\"mo\">total</span>. After the last of the six, what does <span class=\"mo\">print(total)</span> show?",
+            "options": [
+              "The six amounts added together.",
+              "The last row’s amount.",
+              "Zero — it gets set to zero again every time round."
+            ],
+            "correct": 1,
+            "why_prompt": "One line: why that one?"
+          },
+          "acceptance_checks": [
+            {
+              "id": "rows-read",
+              "type": "contains_all",
+              "field": "stdout",
+              "need": [
+                "Ana",
+                "Bo",
+                "Cy",
+                "Di",
+                "Eve",
+                "Fei"
+              ],
+              "case": false
+            },
+            {
+              "id": "counted-and-crossed",
+              "type": "contains_all",
+              "field": "stdout",
+              "need": [
+                "83",
+                "61"
+              ],
+              "case": false
+            }
+          ],
+          "verdicts": {
+            "rows-read": {
+              "pass": "All six rows went through the loop.",
+              "fail": "Some of the rows never printed. A loop that stops early, or starts at the wrong place, loses rows without saying so."
+            },
+            "counted-and-crossed": {
+              "pass": "The sum over 20 and the crossing total are both there.",
+              "fail": "The sum of the amounts over 20, or the total when it first passed 50, is not here. If nothing ever passes 50, look at where your total is set before you look at anything else."
+            }
+          },
+          "receipt_fields": [],
+          "receipt_prompt": "Paste your runs — the command, and what came back under it, each time.",
+          "receipt_hint": "$ python3 rows.py\n...\n$ python3 rows.py\n...",
+          "compare": {
+            "mine_label": "Measured reference: total set inside the loop",
+            "mine": "$ python3 inside.py\n18\n12\n31\n27\n25\n19\ntotal at the end: <b>19</b>",
+            "theirs_label": "Measured reference: total set before the loop",
+            "theirs": "$ python3 outside.py\n18\n30\n61\n88\n113\n132\ntotal at the end: <b>132</b>",
+            "note": "<strong>Where you put <span class=\"mo\">total = 0</span> is not a style choice. It is a different answer.</strong> SQL never asked you where to put it, because there is no “where”: <span class=\"mo\">SUM(amount)</span> is one statement over a set that has no order.",
+            "after": "The third task needs the total to survive the loop. If nothing ever passes 50, the largest single amount is 31 — so the total is being thrown away each time round.",
+            "table": [
+              [
+                "reading down the run",
+                "total = 0 inside the loop",
+                "total = 0 before the loop"
+              ],
+              [
+                "each line printed is",
+                "that row’s own amount",
+                "the total so far"
+              ],
+              [
+                "each line depends on",
+                "only its own row",
+                "every row above it"
+              ],
+              [
+                "after the last row",
+                "19",
+                "132"
+              ],
+              [
+                "did either one complain?",
+                "no",
+                "no"
+              ]
+            ]
+          },
+          "labels": [
+            "I had it right, and for the right reason.",
+            "I read the loop the way I read SQL: the whole set at once, with no order.",
+            "I thought setting it to zero again was the same as leaving it alone.",
+            "I expected Python to object to setting the same name twice.",
+            "I had it right, but was not sure why."
+          ],
+          "concepts": [
+            {
+              "term": "A variable that changes",
+              "anchor": "Like a running tally on paper: each time you write a new number the old one is gone, and only the last one is there at the end.",
+              "explain": "A name holds one value at a time, and assigning to it replaces what was there. The loop body runs once per row of data, so an assignment inside the body runs once per row too."
+            },
+            {
+              "term": "Order",
+              "anchor": "Like a bank statement: the balance on each line depends on every line above it. A SQL SUM has no “above”.",
+              "explain": "The rows come in a sequence and a running total depends on it. “Which row did the total first pass 50 at” has no answer without an order."
+            }
+          ],
+          "provenance": {
+            "level": "shaped",
+            "courses": [
+              {
+                "name": "MIT 6.100L, Lecture 3: Iteration (lecture notes)",
+                "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/resources/mit6_100l_f22_lec03_pdf/",
+                "kind": "lecture",
+                "checked": "2026-11-10"
+              },
+              {
+                "name": "MIT 6.100L, Lecture 2: Strings, Input/Output, Branching (lecture notes)",
+                "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/resources/mit6_100l_f22_lec02_pdf/",
+                "kind": "lecture",
+                "checked": "2026-11-10"
+              }
+            ],
+            "measured": {
+              "machine": "Darwin 24.6.0 arm64, Python 3.12.2; both variants run against public/labs/s02-lab-a/rows.py",
+              "date": "2026-11-09"
+            }
+          },
+          "leak_guard": [
+            "the last row",
+            "total = 0 inside the loop",
+            "starts again on every row"
+          ]
+        },
+        {
+          "id": "s02-teardown-a",
+          "kind": "teardown",
+          "shows": "Read how Spliit is put together",
+          "minutes": {
+            "learn": 30
+          },
+          "ai_allowed": true,
+          "size": "simple",
+          "scored": false,
+          "anatomy_example": "Spliit (bill splitter)",
+          "product": "Spliit",
+          "why": "Spliit is the smallest thing here that is still a real product: a web app, a database, a library between them, somewhere to run, and one rule that has to hold — the amounts must always add up. This one is a read, not a test: you are not naming its parts from memory yet. It is here because that rule is the one this session’s lab is about — a total that has to come out right — at the size a product has to live at.",
+          "provenance": {
+            "level": "authored",
+            "courses": [
+              {
+                "name": "Spliit — the project’s own repository",
+                "url": "https://github.com/spliit-app/spliit",
+                "kind": "repo",
+                "checked": "2026-11-09"
+              }
+            ]
+          },
+          "reading": [
+            {
+              "title": "Spliit — the project’s README",
+              "url": "https://github.com/spliit-app/spliit",
+              "teaches": "what it is for, and what it is built out of",
+              "minutes": 20
+            },
+            {
+              "title": "Spliit — the running app",
+              "url": "https://spliit.app",
+              "teaches": "what the balance rule has to keep true while people add expenses",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "s02-withdraw-a",
+          "kind": "withdraw",
+          "shows": "No-help check",
+          "minutes": {
+            "attempt": 9,
+            "compare": 5,
+            "record": 3,
+            "resurface": 4
+          },
+          "ai_allowed": false,
+          "bar": "build",
+          "item_kind": "recall",
+          "labels": [
+            "I had it right, and for the right reason.",
+            "I knew the idea but could not produce it cold.",
+            "I mixed it up with something next to it.",
+            "I had it right, but was not sure why."
+          ]
+        },
+        {
+          "id": "s02-interview-a",
+          "kind": "interview",
+          "shows": "Talk through someone else’s code",
+          "minutes": {
+            "attempt": 30
+          },
+          "ai_allowed": true,
+          "target": {
+            "kind": "program",
+            "path": "content/interviews/s02-weekly-total.py"
+          },
+          "brief": "An agent wrote this script from one sentence: “total the week’s amounts by team”. It runs without an error and prints one number for each team.",
+          "questions": [
+            "Before you read it: someone asks for “the week’s amounts totalled by team”. What has to be true of the answer for it to be right?",
+            "Still before you open it: what could make a script like this wrong without making it stop?",
+            "Now walk through it. Say what the printed numbers actually are, and name the one line that makes them that."
+          ],
+          "looks_for": [
+            "A total per team that adds up every row of that team, and a way to check it — few enough rows to add up by hand.",
+            "It can print one number per team that looks like a total and is not. Nothing raises, so the only way to notice is to know what the answer should be.",
+            "The numbers are not totals. Say which rows each one came from, and name the single line that decides it — then say what you would have had to know to notice without being told."
+          ]
+        }
+      ]
+    },
+    {
+      "session": 3,
+      "title": "Naming and boundaries",
+      "subtitle": "A function has its own names. Ten programs to run; eight of them stop.",
+      "covers": [
+        1,
+        6
+      ],
+      "parts": [
+        {
+          "id": "s03-lab-a",
+          "kind": "lab",
+          "shows": "Read ten broken programs — and the two that are worse than broken",
+          "needs_environment": true,
+          "minutes": {
+            "learn": 95,
+            "predict": 4,
+            "attempt": 100,
+            "compare": 12,
+            "record": 5,
+            "resurface": 5
+          },
+          "ai_allowed": true,
+          "why": "An agent hands you two hundred lines. The ones that stop tell you where they stopped, and A1 asks whether you can read that trail and explain every line. The ones that do not stop tell you nothing at all — and two of these ten are that kind: a total that is not the number you asked for, and a column of whole numbers that silently wrapped round to a negative. That is the shape of the script in A1’s own check, the one that prints Success on every run while the week’s total is 12% out.",
+          "setup": "Ten small programs are waiting. Most are about functions: what a function’s own names are, what it hands back, and what it can reach. Eight of them stop. Two of them finish and print something wrong. You will run all ten, and the sorting is yours to do.",
+          "reading": [
+            {
+              "title": "MIT 6.100L, Lecture 7: Decomposition, Abstraction, Functions — the lecture-notes PDF",
+              "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/resources/mit6_100l_f22_lec07_pdf/",
+              "teaches": "a function’s own names, its arguments, and what return hands back",
+              "minutes": 45
+            },
+            {
+              "title": "Python tutorial, “Errors and Exceptions” — sections 8.1 and 8.2",
+              "url": "https://docs.python.org/3/tutorial/errors.html",
+              "teaches": "how to read what Python prints when it stops",
+              "minutes": 15
+            },
+            {
+              "title": "MIT 6.100L, Lecture 5: Floats and Approximation Methods — the lecture-notes PDF, the floats half",
+              "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/resources/mit6_100l_f22_lec05_pdf/",
+              "teaches": "why 0.1 + 0.2 is not 0.3, and what that costs money",
+              "minutes": 20
+            },
+            {
+              "title": "MIT 6.100L — Finger Exercise, Lecture 7",
+              "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/pages/finger-exercises/",
+              "teaches": "writing a function that returns, and one that only prints",
+              "minutes": 15
+            }
+          ],
+          "tasks": [
+            {
+              "name": "Run the ten, and sort them into two piles",
+              "brief": "Fetch <span class=\"mo\">ten-programs.zip</span>, unzip it, and run every one of the ten. Put each in one of two piles: it stopped, or it finished and printed something wrong.",
+              "passes_when": "all ten have been run, and exactly two of them are in the second pile.",
+              "minutes": 35,
+              "guess": false
+            },
+            {
+              "name": "Name the line and the belief, for three of them",
+              "brief": "Pick three that stopped. For each one: the file, the line number Python named, and one sentence on what the code believed that was not true. Not how to fix it.",
+              "passes_when": "three entries, each with a file, a line number, and a belief rather than a repair.",
+              "minutes": 30,
+              "guess": true
+            },
+            {
+              "name": "Give one of them a boundary",
+              "brief": "Take <span class=\"mo\">03_reassign.py</span> and make it work by handing the new total back out of the function instead of assigning to the name outside it. Run it before and after.",
+              "passes_when": "the before run still stops, the after run prints 10, and nothing outside the function is assigned to from inside it.",
+              "minutes": 35,
+              "guess": true
+            }
+          ],
+          "reference_card": [
+            {
+              "label": "fetch an archive and open it",
+              "code": "curl -O http://localhost:3000/labs/s03-lab-a/ten-programs.zip\nunzip ten-programs.zip"
+            },
+            {
+              "label": "run one file, see what it says",
+              "code": "python3 hello.py"
+            },
+            {
+              "label": "hand something back out of a function",
+              "code": "def loudest(colour):\n    return colour.upper()"
+            },
+            {
+              "label": "read a traceback from the bottom up",
+              "code": "Traceback (most recent call last):\n  File \"shapes.py\", line 4, in <module>\n    area(2)\nValueError: ...        <- what went wrong\n                       <- lines above: where"
+            }
+          ],
+          "reference_card_bans": [
+            "NameError",
+            "TypeError",
+            "UnboundLocalError",
+            "AttributeError",
+            "KeyError",
+            "IndexError",
+            "ZeroDivisionError",
+            "RecursionError",
+            "0\\.30000000000000004",
+            "2147483648",
+            "return total",
+            "\\+="
+          ],
+          "rules": [
+            "AI may explain, never write or debug.",
+            "stuck 15 min is normal"
+          ],
+          "predict": {
+            "type": "choice",
+            "ask": "Both of these are handed to the function as arguments, and the function returns nothing. <span class=\"mo\">items.append(\"new\")</span> adds an item to the list it is called on.<pre>def bump(number, items):\n    number = number + 1\n    items.append(\"new\")\n\ncount = 1\nnames = [\"Ana\"]\nbump(count, names)\nprint(count, names)</pre>What does the last line print?",
+            "options": [
+              "2 ['Ana', 'new'] — the function changed both of them.",
+              "1 ['Ana'] — it changed neither; a function works on its own copies.",
+              "1 ['Ana', 'new'] — the list changed and the number did not."
+            ],
+            "correct": 2,
+            "why_prompt": "One line: why that one?"
+          },
+          "acceptance_checks": [
+            {
+              "id": "eight-that-stop",
+              "type": "contains_all",
+              "field": "stdout",
+              "need": [
+                "NameError",
+                "TypeError",
+                "UnboundLocalError",
+                "AttributeError",
+                "KeyError",
+                "IndexError",
+                "ZeroDivisionError",
+                "RecursionError"
+              ],
+              "case": false
+            },
+            {
+              "id": "two-that-do-not",
+              "type": "paired",
+              "field": "stdout",
+              "pairs": [
+                {
+                  "name": "money",
+                  "cue": "^\\s*(?:[^\\n]*?[$%]\\s*)?[^\\s]*python3?\\s+.*09_money\\.py\\s*$",
+                  "value": "(0\\.30000000000000004)"
+                },
+                {
+                  "name": "whole numbers",
+                  "cue": "^\\s*(?:[^\\n]*?[$%]\\s*)?[^\\s]*python3?\\s+.*10_overflow\\.py\\s*$",
+                  "value": "(-2147483648)"
+                }
+              ],
+              "expect": {
+                "money": "^0\\.30000000000000004$",
+                "whole numbers": "^-2147483648$"
+              }
+            }
+          ],
+          "verdicts": {
+            "eight-that-stop": {
+              "pass": "All eight that stop are here, and they stop for eight different reasons.",
+              "fail": "Some of the eight are missing. The last line of each one starts with a different word — the word before the colon — and all eight of those last lines have to be in what you paste."
+            },
+            "two-that-do-not": {
+              "pass": "Both of the quiet ones are here, each under the command that produced it.",
+              "fail": "Those two numbers are under each other’s commands. Which program printed which is the whole of this pair.",
+              "partial": "Run the two that did not stop, and paste each command with the line that came back under it.",
+              "missing": {
+                "money": "The whole-number one is here; the money one is not. Run <span class=\"mo\">09_money.py</span> and paste it with its command.",
+                "whole numbers": "The money one is here; the whole-number one is not. Run <span class=\"mo\">10_overflow.py</span> from the environment that has numpy, and paste it with its command."
+              }
+            }
+          },
+          "receipt_fields": [],
+          "receipt_prompt": "Paste the ten runs: for each one, the command, and what came back under it — and for the two that did not stop, every line they printed.",
+          "receipt_hint": "$ python3 01_scope.py\n...\n$ python3 02_arguments.py\n...\n",
+          "compare": {
+            "mine_label": "Measured reference: the two that did not stop",
+            "mine": "$ python3 09_money.py\ncharged: <b>0.30000000000000004</b>\nis it 0.30? <b>False</b>\n\n$ python3 10_overflow.py\nbefore: 2147483647\nafter one more: <b>-2147483648</b>",
+            "theirs_label": "Measured reference: what the caller sees",
+            "theirs": "$ python3 bump.py\n1 ['Ana', 'new']",
+            "note": "<strong>A name inside a function belongs to the function.</strong> Assigning to it points the function’s own name somewhere new, and the caller never sees that. Changing that object in place, as <span class=\"mo\">append</span> does, changes the one object both names point at. What crosses out of a function is what you <span class=\"mo\">return</span>, plus anything you changed in place.",
+            "after": "And the two that did not stop are the expensive kind. 0.1 and 0.2 have no exact form in binary, so their sum is not 0.30 and the comparison is False — which is why money is held in whole cents, or in <span class=\"mo\">Decimal</span>, never in a float. The column of whole numbers was already at its type’s ceiling; one more wrapped it round to a negative, with no warning, and the program still ended as if nothing was wrong. The eight that stop tell you the file and the line. These two are the ones you will actually meet.",
+            "table": [
+              [
+                "line in bump()",
+                "what the function’s own name holds",
+                "what the caller still holds"
+              ],
+              [
+                "before the call",
+                "—",
+                "count 1, names ['Ana']"
+              ],
+              [
+                "number = number + 1",
+                "number 2",
+                "count 1 — it never saw this"
+              ],
+              [
+                "items.append(\"new\")",
+                "items ['Ana', 'new']",
+                "names ['Ana', 'new'] — the same list"
+              ],
+              [
+                "after the call",
+                "gone",
+                "1 ['Ana', 'new']"
+              ]
+            ]
+          },
+          "labels": [
+            "I had it right, and for the right reason.",
+            "I thought a function could change the caller’s variables.",
+            "I thought arguments are always copies, so nothing could change.",
+            "I expected a wrong number to raise something.",
+            "I had it right, but was not sure why."
+          ],
+          "concepts": [
+            {
+              "term": "A function’s own names",
+              "anchor": "Like a form you fill in and hand back: writing on your copy changes nothing upstairs, but if they gave you the original folder, your notes are in it.",
+              "explain": "Assigning to a variable name inside a function moves only the function’s own name, and the code that called it never sees that. Changing the object itself in place changes the one object both of them hold. Otherwise the only way out is <span class=\"mo\">return</span>."
+            },
+            {
+              "term": "Money is not a float",
+              "anchor": "Like thirds in decimal: 0.333… never closes, however many digits you write.",
+              "explain": "0.1 and 0.2 have no exact binary form, so their sum is slightly above 0.3 and <span class=\"mo\">==</span> returns <span class=\"mo\">False</span>. Hold money in whole cents, or in <span class=\"mo\">Decimal</span>."
+            }
+          ],
+          "provenance": {
+            "level": "shaped",
+            "courses": [
+              {
+                "name": "MIT 6.100L, Lecture 7: Decomposition, Abstraction, Functions (lecture notes)",
+                "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/resources/mit6_100l_f22_lec07_pdf/",
+                "kind": "lecture",
+                "checked": "2026-11-10"
+              },
+              {
+                "name": "MIT 6.100L, Lecture 5: Floats and Approximation Methods (lecture notes)",
+                "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/resources/mit6_100l_f22_lec05_pdf/",
+                "kind": "lecture",
+                "checked": "2026-11-10"
+              },
+              {
+                "name": "Python tutorial, “Errors and Exceptions”",
+                "url": "https://docs.python.org/3/tutorial/errors.html",
+                "kind": "lecture",
+                "checked": "2026-11-10"
+              }
+            ],
+            "measured": {
+              "machine": "Darwin 24.6.0 arm64; the course .venv from scripts/setup-python.sh, Python 3.12.16 arm64, numpy 2.2.5; all ten programs in public/labs/s03-lab-a run there, and 10_overflow.py is silent on 2.5.4 too",
+              "date": "2026-11-10"
+            }
+          },
+          "leak_guard": [
+            "the list changed and the number did not",
+            "0.30000000000000004",
+            "-2147483648",
+            "some of what you hand it can be changed"
+          ]
+        },
+        {
+          "id": "s03-withdraw-a",
+          "kind": "withdraw",
+          "shows": "No-help check",
+          "minutes": {
+            "attempt": 8,
+            "compare": 5,
+            "record": 3,
+            "resurface": 4
+          },
+          "ai_allowed": false,
+          "bar": "build",
+          "item_kind": "recall",
+          "labels": [
+            "I had it right, and for the right reason.",
+            "I had only ever typed it with the notes open.",
+            "I knew the idea but could not produce it cold.",
+            "I mixed it up with something next to it.",
+            "I had it right, but was not sure why."
+          ]
+        },
+        {
+          "id": "s03-interview-a",
+          "kind": "interview",
+          "shows": "Talk through someone else’s code",
+          "minutes": {
+            "attempt": 25
+          },
+          "ai_allowed": true,
+          "target": {
+            "kind": "program",
+            "path": "content/interviews/s03-price.py"
+          },
+          "brief": "An agent wrote this function from one sentence: “apply the discounts to a price”. Called three times with the same price, it printed 90.0, then 81.0, then 72.9.",
+          "questions": [
+            "Before you read it: someone asks for “apply the discounts to a price”. What has to be true of the answer, and what would you want to see to believe it?",
+            "Still before you open it: what could make three calls with the same price give three different answers?",
+            "Now walk through it. Name the line that makes the second call different from the first, and say what you would change about how the price itself is held."
+          ],
+          "looks_for": [
+            "A price with the discounts applied, and the same price in gives the same price out — calling it twice must not change anything.",
+            "Something is being kept from one call to the next: a list or a total that lives outside any single call and is added to each time. Code like this can carry what earlier calls did into later ones.",
+            "The default list is made once, when the function is defined, and <span class=\"mo\">discounts.append(0.1)</span> adds to that same list on every call that does not pass its own — that is the line. And the price is a float: these three happen to come out clean, but money belongs in whole cents or <span class=\"mo\">Decimal</span>, and other prices will not: 1.10 comes back as 0.9900000000000001."
+          ]
+        }
+      ]
+    }
+  ]
+}

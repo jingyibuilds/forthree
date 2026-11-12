@@ -1,0 +1,119 @@
+{
+  "measured_with": "3.12.16 arm64 numpy 2.2.5",
+  "programs": {
+    "content/interviews/s01-check-env.py": {
+      "sha256": "c105c8abd75329276f34674b85660ac3944403d8f0c0caec3dccd29007111ff2",
+      "exit": 0,
+      "stdout": "interpreter: <repo>/.venv/bin/python3\nversion: 3.12.16\nmachine: arm64\npython3 on the path: /usr/local/bin/python3\nSuccess: environment checked.\n",
+      "stderr_last": ""
+    },
+    "content/interviews/s02-weekly-total.py": {
+      "sha256": "9dbc3a866e7a902da5e558b0b92ddac119ab387154a3379c27e33e123290fc7c",
+      "exit": 0,
+      "stdout": "{'sales': 25, 'eng': 27}\nSuccess: weekly totals written.\n",
+      "stderr_last": ""
+    },
+    "content/interviews/s03-price.py": {
+      "sha256": "5a1fa8f0d94ebb0fe65aeef0fe3b377a84b1f9bbf087531ac358d63e4b0c5217",
+      "exit": 0,
+      "stdout": "first call:  90.0\nsecond call: 81.0\nthird call:  72.9\n",
+      "stderr_last": ""
+    },
+    "public/labs/s02-lab-a/rows.py": {
+      "sha256": "feb6d2977889ec0c73198c97a3824aa57b72f51e65b2d2240575db0622998a22",
+      "exit": 0,
+      "stdout": "",
+      "stderr_last": ""
+    },
+    "public/labs/s03-lab-a/01_scope.py": {
+      "sha256": "f677e1356a74e414bf02b714f9585220964951d1da135dfb8f27c2c9c3075070",
+      "exit": 1,
+      "stdout": "",
+      "stderr_last": "NameError: name 'total' is not defined"
+    },
+    "public/labs/s03-lab-a/02_arguments.py": {
+      "sha256": "203ff07444987731add04a1b6b01a4515bb6d4e8bb57a3314e6bb591e4539537",
+      "exit": 1,
+      "stdout": "",
+      "stderr_last": "TypeError: final_price() missing 1 required positional argument: 'minimum'"
+    },
+    "public/labs/s03-lab-a/03_reassign.py": {
+      "sha256": "a908229ba380e56e5c1e35776d97a6cf6aa774b63f587598ae0660afe26f417a",
+      "exit": 1,
+      "stdout": "",
+      "stderr_last": "UnboundLocalError: cannot access local variable 'total' where it is not associated with a value"
+    },
+    "public/labs/s03-lab-a/04_returns_nothing.py": {
+      "sha256": "02053a26a8b63710b295612288f47b9da42278c4ad519f19ca57e413fac2787e",
+      "exit": 1,
+      "stdout": "Ana (sales)\n",
+      "stderr_last": "AttributeError: 'NoneType' object has no attribute 'upper'"
+    },
+    "public/labs/s03-lab-a/05_missing_key.py": {
+      "sha256": "267f0a15e9f8b8fbfc10122ad55a718618e6fd1eca82378dcbbf17476663ecc7",
+      "exit": 1,
+      "stdout": "Ana sales\nBo eng\n",
+      "stderr_last": "KeyError: 'team'"
+    },
+    "public/labs/s03-lab-a/06_off_by_one.py": {
+      "sha256": "47ea156156a60eaf240ee6fb66d1d0a50524493ff3b32c14389d628462c6ae2d",
+      "exit": 1,
+      "stdout": "Ana -> Bo\nBo -> Cy\n",
+      "stderr_last": "IndexError: list index out of range"
+    },
+    "public/labs/s03-lab-a/07_empty_average.py": {
+      "sha256": "151eb8e4971b3a2f1ed6bd9e0e096a2e2013a7387f409ede6869c793c06cf38b",
+      "exit": 1,
+      "stdout": "sales 18.0\neng 12.0\n",
+      "stderr_last": "ZeroDivisionError: division by zero"
+    },
+    "public/labs/s03-lab-a/08_no_base_case.py": {
+      "sha256": "e93c76e3d5ddf1b66995098349d1b2780d9db1767d6ddfc36e23f14ac474fcbb",
+      "exit": 1,
+      "stdout": "",
+      "stderr_last": "RecursionError: maximum recursion depth exceeded"
+    },
+    "public/labs/s03-lab-a/09_money.py": {
+      "sha256": "2f8e015f3c46778b69f3c1d3738aa198a2c07d0d2fdeb6f77ad363c0fd6c4e3a",
+      "exit": 0,
+      "stdout": "charged: 0.30000000000000004\nis it 0.30? False\n",
+      "stderr_last": ""
+    },
+    "public/labs/s03-lab-a/10_overflow.py": {
+      "sha256": "0b178154de64fddc56e48455c2c50d3b7f90b6a5f08c3a5c52678e541f377475",
+      "exit": 0,
+      "stdout": "before: 2147483647\nafter one more: -2147483648\n",
+      "stderr_last": ""
+    },
+    "curriculum/reference/s02-lab-a/inside.py": {
+      "sha256": "4a4ad472a11356babe2fbab4b734cd1a5a968d9d34234eaacfbb4abf7da33399",
+      "exit": 0,
+      "stdout": "18\n12\n31\n27\n25\n19\ntotal at the end: 19\n",
+      "stderr_last": ""
+    },
+    "curriculum/reference/s02-lab-a/outside.py": {
+      "sha256": "ab1dfcc53064d6b890feb626cf9259c5ea5535aa02999444977a20681a7526f8",
+      "exit": 0,
+      "stdout": "18\n30\n61\n88\n113\n132\ntotal at the end: 132\n",
+      "stderr_last": ""
+    },
+    "curriculum/reference/s02-lab-a/tasks.py": {
+      "sha256": "f623bc5559675ebeafbc8b68755fb5bbf5b6a7311892baddefa2a6e2944d4cba",
+      "exit": 0,
+      "stdout": "Ana\nBo\nCy\nDi\nEve\nFei\ncount 3 83\nCy 61\nlargest 31\n",
+      "stderr_last": ""
+    },
+    "curriculum/reference/s03-lab-a/03_fixed.py": {
+      "sha256": "38c56320ea14ec7bf7d155a2e6cadd447105047fa8c80c93ddfe521e491b329a",
+      "exit": 0,
+      "stdout": "10\n",
+      "stderr_last": ""
+    },
+    "curriculum/reference/s03-lab-a/bump.py": {
+      "sha256": "ba96bfce40e69d23d4a85d8ace2d3f8d91e237e4ac0e6ccf80abc0e23448eb55",
+      "exit": 0,
+      "stdout": "1 ['Ana', 'new']\n",
+      "stderr_last": ""
+    }
+  }
+}

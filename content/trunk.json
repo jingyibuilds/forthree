@@ -1,0 +1,970 @@
+[
+ {
+  "id": "A1",
+  "question": "Can I read, run and fix code an AI wrote?",
+  "learn": [
+   "Read Python: variables, functions, loops, dictionaries (key-value lookups), classes (bundles of data and functions), exceptions (how code signals failure)",
+   "Write small scripts unaided first, so you can tell when an agent (AI that writes and runs code) is wrong",
+   "Use the terminal: run programs, move files, set up virtual environments (per-project package installs)",
+   "Use Git (version history for code): commit, branch, read a diff (what changed), undo",
+   "Debug by method: reproduce, shrink the case, guess, test the guess with logs or a debugger (tool that pauses running code)",
+   "Read stack traces (the error's trail through the code), and explain every line an agent hands you"
+  ],
+  "drop": [
+   "Memorising syntax and library calls: agents and docs supply them, and a 2026 curriculum paper ranks this as devalued",
+   "Manual memory work in C: CS50 still teaches it, but the concept is enough and belongs in A4",
+   "Learning several languages: Python plus SQL covers this goal, and language choice matters less now",
+   "Editor tricks and typing speed: agents write most first drafts, so reading speed counts for more"
+  ],
+  "head_start": "Basic SQL gives you precise requests and checking a result against what you expected. You rarely write Python, so writing and debugging start near zero.",
+  "judge_check": "Situation: An agent-written Python script turns a 2-million-row export into a weekly revenue table and prints 'Success' on every run. This week's total jumped 12% with no business reason. Check: (1) Does a broad exception handler (code that catches any error and carries on) make 'Success' meaningless? (2) Do row counts jump after a join, meaning duplicate keys are inflating revenue? (3) What does the Git diff show changed since the last good run, including package versions?",
+  "understand_check": "Build a 100-line script with an agent that downloads a CSV, cleans it and loads it into SQLite (a one-file database), with at least five Git commits. Have a second agent plant a bug without telling you where, then find it using only logs or a debugger, with no AI explaining it. Finish by walking through every function aloud.",
+  "courses": [
+   {
+    "school": "Harvard",
+    "code": "CS50x",
+    "title": "CS50's Introduction to Computer Science",
+    "url": "https://cs50.harvard.edu/x/",
+    "catalog_year": "2026"
+   },
+   {
+    "school": "MIT",
+    "code": "6.100",
+    "title": "Introduction to Programming and Computer Science",
+    "url": "https://introcomp.mit.edu/fall26/",
+    "catalog_year": "Fall 2026"
+   },
+   {
+    "school": "UC Berkeley",
+    "code": "CS 61A",
+    "title": "Structure and Interpretation of Computer Programs",
+    "url": "https://cs61a.org/fa26/",
+    "catalog_year": "Fall 2026"
+   },
+   {
+    "school": "MIT",
+    "code": "IAP, no subject code",
+    "title": "The Missing Semester of Your CS Education",
+    "url": "https://missing.csail.mit.edu/",
+    "catalog_year": "2026 (January)"
+   }
+  ],
+  "sources": [
+   {
+    "title": "How AI assistance impacts the formation of coding skills (Anthropic randomised trial)",
+    "url": "https://www.anthropic.com/research/AI-assistance-coding-skills",
+    "date": "2026-01-29",
+    "type": "primary"
+   },
+   {
+    "title": "Debugging and Profiling, Missing Semester 2026",
+    "url": "https://missing.csail.mit.edu/2026/debugging-profiling/",
+    "date": "2026-01-15",
+    "type": "primary"
+   },
+   {
+    "title": "CS 61A Fall 2026 syllabus: AI tools policy and in-person quizzes",
+    "url": "https://cs61a.org/fa26/syllabus/",
+    "date": "undated",
+    "type": "primary"
+   },
+   {
+    "title": "Allowing Generative AI in CS1 with Code Review Interviews and a Flipped Classroom (Fowles et al.)",
+    "url": "https://arxiv.org/abs/2605.21374",
+    "date": "2026-05-20",
+    "type": "primary"
+   },
+   {
+    "title": "Reshaping Undergraduate Computer Science Education in the Generative AI Era (Lee et al., NUS and Google workshops)",
+    "url": "https://arxiv.org/abs/2606.07545",
+    "date": "2026-05-02",
+    "type": "expert"
+   },
+   {
+    "title": "Yes, You Can Use AI in Our Interviews. In fact, we insist (Canva Engineering)",
+    "url": "https://www.canva.dev/blog/engineering/yes-you-can-use-ai-in-our-interviews/",
+    "date": "2025-06-11",
+    "type": "primary"
+   },
+   {
+    "title": "Andrew Ng says everyone should still learn to code (Business Insider via AOL)",
+    "url": "https://www.aol.com/articles/google-brain-founder-andrew-ng-053503188.html",
+    "date": "2025-11-11",
+    "type": "press"
+   }
+  ],
+  "confidence": "High: courses, one trial and employers agree; depth for non-engineers is my judgement",
+  "notes": "Boundary is right. CS50x teaches its early weeks through C, so skim those and focus on its Python, SQL and web weeks. Berkeley's CS 61A bans AI for writing or fixing homework code, then has students use coding agents in the final project: a sign that teachers protect unaided practice first. Anthropic's trial found its largest gap on debugging questions, but it is vendor-run, small (52 mostly junior engineers) and measured only an immediate quiz. Canva's interview change is one employer's pilot, not a proven trend."
+ },
+ {
+  "id": "A2",
+  "question": "Can I state exactly what must be true, and spot exceptions?",
+  "learn": [
+   "And, or, not, if-then, and how to negate a claim correctly",
+   "'For all' versus 'there exists': one counterexample kills a 'for all' claim",
+   "Preconditions and postconditions (what must hold before and after code runs)",
+   "Invariants (facts that must stay true throughout), such as 'refunds never exceed payments'",
+   "Induction (if each step preserves a fact, it always holds) as the idea behind loops: read it, don't write it",
+   "Property-based tests (checking a rule against many generated inputs) as the everyday stand-in for proof"
+  ],
+  "drop": [
+   "Writing formal proofs by hand: an exam skill; you need the reasoning, and Kleppmann expects AI to make the mechanics far cheaper",
+   "Number theory and RSA (a public-key encryption method) mathematics: for cryptographers; use vetted libraries",
+   "Automata and computability theory (what abstract machines can compute): taught in CS103 and CS 70, but rarely changes a product decision",
+   "Proof assistants such as Lean or Dafny (tools that machine-check proofs): promising, but still a forecast for mainstream work, and writing the specification stays the hard part"
+  ],
+  "head_start": "SQL WHERE clauses are already and/or/not logic, including the trap that NULL (a missing value) breaks simple true/false thinking. Basic statistics adds reasoning from stated assumptions.",
+  "judge_check": "Situation: An AI agent writes a refund rule: refund if the order is under 30 days old and not final-sale. All 20 example tests pass, and product says customers must never get back more than they paid. Check: (1) Boundaries: exactly day 30, time zones, and a blank final-sale field. (2) The invariant: is 'total refunds never exceed amount paid' tested across generated orders, not just 20 examples? (3) The counterexample: can two partial refunds arriving together break it?",
+  "understand_check": "Take a business rule you know, such as commission or refunds. Write its preconditions, postconditions and two invariants on one page, find two counterexamples to a first draft, then have an agent write a property-based test with Hypothesis (a Python testing library) that catches one. Explain why that test beats 20 examples yet still isn't a proof.",
+  "courses": [
+   {
+    "school": "MIT",
+    "code": "6.1200[J]",
+    "title": "Mathematics for Computer Science",
+    "url": "https://catalog.mit.edu/subjects/6/",
+    "catalog_year": "2026-27"
+   },
+   {
+    "school": "UC Berkeley",
+    "code": "CS 70",
+    "title": "Discrete Mathematics and Probability Theory",
+    "url": "https://www.eecs70.org/",
+    "catalog_year": "Fall 2026"
+   },
+   {
+    "school": "Stanford",
+    "code": "CS103",
+    "title": "Mathematical Foundations of Computing",
+    "url": "https://web.stanford.edu/class/cs103/",
+    "catalog_year": "2025-26 (Winter and Spring 2026 pages; Autumn 2026 not confirmed)"
+   },
+   {
+    "school": "CMU",
+    "code": "17-313",
+    "title": "Foundations of Software Engineering",
+    "url": "https://cmu-313.github.io/",
+    "catalog_year": "Fall 2026 (inferred from schedule dates)"
+   }
+  ],
+  "sources": [
+   {
+    "title": "Prediction: AI will make formal verification go mainstream (Martin Kleppmann)",
+    "url": "https://martin.kleppmann.com/2025/12/08/ai-formal-verification.html",
+    "date": "2025-12-08",
+    "type": "expert"
+   },
+   {
+    "title": "Agentic Property-Based Testing: Finding Bugs Across the Python Ecosystem (Maaz et al.)",
+    "url": "https://arxiv.org/abs/2510.09907",
+    "date": "2025-10-10",
+    "type": "primary"
+   },
+   {
+    "title": "Reshaping Undergraduate Computer Science Education in the Generative AI Era (Lee et al.)",
+    "url": "https://arxiv.org/abs/2606.07545",
+    "date": "2026-05-02",
+    "type": "expert"
+   },
+   {
+    "title": "CMU 17-313 Fall 2026 schedule: specifications, oracles, property-based testing",
+    "url": "https://cmu-313.github.io/",
+    "date": "undated",
+    "type": "primary"
+   },
+   {
+    "title": "MIT 6.102 Spring 2026 readings: specifications and representation invariants",
+    "url": "https://web.mit.edu/6.102/www/sp26/",
+    "date": "undated",
+    "type": "primary"
+   },
+   {
+    "title": "Code Quality, Missing Semester 2026: property-based tests",
+    "url": "https://missing.csail.mit.edu/2026/code-quality/",
+    "date": "2026-01-23",
+    "type": "primary"
+   }
+  ],
+  "confidence": "Medium: the rename is my inference; curricula still teach proofs as core material",
+  "notes": "The name looks wrong for this goal. Suggest 'Precise reasoning: specifications, invariants, counterexamples'. Proofs remain core for CS majors in every course checked, and the 2026 NUS and Google workshop paper wants formal methods made foundational, so dropping proof-writing is a fluency call, not a consensus. Keep one fact from computability: some questions no program can decide in general, so a perfect automatic code checker can't exist. Probability, usually taught beside logic, is left to the learner's statistics."
+ },
+ {
+  "id": "A3",
+  "question": "How will this work slow down as the data grows?",
+  "learn": [
+   "Growth rates (big-O, how cost rises with data size): constant, logarithmic, linear, n log n, squared",
+   "Back-of-envelope scaling: predict 5 million rows from a test on 1,000",
+   "Core structures by what they make fast: arrays, hash tables (instant lookup by key), trees, queues, graphs (networks of linked items)",
+   "Sorting and binary search (halving a sorted list repeatedly), and why a database index (a sorted lookup structure) changes the cost",
+   "Spotting hidden repeated work: nested loops, one database query per row",
+   "Trade-offs: caching (keeping answers for reuse) and vector indexes (fast similarity search that may miss some matches)"
+  ],
+  "drop": [
+   "Hand-coding balanced trees or graph algorithms: libraries and agents do it; know when each applies",
+   "Interview puzzle drilling: irrelevant to this goal, and Canva replaced its fundamentals screen because AI solves such questions",
+   "Solving recurrences and amortised-cost proofs (formal running-time maths): a rough growth class is enough to judge",
+   "Dynamic programming techniques (building answers from stored sub-answers): recognise the name, then ask an agent"
+  ],
+  "head_start": "Warehouse work probably gave you some feel for which scans and joins get expensive. The vocabulary for predicting growth is new.",
+  "judge_check": "Situation: An AI agent builds a duplicate-customer finder that fuzzy-matches (compares approximately) each record against every other, and it takes 8 seconds on a 1,000-row sample. Production has 5 million rows. Check: (1) Growth: comparing all pairs is squared, so 5,000 times the rows means 25 million times the work, about six years on this setup. (2) Can a cheap key such as postcode narrow the candidates first, and how many true duplicates would that miss? (3) Does it call a database or model once per pair, where per-call cost dwarfs the loop itself?",
+  "understand_check": "With an agent writing the code, time three tasks at 1,000, 10,000 and 100,000 rows: list versus dictionary lookup, nested-loop join versus hash join (matching through a lookup table), and a query before and after adding an index. Predict the 10 million result from your chart before running it, then explain any miss.",
+  "courses": [
+   {
+    "school": "MIT",
+    "code": "6.1210",
+    "title": "Introduction to Algorithms",
+    "url": "https://catalog.mit.edu/subjects/6/",
+    "catalog_year": "2026-27"
+   },
+   {
+    "school": "UC Berkeley",
+    "code": "CS 61B",
+    "title": "Data Structures",
+    "url": "https://www2.eecs.berkeley.edu/Courses/CS61B/",
+    "catalog_year": "Fall 2026"
+   },
+   {
+    "school": "Harvard",
+    "code": "CS50x",
+    "title": "CS50's Introduction to Computer Science (Weeks 3 and 5)",
+    "url": "https://cs50.harvard.edu/x/",
+    "catalog_year": "2026"
+   }
+  ],
+  "sources": [
+   {
+    "title": "Reshaping Undergraduate Computer Science Education in the Generative AI Era (Lee et al.)",
+    "url": "https://arxiv.org/abs/2606.07545",
+    "date": "2026-05-02",
+    "type": "expert"
+   },
+   {
+    "title": "State of AI vs Human Code Generation Report (CodeRabbit)",
+    "url": "https://www.coderabbit.ai/blog/state-of-ai-vs-human-code-generation-report",
+    "date": "2025-12-17",
+    "type": "vendor"
+   },
+   {
+    "title": "Stanford CS 145 Fall 2026 course site: index cost example, vector search",
+    "url": "https://cs145.stanford.edu/",
+    "date": "undated",
+    "type": "primary"
+   },
+   {
+    "title": "Yes, You Can Use AI in Our Interviews. In fact, we insist (Canva Engineering)",
+    "url": "https://www.canva.dev/blog/engineering/yes-you-can-use-ai-in-our-interviews/",
+    "date": "2025-06-11",
+    "type": "primary"
+   }
+  ],
+  "confidence": "Medium: keep-list well supported; drop-list is inference from employers and curricula",
+  "notes": "Could be renamed 'Cost of computation', since that is what fluency needs here. Stanford CS 145's own example, index choice cutting a query from $550,000 a year to $400, shows this is a money question. CodeRabbit's roughly 8x excess reads and writes in AI-written code is vendor data from 470 open-source pull requests with inferred authorship. Both workshops behind the 2026 NUS and Google paper call algorithms essential for checking AI code, so the drop list trims technique, not the subject."
+ },
+ {
+  "id": "A4",
+  "question": "What actually happens on the machine when code runs?",
+  "learn": [
+   "The speed ladder: CPU cache (tiny fast memory on the processor), main memory, disk and network each differ by orders of magnitude",
+   "Processes and threads (separate programs versus parallel paths sharing memory), and what the operating system does",
+   "Memory limits: why big jobs get killed, and streaming data versus loading it all",
+   "Concurrency: race conditions (results depend on timing), locks (one-at-a-time access), deadlocks (each side waiting on the other forever), waiting on slow operations without stalling",
+   "Measure before optimising: elapsed versus CPU time, profilers (tools showing where time goes)",
+   "Why GPUs (chips doing many simple sums at once) dominate language-model work"
+  ],
+  "drop": [
+   "Assembly language (human-readable machine instructions): compilers (code-to-machine translators) and agents handle it, and it rarely changes a product call",
+   "Logic gates and CPU pipelines (how processors are physically built): Berkeley CS 61C teaches them, but they don't help you judge software",
+   "Writing kernels, page tables or schedulers (operating system internals): know what they do, not how to build them",
+   "Manual memory allocation in C: Python manages it; the idea of limited memory is what matters"
+  ],
+  "head_start": "",
+  "judge_check": "Situation: A nightly Python job loads a 40 GB file on a 32 GB machine, and an agent (AI that writes and runs code) 'fixed' its crashes with eight threads and an automatic retry. It now dies at random hours, and some totals come out wrong. Check: (1) Is the file bigger than memory? Threads don't add memory. (2) Can threads overwrite each other's shared total? (3) Does a rerun after a partial failure count rows twice?",
+  "understand_check": "Have an agent write a script that sums a large file three ways: load all of it, stream it, and split it across processes. Measure time and peak memory for each and explain the differences. Then build a two-thread counter that reads, pauses and writes back, show it losing updates, fix it with a lock, and say why the fix works.",
+  "courses": [
+   {
+    "school": "CMU",
+    "code": "15-213/15-513/14-513",
+    "title": "Introduction to Computer Systems",
+    "url": "https://www.cs.cmu.edu/~213/",
+    "catalog_year": "Fall 2026"
+   },
+   {
+    "school": "UC Berkeley",
+    "code": "CS 162",
+    "title": "Operating Systems and System Programming",
+    "url": "https://cs162.org/",
+    "catalog_year": "Fall 2026"
+   },
+   {
+    "school": "UC Berkeley",
+    "code": "CS 61C",
+    "title": "Great Ideas in Computer Architecture (Machine Structures)",
+    "url": "https://cs61c.org/fa26/",
+    "catalog_year": "Fall 2026"
+   },
+   {
+    "school": "MIT",
+    "code": "6.1800",
+    "title": "Computer Systems Engineering",
+    "url": "https://web.mit.edu/6.1800/www/",
+    "catalog_year": "2026-27 catalog; site shows Spring 2026"
+   }
+  ],
+  "sources": [
+   {
+    "title": "Summary of the Amazon DynamoDB Service Disruption in US-EAST-1 (AWS)",
+    "url": "https://aws.amazon.com/message/101925",
+    "date": "2025-10",
+    "type": "primary"
+   },
+   {
+    "title": "State of AI vs Human Code Generation Report (CodeRabbit)",
+    "url": "https://www.coderabbit.ai/blog/state-of-ai-vs-human-code-generation-report",
+    "date": "2025-12-17",
+    "type": "vendor"
+   },
+   {
+    "title": "Debugging and Profiling, Missing Semester 2026",
+    "url": "https://missing.csail.mit.edu/2026/debugging-profiling/",
+    "date": "2026-01-15",
+    "type": "primary"
+   },
+   {
+    "title": "Stanford CS336 Spring 2026 schedule: resource accounting, GPUs, parallelism",
+    "url": "https://cs336.stanford.edu/",
+    "date": "undated",
+    "type": "primary"
+   },
+   {
+    "title": "Reshaping Undergraduate Computer Science Education in the Generative AI Era (Lee et al.)",
+    "url": "https://arxiv.org/abs/2606.07545",
+    "date": "2026-05-02",
+    "type": "expert"
+   }
+  ],
+  "confidence": "Medium: courses agree on content; little direct evidence on non-engineer depth",
+  "notes": "Boundary is fine. All listed courses go far deeper than needed: use their concept lectures on memory, processes and concurrency, and skip the C and assembly labs. MIT 6.1800 sits closest to this level because it teaches reasoning about systems. The AWS outage of October 2025 was a race condition in automated DNS (internet name lookup) management, a real case of why concurrency isn't academic. CodeRabbit reports roughly 2x concurrency and dependency errors in AI-written code; this is vendor data with inferred authorship."
+ },
+ {
+  "id": "B1",
+  "question": "How do programs talk to each other and keep data safely?",
+  "learn": [
+   "HTTP (the web's request-response format), status codes, JSON (a text data format); every language-model API (programmatic interface) call uses them",
+   "One line each on DNS (name lookup), TCP (reliable delivery) and TLS (encryption)",
+   "Network failure: timeouts, retries, idempotency (repeating a request does no extra harm)",
+   "Transactions (all-or-nothing changes) and what they do and don't promise",
+   "Live databases versus warehouses: indexes (sorted lookups that find rows fast), query plans (how the database will run a query), why analytics shouldn't hit live tables",
+   "Choosing storage: Postgres (popular open-source database) first, then object stores (cheap file buckets), caches (fast copies of frequent answers), vector indexes (search by similarity)"
+  ],
+  "drop": [
+   "Packet routing such as BGP (how networks share routes): cloud providers handle it, and app builders rarely touch it",
+   "Building database internals like buffer pools (memory caches for disk pages): CMU 15-445's projects go there; using a database needs only the concepts",
+   "Socket programming (hand-written network connections): libraries and agents cover it",
+   "Touring every NoSQL (non-relational) product: Postgres now covers many of their jobs, and product names churn"
+  ],
+  "head_start": "Your biggest overlap. Basic SQL and warehousing give you tables, keys and joins. New ground is the live side: transactions, many simultaneous writers, and indexes tuned for single-row lookups.",
+  "judge_check": "Situation: An app calls a payment API, then writes the order to Postgres, and AI-written code retries whenever the call times out. Customers report double charges, and checkout has slowed since a new dashboard began reading the orders table. Check: (1) Is there an idempotency key (a unique ID that marks a retry as the same request), since a timeout doesn't mean the charge failed? (2) What happens if the charge succeeds and the database write fails? (3) Should the dashboard's big scans move to a read replica (a read-only copy) or the warehouse?",
+  "understand_check": "With an agent, build a two-table app behind one web endpoint (a URL that does one job), and call it with curl (a command-line web client) so you can read the status code and JSON. Load a million rows and compare query plans before and after an index. Then simulate a timeout that double-charges, and fix it with an idempotency key, a unique constraint (a database rule forbidding duplicates) and a transaction.",
+  "courses": [
+   {
+    "school": "Stanford",
+    "code": "CS145",
+    "title": "Intro to Modern Data Systems",
+    "url": "https://cs145.stanford.edu/",
+    "catalog_year": "2026-27 (Autumn)"
+   },
+   {
+    "school": "CMU",
+    "code": "15-445/645",
+    "title": "Intro to Database Systems",
+    "url": "https://15445.courses.cs.cmu.edu/fall2026/",
+    "catalog_year": "Fall 2026"
+   },
+   {
+    "school": "MIT",
+    "code": "6.1800",
+    "title": "Computer Systems Engineering",
+    "url": "https://web.mit.edu/6.1800/www/",
+    "catalog_year": "2026-27 catalog; site shows Spring 2026"
+   },
+   {
+    "school": "Harvard",
+    "code": "CS50x",
+    "title": "CS50's Introduction to Computer Science (Weeks 7 to 9)",
+    "url": "https://cs50.harvard.edu/x/",
+    "catalog_year": "2026"
+   }
+  ],
+  "sources": [
+   {
+    "title": "Databases in 2025: A Year in Review (Andy Pavlo, CMU)",
+    "url": "https://www.cs.cmu.edu/~pavlo/blog/2026/01/2025-databases-retrospective.html",
+    "date": "2026-01-04",
+    "type": "expert"
+   },
+   {
+    "title": "Scaling PostgreSQL to power 800 million ChatGPT users (OpenAI; read via search excerpts only)",
+    "url": "https://openai.com/index/scaling-postgresql/",
+    "date": "2026-01-22",
+    "type": "primary"
+   },
+   {
+    "title": "Stack Overflow 2026 survey coverage: PostgreSQL 58%, SQLite 42% (IT Brief)",
+    "url": "https://itbrief.co.uk/story/stack-overflow-survey-shows-developers-trust-ai-with-caveats",
+    "date": "2026-10-06",
+    "type": "press"
+   },
+   {
+    "title": "Packaging and Shipping Code, Missing Semester 2026: LLM calls are HTTP requests",
+    "url": "https://missing.csail.mit.edu/2026/shipping-code/",
+    "date": "2026-01-20",
+    "type": "primary"
+   },
+   {
+    "title": "Idempotent requests (Stripe API docs)",
+    "url": "https://docs.stripe.com/api/idempotent_requests",
+    "date": "undated",
+    "type": "vendor"
+   },
+   {
+    "title": "Model Context Protocol specification, version 2026-07-28",
+    "url": "https://modelcontextprotocol.io/specification/latest",
+    "date": "2026-07-28",
+    "type": "primary"
+   },
+   {
+    "title": "Stanford CS 145 Fall 2026 schedule",
+    "url": "https://cs145.stanford.edu/",
+    "date": "undated",
+    "type": "primary"
+   }
+  ],
+  "confidence": "High: current courses, expert review, survey data and practice all point the same way",
+  "notes": "Two subjects share one name. Databases deserve most of the time, raw networking little, and the useful networking part is how APIs behave and fail. Suggest 'APIs and data stores'. Browser versus server (what runs where, and what can't be trusted) has no home in this list: I placed it in B3, but a short web-basics unit may be missing. MCP (Model Context Protocol, a standard for connecting models to tools) uses JSON-RPC (a simple format for remote calls) messages, so ordinary API knowledge carries over."
+ },
+ {
+  "id": "B2",
+  "question": "How is code structured and checked so change stays safe?",
+  "learn": [
+   "Modules and interfaces (parts that hide their inner workings) so changes stay local",
+   "Specifications: write expected behaviour down before code exists",
+   "Test types: unit (one part), integration (parts together), regression (stops old bugs returning), property-based (rules across generated inputs)",
+   "Test quality: would it fail if the code were wrong? Mutation testing (planting bugs on purpose) answers this",
+   "Automatic checks: types (declared kinds of data, checked by tools), linters (bug and style scanners), CI (checks run on every change)",
+   "Code review and small changes: read each diff (what changed), reject what you can't explain"
+  ],
+  "drop": [
+   "Memorising named design patterns: agents recall them, and Thoughtworks' 2026 Radar advises holding principles over patterns",
+   "Chasing 100% coverage (share of lines tests touch): MIT warns against over-focusing on it, since it doesn't show the checks mean anything",
+   "Formatting and style rules: formatters and linters enforce them automatically",
+   "Spec-as-source workflows (people edit only specs, code is generated): Böckeler warns they risk rigidity plus unpredictability"
+  ],
+  "head_start": "Train-test splits from basic ML give the key intuition: a check fitted to the thing it judges proves little. Tests written by the same agent that wrote the code have exactly that problem.",
+  "judge_check": "Situation: An agent (AI that writes and runs code) delivers a 900-line pull request (a proposed code change) for a discount feature, with 40 new tests, all passing, and coverage up to 95%. The same agent wrote the tests after the code. Check: (1) Break a discount rule on purpose: do tests fail, or do they just mirror the code? (2) Did a person approve a written statement of expected behaviour? (3) Is discount logic in one module, or scattered across checkout so the next change touches everything?",
+  "understand_check": "Write a one-page spec for a small feature. Have an agent write failing tests first, confirm they fail, then implement. Break the finished code in three different ways and report which tests caught each, then explain one refactor (restructuring without changing behaviour) that lets other code know less.",
+  "courses": [
+   {
+    "school": "MIT",
+    "code": "6.1020",
+    "title": "Software Construction",
+    "url": "https://web.mit.edu/6.102/www/sp26/",
+    "catalog_year": "2026-27 catalog; site shows Spring 2026"
+   },
+   {
+    "school": "CMU",
+    "code": "17-313",
+    "title": "Foundations of Software Engineering",
+    "url": "https://cmu-313.github.io/",
+    "catalog_year": "Fall 2026 (inferred from schedule dates)"
+   },
+   {
+    "school": "MIT",
+    "code": "IAP, no subject code",
+    "title": "The Missing Semester of Your CS Education (Code Quality)",
+    "url": "https://missing.csail.mit.edu/2026/code-quality/",
+    "catalog_year": "2026 (January)"
+   }
+  ],
+  "sources": [
+   {
+    "title": "Harness engineering for coding agent users (Birgitta Böckeler, martinfowler.com)",
+    "url": "https://martinfowler.com/articles/harness-engineering.html",
+    "date": "2026-04-02",
+    "type": "expert"
+   },
+   {
+    "title": "Understanding spec-driven development: Kiro, spec-kit and Tessl (Birgitta Böckeler)",
+    "url": "https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html",
+    "date": "2025-10-15",
+    "type": "expert"
+   },
+   {
+    "title": "Many SWE-bench-Passing PRs Would Not Be Merged into Main (METR)",
+    "url": "https://metr.org/notes/2026-03-10-many-swe-bench-passing-prs-would-not-be-merged-into-main/",
+    "date": "2026-03-10",
+    "type": "primary"
+   },
+   {
+    "title": "Key themes in Technology Radar Vol. 34 (Thoughtworks)",
+    "url": "https://www.thoughtworks.com/en-au/insights/podcasts/technology-podcasts/themes-technology-radar-34",
+    "date": "2026-04-15",
+    "type": "expert"
+   },
+   {
+    "title": "Red/green TDD, Agentic Engineering Patterns (Simon Willison)",
+    "url": "https://simonwillison.net/guides/agentic-engineering-patterns/red-green-tdd/",
+    "date": "undated",
+    "type": "expert"
+   },
+   {
+    "title": "Mapping the Emerging Curriculum for AI-Assisted Software Engineering via Syllabus Analysis (Geng et al.)",
+    "url": "https://arxiv.org/abs/2608.05898",
+    "date": "2026-08-06",
+    "type": "primary"
+   },
+   {
+    "title": "Code Quality, Missing Semester 2026",
+    "url": "https://missing.csail.mit.edu/2026/code-quality/",
+    "date": "2026-01-23",
+    "type": "primary"
+   }
+  ],
+  "confidence": "High: courses, practitioners and maintainer data converge on specs and test quality",
+  "notes": "Boundary is fine. AI-written tests are the weak spot: Böckeler calls behaviour checking the hardest area, with no general solution yet. METR found maintainers would merge about 24 percentage points fewer AI patches (proposed code changes) than an automated test grader passed, on a narrow sample of three code projects. Test-first with agents rests on practitioner opinion, not trials. Geng et al. found testing in 10 of 18 AI-era software courses with public topic lists, and debugging in 7."
+ },
+ {
+  "id": "B3",
+  "question": "How does code reach users and stay safe and running?",
+  "learn": [
+   "Path to production: separate test and live environments, CI/CD (automatic test and release), secrets (passwords and keys) kept out of code",
+   "Rollbacks and backups you have actually tried",
+   "Operating: logs, metrics, alerts, who gets paged, postmortems (blame-free incident write-ups)",
+   "Web security baseline: broken access control, injection (input run as commands), misconfiguration; anything in the browser is public",
+   "Supply chain: dependencies (other people's code you rely on), lockfiles (pinned versions), and package names AI invents",
+   "Privacy and agents: collect less, watch logs and prompts, least privilege (minimum access), prompt injection (hidden instructions in content)"
+  ],
+  "drop": [
+   "Writing Kubernetes configuration (a system for running many packaged apps): managed hosts cover small systems; know what it's for",
+   "Cryptography maths: use TLS (standard web encryption) and vetted libraries, and never write your own",
+   "Memory-corruption exploits and assembly attacks: Berkeley CS 161 teaches them, but memory-safe languages like Python avoid most of this class",
+   "Compliance certificate detail such as SOC 2 (an audit standard): get help when a customer asks; learn the principles first"
+  ],
+  "head_start": "",
+  "judge_check": "Situation: A business team ships a customer-lookup tool from an AI app builder, with a hosted database and a public web page. It demoed well, and nobody has a rollback or on-call (who responds to incidents) plan. Check: (1) Access: are rules enforced in the database, or can anyone using the key shipped in the page read every row? Apps built on Lovable, an AI app builder, were exposed this way. (2) Secrets and personal data: any API keys (passwords for services) in browser code, or customer details in logs and prompts? (3) Recovery: is test separated from live, has a restore from backup actually been run, and who gets alerted?",
+  "understand_check": "Deploy the B1 app through an automated pipeline with secrets in environment variables (settings supplied at run time), structured logs, one real alert and a rollback you have performed. Try to read another user's record and show it fails, run a dependency audit (a scan for known-vulnerable packages), and write one page on who can see what. Then retell Cloudflare's November 2025 outage in five sentences of your own.",
+  "courses": [
+   {
+    "school": "UC Berkeley",
+    "code": "CS 161",
+    "title": "Computer Security",
+    "url": "https://fa26.cs161.org/",
+    "catalog_year": "Fall 2026"
+   },
+   {
+    "school": "MIT",
+    "code": "6.1600",
+    "title": "Foundations of Computer Security",
+    "url": "https://catalog.mit.edu/subjects/6/",
+    "catalog_year": "2026-27"
+   },
+   {
+    "school": "CMU",
+    "code": "17-445/17-645/17-745",
+    "title": "Machine Learning in Production",
+    "url": "https://mlip-cmu.github.io/f2026/",
+    "catalog_year": "Fall 2026"
+   },
+   {
+    "school": "MIT",
+    "code": "IAP, no subject code",
+    "title": "The Missing Semester of Your CS Education (Packaging and Shipping Code)",
+    "url": "https://missing.csail.mit.edu/2026/shipping-code/",
+    "catalog_year": "2026 (January)"
+   }
+  ],
+  "sources": [
+   {
+    "title": "OWASP Top 10:2025",
+    "url": "https://top10.owasp.org/2025",
+    "date": "undated",
+    "type": "primary"
+   },
+   {
+    "title": "OWASP Top 10 for LLM Applications, 2025 edition",
+    "url": "https://genai.owasp.org/llm-top-10/",
+    "date": "undated",
+    "type": "primary"
+   },
+   {
+    "title": "OWASP Top 10 for Agentic Applications for 2026",
+    "url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/",
+    "date": "2025-12-09",
+    "type": "primary"
+   },
+   {
+    "title": "The lethal trifecta for AI agents (Simon Willison)",
+    "url": "https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/",
+    "date": "2025-06-16",
+    "type": "expert"
+   },
+   {
+    "title": "Statement on CVE-2025-48757 (Matt Palmer, reporting researcher)",
+    "url": "https://mattpalmer.io/posts/statement-on-CVE-2025-48757/",
+    "date": "2025-05-29",
+    "type": "primary"
+   },
+   {
+    "title": "AI-powered coding tool wiped out a software company's database in 'catastrophic failure' (Fortune)",
+    "url": "https://fortune.com/2025/07/23/ai-coding-tool-replit-wiped-database-called-it-a-catastrophic-failure",
+    "date": "2025-07-23",
+    "type": "press"
+   },
+   {
+    "title": "Cloudflare outage on November 18, 2025 (postmortem)",
+    "url": "https://blog.cloudflare.com/18-november-2025-outage/",
+    "date": "2025-11-18",
+    "type": "primary"
+   },
+   {
+    "title": "We Have a Package for You! Package hallucinations by code-generating LLMs (Spracklen et al.)",
+    "url": "https://arxiv.org/abs/2406.10279",
+    "date": "2025-03-02",
+    "type": "primary"
+   },
+   {
+    "title": "Announcing the 2025 DORA report (Google Cloud)",
+    "url": "https://cloud.google.com/blog/products/ai-machine-learning/announcing-the-2025-dora-report",
+    "date": "2025-09-23",
+    "type": "survey"
+   }
+  ],
+  "confidence": "High: OWASP lists, published postmortems and real incidents agree on this baseline",
+  "notes": "Security may deserve more than a share of this topic: broken access control tops OWASP 2025, and agent security now has its own list. Per Willison, prompt injection has no reliable fix yet, so reduce exposure instead. DORA 2025 links AI adoption to higher delivery throughput but lower stability (nearly 5,000 respondents, correlational). The Lovable root cause, missing database row rules, is the reporting researcher's account. Details on Replit (an AI coding service) rest on the user's account via press. Package figures: at least 5.2% invented names for commercial models, 21.7% for open-source, in models tested by early 2025."
+ },
+ {
+  "id": "B4",
+  "question": "What shape should this product and its data flow take?",
+  "learn": [
+   "Estimating load: users, requests, data size and cost, before choosing anything",
+   "Scaling moves in order: better queries, caching, read replicas (read-only copies), then sharding (splitting data across machines)",
+   "Failure thinking: what breaks first, single points of failure, consistency (everyone sees the same data) versus availability (the system keeps answering)",
+   "Data pipelines: batch versus streaming (scheduled bulk runs versus continuous flow), data lakes (cheap raw storage), data quality and ownership",
+   "ML data flow: training versus serving data, versioning, drift (live data moving away from training data)",
+   "AI product anatomy: retrieval (fetching documents), tools (functions the model can use), evals (tests for AI output), guardrails (blocks on bad input or output), cost and speed budgets"
+  ],
+  "drop": [
+   "Implementing consensus such as Raft (how machines agree on one answer): MIT 6.5840 builds it; you need only why it exists",
+   "Memorised 'design Twitter' interview answers: they teach shapes without the habit of estimating your own load",
+   "Microservices (many small separate services) and multi-region (copies across geographies) by default: OpenAI reports one write database plus about 50 read copies at 800 million users",
+   "Comparing tool brands, such as Kafka (a streaming message system) and its rivals: products churn; learn what job each category does"
+  ],
+  "head_start": "Warehousing gives you a starting sense of data modeling and why large scans cost money. New ground is live serving: many users at once, failures mid-request, and response time.",
+  "judge_check": "Situation: A team plans an internal assistant over 2 million support documents for 200 staff, at about two questions a minute. The design has microservices, Kafka, a standalone vector database (a store for similarity search) and multi-region sharding from day one. Check: (1) Load: two questions a minute is tiny, so would one Postgres (open-source database) with a vector index do? (2) The real risks: can staff retrieve only documents they may see, and how stale is the index? (3) Is there an eval set showing retrieval works, plus a per-question cost and a plan for provider outages?",
+  "understand_check": "Write a two-page design for that assistant at 5,000 staff: estimate traffic, storage and token (model billing unit) costs, draw the flow from ingest to answer to logging, name the first bottleneck and top three failure modes, and list what you won't build yet. Ask an agent to attack it, then defend or change each point.",
+  "courses": [
+   {
+    "school": "MIT",
+    "code": "6.1800",
+    "title": "Computer Systems Engineering",
+    "url": "https://web.mit.edu/6.1800/www/",
+    "catalog_year": "2026-27 catalog; site shows Spring 2026"
+   },
+   {
+    "school": "MIT",
+    "code": "6.5840",
+    "title": "Distributed Computer Systems Engineering",
+    "url": "https://pdos.csail.mit.edu/6.824/",
+    "catalog_year": "2026-27 catalog; site shows Spring 2026"
+   },
+   {
+    "school": "Stanford",
+    "code": "CS145",
+    "title": "Intro to Modern Data Systems",
+    "url": "https://cs145.stanford.edu/",
+    "catalog_year": "2026-27 (Autumn)"
+   },
+   {
+    "school": "CMU",
+    "code": "17-445/17-645/17-745",
+    "title": "Machine Learning in Production",
+    "url": "https://mlip-cmu.github.io/f2026/",
+    "catalog_year": "Fall 2026"
+   }
+  ],
+  "sources": [
+   {
+    "title": "Scaling PostgreSQL to power 800 million ChatGPT users (OpenAI; read via search excerpts only)",
+    "url": "https://openai.com/index/scaling-postgresql/",
+    "date": "2026-01-22",
+    "type": "primary"
+   },
+   {
+    "title": "Designing Data-Intensive Applications, 2nd edition (Kleppmann and Riccomini; O'Reilly listing seen via search only)",
+    "url": "https://www.oreilly.com/library/view/designing-data-intensive/9781098119058/",
+    "date": "2026-02",
+    "type": "expert"
+   },
+   {
+    "title": "Stanford CS 145 Fall 2026 schedule: scaling, data lakes, big data economics, AI case studies",
+    "url": "https://cs145.stanford.edu/",
+    "date": "undated",
+    "type": "primary"
+   },
+   {
+    "title": "CMU Machine Learning in Production, Fall 2026 schedule",
+    "url": "https://mlip-cmu.github.io/f2026/",
+    "date": "undated",
+    "type": "primary"
+   },
+   {
+    "title": "Stanford CS 329Z Engineering AI Agents, Fall 2026 schedule",
+    "url": "https://cs329z.stanford.edu/",
+    "date": "undated",
+    "type": "primary"
+   },
+   {
+    "title": "Building effective AI agents (Anthropic)",
+    "url": "https://www.anthropic.com/engineering/building-effective-agents",
+    "date": "2024-12-19",
+    "type": "vendor"
+   },
+   {
+    "title": "Common pitfalls when building generative AI applications (Chip Huyen)",
+    "url": "https://huyenchip.com/2025/01/16/ai-engineering-pitfalls.html",
+    "date": "2025-01-16",
+    "type": "expert"
+   },
+   {
+    "title": "Seven Failure Points When Engineering a Retrieval Augmented Generation System (Barnett et al.)",
+    "url": "https://arxiv.org/abs/2401.05856",
+    "date": "2024-01-11",
+    "type": "primary"
+   },
+   {
+    "title": "AI Is Here, But The Hard Parts Haven't Changed (Joe Reis, with 2026 data engineering survey)",
+    "url": "https://joereis.substack.com/p/ai-is-here-but-the-hard-parts-havent",
+    "date": "2026-03-28",
+    "type": "survey"
+   }
+  ],
+  "confidence": "Medium: classic design is well sourced; LLM data-pipeline evidence is thin and vendor-heavy",
+  "notes": "OpenAI's setup also reportedly moved shardable write-heavy loads to another database, so it isn't a pure single-database story. This topic holds three subjects, and I would split it: system design; data engineering for ML and language models; and AI product engineering (retrieval, tools, evals, guardrails). The third is the largest gap in the list: the learner says they can't structure an AI-assisted product, and Stanford CS 329Z and CMU 17-645 now teach it directly. Reis's survey of 1,101 data professionals puts legacy systems, weak leadership direction and poor requirements as the top bottlenecks, so hardcore data work is partly organisational. Most RAG (retrieval-augmented generation: fetching documents to feed a model) advice online is vendor blogs, so I relied on Barnett et al. and syllabi."
+ },
+ {
+  "id": "C1",
+  "question": "Why do language models behave, fail and cost as they do?",
+  "learn": [
+   "Tokens (the chunks models read), embeddings (meaning as numbers), the context window (how much a model can see at once)",
+   "Attention and transformers (the design behind LLMs, large language models) at diagram level",
+   "Pretraining on text, then post-training on human preferences and rewards, which creates assistant behaviour",
+   "Why they fail: guessing when unsure, random sampling, recall fading as context grows",
+   "What isn't proof: shown reasoning and public benchmarks don't establish correctness on your task",
+   "Economics: per-token pricing, GPU (parallel maths chip) serving, prompt caching (reusing recent input cheaply), small versus large models"
+  ],
+  "drop": [
+   "Implementing GPU kernels (low-level chip code) or distributed training (across many machines): CS336 builds these for future model makers; product work rarely needs them",
+   "Deriving backpropagation (how training computes corrections) by hand: the idea from basic ML is enough",
+   "Older sequence models such as RNNs and LSTMs (pre-transformer designs): a paragraph of history will do",
+   "Following weekly model rankings: they age fast, and METR found automated test scores overstate work that people would accept"
+  ],
+  "head_start": "Basic ML gives you training versus test data, loss, overfitting and features. Basic statistics gives you sampling and probability, which is what an LLM outputs. What's new is scale and architecture.",
+  "judge_check": "Situation: A vendor demos a policy assistant that feeds your whole 400-page manual to the model on every question and shows its reasoning steps as proof of accuracy. Its slide claims 94% on a public benchmark. Check: (1) Context and cost: roughly 250,000 tokens per question raises the bill and may blur recall, so why not retrieve only the relevant pages? (2) Shown reasoning isn't evidence: Anthropic found models disclosed hints they had used only 25% to 39% of the time. (3) Test on your own questions, including ones the manual can't answer: does it admit ignorance or guess?",
+  "understand_check": "Read and run Karpathy's 200-line microgpt with an agent as tutor. Change the block size (its context length) and the temperature (how random sampling is), predict each effect first, then check. Then explain to a colleague, without notes: tokenisation, attention, why models hallucinate (state false things confidently), what post-training changes, and what one chat turn costs at a stated price.",
+  "courses": [
+   {
+    "school": "Stanford",
+    "code": "CME 295",
+    "title": "Transformers & Large Language Models",
+    "url": "https://cme295.stanford.edu/",
+    "catalog_year": "Autumn 2026-27 (inferred from staff address)"
+   },
+   {
+    "school": "Stanford",
+    "code": "CS336",
+    "title": "Language Modeling from Scratch",
+    "url": "https://cs336.stanford.edu/",
+    "catalog_year": "Spring 2026 (2025-26)"
+   },
+   {
+    "school": "Stanford",
+    "code": "CS224N",
+    "title": "Natural Language Processing with Deep Learning",
+    "url": "https://web.stanford.edu/class/cs224n/",
+    "catalog_year": "Winter 2026 (2025-26)"
+   },
+   {
+    "school": "MIT",
+    "code": "6.390",
+    "title": "Introduction to Machine Learning",
+    "url": "https://introml.mit.edu/fall26/",
+    "catalog_year": "Fall 2026"
+   }
+  ],
+  "sources": [
+   {
+    "title": "Stanford CS336 Spring 2026 schedule and prerequisites",
+    "url": "https://cs336.stanford.edu/",
+    "date": "undated",
+    "type": "primary"
+   },
+   {
+    "title": "microgpt (Andrej Karpathy)",
+    "url": "https://karpathy.github.io/2026/02/12/microgpt/",
+    "date": "2026-02-12",
+    "type": "expert"
+   },
+   {
+    "title": "Effective context engineering for AI agents (Anthropic)",
+    "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+    "date": "2025-09-29",
+    "type": "vendor"
+   },
+   {
+    "title": "Reasoning models don't always say what they think (Anthropic)",
+    "url": "https://www.anthropic.com/research/reasoning-models-dont-say-think",
+    "date": "2025-04-03",
+    "type": "primary"
+   },
+   {
+    "title": "Why Language Models Hallucinate (Kalai et al.)",
+    "url": "https://arxiv.org/abs/2509.04664",
+    "date": "2025-09-04",
+    "type": "primary"
+   },
+   {
+    "title": "How coding agents work, Agentic Engineering Patterns (Simon Willison)",
+    "url": "https://simonwillison.net/guides/agentic-engineering-patterns/how-coding-agents-work/",
+    "date": "undated",
+    "type": "expert"
+   },
+   {
+    "title": "Many SWE-bench-Passing PRs Would Not Be Merged into Main (METR)",
+    "url": "https://metr.org/notes/2026-03-10-many-swe-bench-passing-prs-would-not-be-merged-into-main/",
+    "date": "2026-03-10",
+    "type": "primary"
+   }
+  ],
+  "confidence": "Medium: course content verified; the right depth for non-builders is my judgement",
+  "notes": "Name is fine. CS336 requires Python and PyTorch (a model-building library) proficiency and is heavy on implementation, so use it as a map of topics, not a course to take. CME 295 and the LLMs-for-builders lecture in Stanford CS 329Z sit closer to this depth. The 25% to 39% figure comes from contrived multiple-choice tests on two early-2025 models, so newer ones may differ. Interpretability (tracing what happens inside a model) is left out on my judgement. Some evidence here comes from model vendors."
+ },
+ {
+  "id": "C2",
+  "question": "How do I direct AI work and know it's right?",
+  "learn": [
+   "The agent loop (model, tools, repeat), the context window (what it can currently see), and how to manage that context",
+   "Specs and runnable checks first: tests the agent must pass, written or reviewed by you",
+   "Review like an owner: read diffs (what changed), ask for walkthroughs, never accept 'done' on the agent's word",
+   "Harness (controls around an agent): instruction files, linters (automatic code checkers), tests it can't disable",
+   "Limit damage: sandboxes (isolated environments), least privilege (minimum access), and the lethal trifecta (private data, untrusted content, outbound access together)",
+   "Evals (tests for AI output): study real failures, label pass or fail, validate AI judges against human labels"
+  ],
+  "drop": [
+   "Magic prompt phrasing: Anthropic's own guide says plain prompts usually work; missing context and missing checks are the common failures",
+   "Tool-specific shortcuts and settings: tools change within months, while the concepts carry across them",
+   "Agent frameworks (pre-built agent libraries) early on: Anthropic and Huyen both advise starting with direct API (programmatic) calls",
+   "Multi-agent 'software factory' setups (many agents run like an assembly line): CS146S teaches them, but one checked loop should be reliable first"
+  ],
+  "head_start": "Basic statistics gives you sampling and base rates, and basic ML gives you hold-out data. Evals apply these to AI output.",
+  "judge_check": "Situation: An analyst lets a coding agent build a churn-report pipeline over a weekend, using the team's production database login to save time. The agent says all tests pass, and the new number is within 1% of last month's. Check: (1) Permissions: swap the login for read-only access to a copy, since Replit's agent deleted a live database in 2025. (2) Evidence: did the agent change or skip tests? Read the diff, run the checks yourself and recompute a small sample by hand. (3) Injection: if it reads tickets or web pages, could hidden instructions reach the data and send it out?",
+  "understand_check": "Build one small tool with an agent using a written spec, tests first and a sandbox, then explain its code with no AI help. Next, for an LLM (large language model) ticket classifier, review 100 real outputs, group the failures, write 30 pass/fail cases and one AI judge, and report the judge's true-positive and true-negative rates against your labels, with confidence intervals.",
+  "courses": [
+   {
+    "school": "Stanford",
+    "code": "CS146S",
+    "title": "The Modern Software Developer",
+    "url": "https://themodernsoftware.dev/",
+    "catalog_year": "2026-27 (Autumn)"
+   },
+   {
+    "school": "MIT",
+    "code": "IAP, no subject code",
+    "title": "The Missing Semester of Your CS Education (Agentic Coding)",
+    "url": "https://missing.csail.mit.edu/2026/agentic-coding/",
+    "catalog_year": "2026 (January)"
+   },
+   {
+    "school": "Stanford",
+    "code": "CS 329Z",
+    "title": "Engineering AI Agents",
+    "url": "https://cs329z.stanford.edu/",
+    "catalog_year": "Fall 2026"
+   },
+   {
+    "school": "CMU",
+    "code": "17-313",
+    "title": "Foundations of Software Engineering",
+    "url": "https://cmu-313.github.io/",
+    "catalog_year": "Fall 2026 (inferred from schedule dates)"
+   }
+  ],
+  "sources": [
+   {
+    "title": "Agentic Coding, Missing Semester 2026",
+    "url": "https://missing.csail.mit.edu/2026/agentic-coding/",
+    "date": "2026-01-21",
+    "type": "primary"
+   },
+   {
+    "title": "We are Changing our Developer Productivity Experiment Design (METR)",
+    "url": "https://metr.org/blog/2026-02-24-uplift-update/",
+    "date": "2026-02-24",
+    "type": "primary"
+   },
+   {
+    "title": "Many SWE-bench-Passing PRs Would Not Be Merged into Main (METR)",
+    "url": "https://metr.org/notes/2026-03-10-many-swe-bench-passing-prs-would-not-be-merged-into-main/",
+    "date": "2026-03-10",
+    "type": "primary"
+   },
+   {
+    "title": "How AI assistance impacts the formation of coding skills (Anthropic randomised trial)",
+    "url": "https://www.anthropic.com/research/AI-assistance-coding-skills",
+    "date": "2026-01-29",
+    "type": "primary"
+   },
+   {
+    "title": "AI Evals: Everything You Need to Know (Hamel Husain and Shreya Shankar)",
+    "url": "https://hamel.dev/blog/posts/evals-faq/",
+    "date": "2026-09-18",
+    "type": "expert"
+   },
+   {
+    "title": "Demystifying evals for AI agents (Anthropic)",
+    "url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+    "date": "2026-01-09",
+    "type": "vendor"
+   },
+   {
+    "title": "Harness engineering for coding agent users (Birgitta Böckeler, martinfowler.com)",
+    "url": "https://martinfowler.com/articles/harness-engineering.html",
+    "date": "2026-04-02",
+    "type": "expert"
+   },
+   {
+    "title": "Agentic Engineering Patterns guide (Simon Willison; chapters undated, guide announced 2026-02-23)",
+    "url": "https://simonwillison.net/guides/agentic-engineering-patterns/",
+    "date": "undated",
+    "type": "expert"
+   },
+   {
+    "title": "Stack Overflow 2026 Developer Survey",
+    "url": "https://survey.stackoverflow.co/2026/",
+    "date": "undated",
+    "type": "survey"
+   },
+   {
+    "title": "Best practices for Claude Code (Anthropic)",
+    "url": "https://code.claude.com/docs/en/best-practices",
+    "date": "undated",
+    "type": "vendor"
+   },
+   {
+    "title": "Andrej Karpathy: From Vibe Coding to Agentic Engineering (talk; content known via secondary summaries only)",
+    "url": "https://www.youtube.com/watch?v=96jN2OCOfLs",
+    "date": "2026-04",
+    "type": "expert"
+   }
+  ],
+  "confidence": "Medium: field moves monthly; key studies are small, vendor-run or already dated",
+  "notes": "Two skills share this name: directing coding agents, and evaluating AI features in a product. Move the second to the proposed AI product topic if B4 is split. Productivity evidence is unsettled: METR's early-2025 trial found 19% slower, while its late-2025 rerun shows 18% and 4% faster, with intervals crossing zero and admitted selection bias. Checking pays either way. In Stack Overflow's 2026 survey, 48% trust AI when output is easy to verify and 6.6% for important decisions. Anthropic's trial links delegation to quiz scores under 40% and asking for explanations to 65% or more, which is also a study rule for this learner. Several sources sell AI tools, and I am an Anthropic model citing Anthropic, so weigh those accordingly. CS146S expects strong programming (CS111/CS161 level), so use it as a syllabus."
+ }
+]
