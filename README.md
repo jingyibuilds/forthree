@@ -20,8 +20,8 @@ terminal, take a no-help check, and talk through a short interview program.
 
 ## Try it without installing anything
 
-A trimmed version of the course runs in a browser, deployed from this
-repository — the link is on the repository page. It has no account and no
+**<https://forthree.vercel.app>** — a trimmed version of the course, running
+in a browser, deployed from this repository. It has no account and no
 server-side storage: **your progress is kept in that browser only**, and it
 hands you a file to save if you want to come back to it.
 
