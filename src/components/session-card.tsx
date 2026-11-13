@@ -7,6 +7,9 @@ import { Html } from "@/components/html";
 import { redirect } from "next/navigation";
 import { assistantState, getToday } from "@/lib/study/service";
 import { StudyError } from "@/lib/study/types";
+import { WEB } from "@/lib/mode";
+import ReadingList from "@/components/reading-list";
+import { withEmptyRecord } from "@/lib/study/web";
 
 // One card, two doors. `/` shows the session Today is on; `/sessions/N` shows
 // any written session she opens from the map. She looks at anything and works
@@ -16,7 +19,7 @@ import { StudyError } from "@/lib/study/types";
 export default async function SessionCard({viewing}: {viewing?: number}) {
   let today: Awaited<ReturnType<typeof getToday>>;
   try {
-    today = await getToday(viewing);
+    today = await withEmptyRecord(() => getToday(viewing));
   } catch (error) {
     const message = error instanceof StudyError ? error.message : "Your study record could not be read. No automatic repair was attempted.";
     return (
@@ -27,14 +30,17 @@ export default async function SessionCard({viewing}: {viewing?: number}) {
     );
   }
 
-  // Today's own session has one address.
-  if (viewing !== undefined && today.viewing?.is_today) redirect("/");
+  // Today's own session has one address — but on the web trial that address
+  // is the page saying what the course is, so sending session 1 there would
+  // bounce a visitor straight back off the door they just opened.
+  if (!WEB && viewing !== undefined && today.viewing?.is_today) redirect("/");
 
   if (!today.session || !today.main) {
     const done = today.done_sessions ?? [];
     // The same rule as every other screen: a no-help check left open in a
     // session she went back to quiets Ask here too.
-    const ask = await assistantState().catch(() => ({open: true, reason: ""}));
+    // Same as the map: no record on the web trial, so nothing to read here.
+    const ask = WEB ? {open: true, reason: ""} : await assistantState().catch(() => ({open: true, reason: ""}));
     return (
       <Shell active="/" bubble={<AskBubble mode={ask.open ? "live" : "disabled"} reason={askReason(ask)} />}>
         <h1>{today.completed ? "All twenty-one are done." : `Session ${today.plan.current_session} is not written yet.`}</h1>
@@ -130,6 +136,17 @@ export default async function SessionCard({viewing}: {viewing?: number}) {
       <h1>{session.title}</h1>
       {session.subtitle && <p className="sub">{session.subtitle}</p>}
 
+      {/* On the web trial this page is rendered without the visitor's record,
+          so it cannot say where they stopped; the part itself can, because the
+          record travels with the call (PUBLISH.md §6). */}
+      {WEB && (
+        <p className="viewing">
+          This page shows the session as it looks before you start. The trial keeps your progress in this
+          browser: open a part and it picks up where you left it, and{" "}
+          <Link href="/board">the board</Link> reads the same record.
+        </p>
+      )}
+
       {main.why && (
         <div className="why">
           <span className="wl">Why this one is here</span>
@@ -145,10 +162,16 @@ export default async function SessionCard({viewing}: {viewing?: number}) {
             if (!environment.report) {
               return (
                 <p className="envline not-yet">
-                  The setup check could not run just now.{" "}
-                  {environment.ready
-                    ? "The course environment is here; nothing is blocked."
-                    : "The course environment is not here yet — session 1 is where it gets installed."}
+                  {/* On the web trial there is no machine of hers to read, and
+                      the server's own is not an answer (PUBLISH.md §6). */}
+                  {WEB
+                    ? "This page cannot see your machine, so nothing here is measured. The setup check runs on your own computer, where the course is installed."
+                    : <>
+                        The setup check could not run just now.{" "}
+                        {environment.ready
+                          ? "The course environment is here; nothing is blocked."
+                          : "The course environment is not here yet — session 1 is where it gets installed."}
+                      </>}
                 </p>
               );
             }
@@ -231,7 +254,7 @@ export default async function SessionCard({viewing}: {viewing?: number}) {
                     ))}
                     {findings && rows.filter(row => row.id.startsWith("package-")).every(row => row.ok) && (
                       <div className="reading-row env-ok">
-                        <span className="env-label"><Icon name="check" /> The six packages this course pins</span>
+                        <span className="env-label"><Icon name="check" /> The course’s own Python has the six packages it pins</span>
                         <span className="reading-description">all present, at the pinned versions</span>
                       </div>
                     )}
@@ -249,15 +272,9 @@ export default async function SessionCard({viewing}: {viewing?: number}) {
             <b>Read this first</b>
             <span>{minutes} min · the material itself, not my summary of it</span>
           </header>
-          {reading.map(row => (
-            <div className="reading-row" key={row.url}>
-              <a href={row.url} target="_blank" rel="noreferrer">
-                {row.title} <Icon name="out" />
-              </a>
-              <span className="reading-description">{row.teaches}</span>
-              <span className="reading-duration">{row.minutes} min</span>
-            </div>
-          ))}
+          {/* Her ticks and her note live here and nowhere else; the log
+              page shows them all (owner, 2026-11-13). */}
+          <ReadingList session={session.session} rows={reading} note />
         </section>
       )}
 
@@ -293,7 +310,8 @@ export default async function SessionCard({viewing}: {viewing?: number}) {
             </span>
             <span className="pk">
               {part.finished
-                ? `${part.kind_label} · done`
+                // The web trial's escape: done, and the lab was not run.
+                ? part.lab_skipped ? `${part.kind_label} · done, not run` : `${part.kind_label} · done`
                 : part.id === main.id
                   ? `${part.kind_label} · below`
                   : part.kind === "withdraw"
@@ -382,6 +400,7 @@ export default async function SessionCard({viewing}: {viewing?: number}) {
                     <p>
                       <Html text={task.brief} />
                     </p>
+                    {(task.uses ?? []).length > 0 && <p className="uses">Uses: {task.uses!.join(" · ")}</p>}
                   </div>
                 </div>
               ))}

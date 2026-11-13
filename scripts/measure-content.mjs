@@ -26,7 +26,10 @@ import {dirname, join, relative, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const python = join(root, ".venv/bin/python3");
+// --python <path> runs the same checks under another interpreter, to see what
+// moving the course to it would change; without it, the course .venv.
+const pythonArg = process.argv.indexOf("--python");
+const python = pythonArg > 0 ? resolve(process.argv[pythonArg + 1]) : join(root, ".venv/bin/python3");
 const BLOCK = "a1";
 const snapshotPath = join(root, "curriculum/measured", `${BLOCK}.json`);
 const claimsPath = join(root, "curriculum/claims", `${BLOCK}.json`);

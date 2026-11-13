@@ -18,6 +18,10 @@ export interface RecallItem {
   explain: string;
   earliest_session: number;
   smoke?: boolean;
+  /** What teaches it: "sNN-<part>:reading:N", ":card" or ":page" (REBUILD.md, R7). */
+  taught_by?: string[];
+  /** No longer drawn: what it asks is no longer taught. Kept, so answers given to it still resolve. */
+  retired?: boolean;
 }
 
 export interface ColdWriteItem {
@@ -30,6 +34,10 @@ export interface ColdWriteItem {
   explain: string;
   earliest_session: number;
   smoke?: boolean;
+  /** What teaches it: "sNN-<part>:reading:N", ":card" or ":page" (REBUILD.md, R7). */
+  taught_by?: string[];
+  /** No longer drawn: what it asks is no longer taught. Kept, so answers given to it still resolve. */
+  retired?: boolean;
 }
 
 export type BankItem = RecallItem | ColdWriteItem;
@@ -42,6 +50,10 @@ export interface JudgeVariant {
   explain: string;
   earliest_session: number;
   smoke?: boolean;
+  /** What teaches it: "sNN-<part>:reading:N", ":card" or ":page" (REBUILD.md, R7). */
+  taught_by?: string[];
+  /** No longer drawn: what it asks is no longer taught. Kept, so answers given to it still resolve. */
+  retired?: boolean;
 }
 
 export interface SealedBlock {
@@ -63,7 +75,7 @@ export async function loadSealed(block: string): Promise<SealedBlock> {
 export interface CheckSlot { part: string; session: number; want: number; kind: "recall" | "cold_write" }
 
 const fits = (item: BankItem, slot: CheckSlot) =>
-  item.kind === slot.kind && item.smoke !== true && item.earliest_session <= slot.session;
+  item.kind === slot.kind && item.smoke !== true && item.retired !== true && item.earliest_session <= slot.session;
 
 /**
  * Each session's check owns the items it would draw if the sessions were done

@@ -84,6 +84,10 @@ export function gradeCheck(check: Check, fields: Record<string, string>, verdict
         absent.length === 1 ? absent[0] : "");
     }
     const pass = Object.entries(check.expect).every(([name, pattern]) => new RegExp(pattern).test(bound[name]));
+    // One side wrong, and the content says what that means: say that one,
+    // not "at least one of the two" (walkthrough 2).
+    const wrong = Object.entries(check.expect).filter(([name, pattern]) => !new RegExp(pattern).test(bound[name])).map(([name]) => name);
+    if (!pass && wrong.length === 1 && words?.wrong?.[wrong[0]]) return {id: check.id, pass: false, message: words.wrong[wrong[0]]};
     return say(pass, pass
       ? "Each answer is under the command that produced it."
       : "Those answers are under the wrong commands. Look again at which command asked what.");
@@ -95,6 +99,11 @@ export function gradeCheck(check: Check, fields: Record<string, string>, verdict
     const found = check.need.filter(need => haystack.includes(sensitive ? need : need.toLowerCase()));
     const pass = check.type === "contains_all" ? found.length === check.need.length : found.length > 0;
     const absent = check.need.filter(need => !found.includes(need));
+    // One thing missing, and the content has a sentence for it: say that one,
+    // never a message that names something she did paste (walkthrough, N7).
+    if (!pass && check.type === "contains_all" && absent.length === 1 && words?.missing?.[absent[0]]) {
+      return {id: check.id, pass: false, message: words.missing[absent[0]]};
+    }
     return say(pass, pass
       ? "That is what these produce."
       : check.type === "contains_all"

@@ -1,0 +1,11 @@
+# The course's packages, pinned. Installed by scripts/setup-python.sh into the
+# course Python's own .venv, and by session 1's last step into her lab
+# environment in ~/cs-core; scripts/doctor.py reads its expectations from here
+# (DECISIONS 2026-11-11). Every pin has ready-made Apple-chip builds for
+# Python 3.12 through 3.15, and the course's programs were measured on both ends.
+pytest==9.2.0
+hypothesis==6.170.15
+psutil==7.2.2
+numpy==2.5.4
+ruff==0.17.4
+pyright==1.1.414

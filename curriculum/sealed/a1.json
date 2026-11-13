@@ -7,14 +7,16 @@
       "prompt": "Your machine has more than one <span class=\"mo\">python3</span> installed. One command lists every <span class=\"mo\">python3</span> your shell can find, in the order it searches, instead of only the first. Write that one command.",
       "accept_sha256": [
         "dc41e4be3e12a996aa7125537c76c1866180442d5c59732a08f1a5bd67f223c6",
-        "e1a61b9e9006a5edab24e256b624cf01261135ddeb4b974ba1b3e6ab75fa3ea3",
-        "db6835e807e672ca5241ad1c2e16a570b57f2c3227667a4236ac36d489450ba5",
         "425aab3e98b4cd04621581b427cb7e5c38c52f549bf44657fd15c33c0d61c5c5"
       ],
       "normalise": "lower",
       "explain": "<span class=\"mo\">which -a python3</span> lists every match, in search order. <span class=\"mo\">which python3</span> prints only the first one, and the first one is the one that runs.",
       "earliest_session": 1,
-      "smoke": false
+      "smoke": false,
+      "taught_by": [
+        "s01-lab-a:card",
+        "s01-lab-a:page"
+      ]
     },
     {
       "id": "a1-r-02",
@@ -30,7 +32,11 @@
       "normalise": "lower",
       "explain": "The list is <span class=\"mo\">PATH</span>. The shell searches its folders in order and runs the first match, which is how two installs of the same program can both be present while only one of them ever runs.",
       "earliest_session": 1,
-      "smoke": false
+      "smoke": false,
+      "taught_by": [
+        "s01-lab-a:reading:1",
+        "s01-lab-a:page"
+      ]
     },
     {
       "id": "a1-r-03",
@@ -38,14 +44,14 @@
       "prompt": "One command asks the machine itself which architecture it is — not which architecture a Python was built for. Write that one command.",
       "accept_sha256": [
         "ea82fe82924bbdcd34f9642d3e79470eefa35f2308a6d85ad9cadf20051f1b2d",
-        "d54f6eb7f8932ccd3f87909e72b46597a48344fcd6e6f5b26decc93dc58bf84b",
         "890cabe271136403326f8252c59cfdd47160fa63fe7a37801d3bffc1dbbf03f3",
         "3d7bd5d2c270dfaf6b70ed0a7759f1e5bedfe113504e087dbf260f7da5183b13"
       ],
       "normalise": "lower",
       "explain": "<span class=\"mo\">uname -m</span> reports the machine’s own architecture. <span class=\"mo\">platform.machine()</span> reports what the running Python was built for, and on this machine the two answers can differ.",
       "earliest_session": 1,
-      "smoke": false
+      "smoke": false,
+      "retired": true
     },
     {
       "id": "a1-r-04",
@@ -53,29 +59,16 @@
       "prompt": "Write the one command that creates a virtual environment in a folder named <span class=\"mo\">.venv</span> inside the folder you are in now.",
       "accept_sha256": [
         "bff877488618db6edb7b3ca9103b38efacf40dc2099655e310b2e9604cf83ee9",
-        "5e3f7560795167329cbcf02a8a3e4b83f9f045b87cc981b68ad9823d5b84d166",
-        "bf81aa729c80d49000ea8db3662f0d271f5fd788580018d293ff8e108a08faca",
-        "a4bf1d62ac93f1c17775cf4c6d631f627739a7b494b74db0ebfde6e4c7ce1c80"
+        "bf81aa729c80d49000ea8db3662f0d271f5fd788580018d293ff8e108a08faca"
       ],
       "normalise": "lower",
-      "explain": "<span class=\"mo\">python3 -m venv .venv</span> builds the environment with the <span class=\"mo\">python3</span> that runs the command, and the environment keeps that Python. It does not go looking for a newer or a native one.",
+      "explain": "<span class=\"mo\">python3 -m venv .venv</span> builds the environment with the <span class=\"mo\">python3</span> that runs the command, and the environment keeps that Python. It does not go looking for a newer or a native one. It has to be <span class=\"mo\">python3</span>, not <span class=\"mo\">python</span>: they are two different names, and on your Mac the shell finds nothing called <span class=\"mo\">python</span> until an environment is switched on. The environment you are making is not on yet, so <span class=\"mo\">python -m venv .venv</span> stops with <span class=\"mo\">command not found</span>.",
       "earliest_session": 1,
-      "smoke": false
-    },
-    {
-      "id": "a1-r-05",
-      "kind": "recall",
-      "prompt": "A script stops and Python prints an error. The last line of it says what went wrong. The lines above give the file, and one more thing you need in order to look at the right code. Name that one thing. Two words at most.",
-      "accept_sha256": [
-        "e943b098c683b19d7feb66872088929d4db9e96dc673f92a8a1fdd8ab7aa5795",
-        "5834fc3f2024a63a3627b2671c49634615a368af7e4701da5f419d2098a918a0",
-        "38a9c1e721584da284b90ceea4ed7eb8db15ac4ea86c2c75ec925d5f8799fcf0",
-        "366ffdeec8bf5dda2d1466824dc275769cba0e8c5fc0b50af8c58abc4fe9fff7"
-      ],
-      "normalise": "lower",
-      "explain": "They give the line number. Read what Python printed from the bottom up: the last line is what went wrong, the lines above it are where — the file and the line.",
-      "earliest_session": 1,
-      "smoke": false
+      "smoke": false,
+      "taught_by": [
+        "s01-lab-a:reading:2",
+        "s01-lab-a:card"
+      ]
     },
     {
       "id": "a1-r-06",
@@ -89,7 +82,11 @@
       "normalise": "lower",
       "explain": "<span class=\"mo\">pwd</span> prints the folder you are in — the folder your next command will act in.",
       "earliest_session": 1,
-      "smoke": true
+      "smoke": true,
+      "taught_by": [
+        "s01-lab-a:card",
+        "s01-lab-a:reading:1"
+      ]
     },
     {
       "id": "a1-r-07",
@@ -104,23 +101,11 @@
       ],
       "normalise": "lower",
       "explain": "It needs an order. A running total depends on the sequence the rows arrive in, so “the first row to cross 50” has no answer until the rows are in an order.",
-      "earliest_session": 2,
-      "smoke": false
-    },
-    {
-      "id": "a1-r-08",
-      "kind": "recall",
-      "prompt": "A row arrives as a dictionary and is held in a name called <span class=\"mo\">row</span>. One of its fields is <span class=\"mo\">team</span>. Using that name, write the code that gets this row’s <span class=\"mo\">team</span> value out of it. One short piece of code.",
-      "accept_sha256": [
-        "a52348d21f90f664abe3c5b0c753d3d1e4b5b4b34e0f2cda5b274c059609a570",
-        "f4ef7d6309df2a1601749e0b5dff511a07ba8abc9859235dfb60b5cb8af6f08e",
-        "1a876411d12bbc7a62a84ac31599f12edf0e5084b305eb4c8927bca7d0bbaf89",
-        "2fbe6886f3fc7a62790731fae9a5044e5601aa2d812064b8240fa21f00fcf437"
-      ],
-      "normalise": "lower",
-      "explain": "<span class=\"mo\">row[\"team\"]</span> asks that one row for that one field. A loop runs it once per row, on one row at a time, which is the part SQL never asked you to do.",
-      "earliest_session": 2,
-      "smoke": false
+      "earliest_session": 3,
+      "smoke": false,
+      "taught_by": [
+        "s02-lab-a:page"
+      ]
     },
     {
       "id": "a1-r-09",
@@ -132,8 +117,12 @@
       ],
       "normalise": "lower",
       "explain": "<span class=\"mo\">break</span> leaves the loop at once, so the rows after it are never looked at. That is how you report the first row that meets a condition rather than the last one.",
-      "earliest_session": 2,
-      "smoke": false
+      "earliest_session": 3,
+      "smoke": false,
+      "taught_by": [
+        "s02-lab-a:card",
+        "s02-lab-a:page"
+      ]
     },
     {
       "id": "a1-r-10",
@@ -146,63 +135,12 @@
       ],
       "normalise": "lower",
       "explain": "<span class=\"mo\">if</span> runs the lines under it only when what you asked about that row is true. It is how one row out of six is acted on and the other five are passed over.",
-      "earliest_session": 2,
-      "smoke": false
-    },
-    {
-      "id": "a1-r-11",
-      "kind": "recall",
-      "prompt": "A function works out a number, and its caller needs that number. One keyword hands it back out of the function. One word.",
-      "accept_sha256": [
-        "7187f0675eb3827939741acf7342ba78836ecec21a31ecf3f34a55309d3bee8a",
-        "f1559364353eb143133c96d228054ac3c047330d8931ccf5a29ff5962b554373"
-      ],
-      "normalise": "lower",
-      "explain": "<span class=\"mo\">return</span> hands the value back to the caller. Without it the function gives back nothing, and the caller ends up holding nothing instead of the number it asked for.",
       "earliest_session": 3,
-      "smoke": false
-    },
-    {
-      "id": "a1-r-12",
-      "kind": "recall",
-      "prompt": "A function builds a line, prints it, and returns nothing. The caller keeps what came back and calls <span class=\"mo\">.upper()</span> on it. Python stops. Name the exception on the last line of the traceback. One word.",
-      "accept_sha256": [
-        "9d867deca2a00f77eedcab8b9b51c344e68a85e5f4e2a65a2fc9d4c9dad9c792",
-        "16f55e1ffc58cdc8704a618c750aa832cd3ce94875309c3257a68dd85effba1c",
-        "644dca4a55c2933ab4aca3efa58b82972392610c08cf57571838e4318904e620"
-      ],
-      "normalise": "lower",
-      "explain": "<span class=\"mo\">AttributeError</span>. The function returned nothing, so the caller is holding <span class=\"mo\">None</span> — Python’s word for nothing — and <span class=\"mo\">None</span> has no <span class=\"mo\">.upper()</span>. The last line of a traceback always names the exception; the lines above name the file and the line.",
-      "earliest_session": 3,
-      "smoke": false
-    },
-    {
-      "id": "a1-r-13",
-      "kind": "recall",
-      "prompt": "A column of whole numbers is held as a numpy <span class=\"mo\">int32</span>, and one value is <span class=\"mo\">2147483647</span>, the highest that type holds. One is added to it. What is printed? One number.",
-      "accept_sha256": [
-        "56bb3b3a6aa1747def7c225256374c5e73f2fc46555adc47ea16e2d782159387",
-        "6c6a9af8c54a6f4879af2a209cb394dc10db1b8908601126678fce72b56aa889",
-        "c9d4e90bf93a008a4a771bb1ab41e12272b90332051904b87d48a629aa79d9bf"
-      ],
-      "normalise": "lower",
-      "explain": "<span class=\"mo\">-2147483648</span>. The value wraps round to the bottom of the type: nothing is raised, nothing is printed as a warning, and the program ends normally. The only thing that catches it is a number you already expected.",
-      "earliest_session": 3,
-      "smoke": false
-    },
-    {
-      "id": "a1-r-14",
-      "kind": "recall",
-      "prompt": "<span class=\"mo\">0.10 + 0.20 == 0.30</span> is <span class=\"mo\">False</span>, so money is never held as a float. Name the type from Python’s standard library that holds it exactly instead. One word.",
-      "accept_sha256": [
-        "3e6d4b43d473c69d919c7550b0468718a2e66daf934e0428b401e230c5d34d85",
-        "ae7954fcacc679d164f0d57e2fcdd478afbc7fd98fd43131c425c55a651fa23e",
-        "91418df8afded56f407299500b321e7658eeda5a10784f48208ddf4abcb653cf"
-      ],
-      "normalise": "lower",
-      "explain": "<span class=\"mo\">Decimal</span>, from the <span class=\"mo\">decimal</span> module. The other way is to count whole minor units — amounts in cents, as integers. Both avoid the float that makes <span class=\"mo\">0.10 + 0.20</span> miss <span class=\"mo\">0.30</span>.",
-      "earliest_session": 3,
-      "smoke": false
+      "smoke": false,
+      "taught_by": [
+        "s02-lab-a:reading:1",
+        "s02-lab-a:card"
+      ]
     },
     {
       "id": "a1-r-15",
@@ -216,8 +154,12 @@
       "normalise": "lower",
       "mode": "equals",
       "explain": "<span class=\"mo\">for row in rows:</span> starts the loop. The lines under it run once for each row, in the order the list holds them, and <span class=\"mo\">row</span> holds a different row each time round.",
-      "earliest_session": 2,
-      "smoke": false
+      "earliest_session": 3,
+      "smoke": false,
+      "taught_by": [
+        "s02-lab-a:reading:2",
+        "s02-lab-a:card"
+      ]
     },
     {
       "id": "a1-r-16",
@@ -237,8 +179,12 @@
       "normalise": "lower",
       "mode": "equals",
       "explain": "Indentation. The lines of the body are pushed in by the same amount under the line that starts the loop. The first line that is not pushed in is no longer part of the body.",
-      "earliest_session": 2,
-      "smoke": false
+      "earliest_session": 3,
+      "smoke": false,
+      "taught_by": [
+        "s02-lab-a:reading:1",
+        "s02-lab-a:reading:2"
+      ]
     },
     {
       "id": "a1-r-17",
@@ -259,8 +205,12 @@
       "normalise": "lower",
       "mode": "equals",
       "explain": "<span class=\"mo\">price &gt; 100</span> asks a question whose answer is <span class=\"mo\">True</span> or <span class=\"mo\">False</span>. Written after <span class=\"mo\">if</span>, it decides whether the lines under the <span class=\"mo\">if</span> run or are skipped.",
-      "earliest_session": 2,
-      "smoke": false
+      "earliest_session": 3,
+      "smoke": false,
+      "taught_by": [
+        "s02-lab-a:reading:1",
+        "s02-lab-a:card"
+      ]
     },
     {
       "id": "a1-r-18",
@@ -278,8 +228,11 @@
       "normalise": "lower",
       "mode": "equals",
       "explain": "<span class=\"mo\">==</span> asks whether two values are equal, and the answer is <span class=\"mo\">True</span> or <span class=\"mo\">False</span>. A single <span class=\"mo\">=</span> asks nothing: it gives the name on its left the value on its right.",
-      "earliest_session": 2,
-      "smoke": false
+      "earliest_session": 3,
+      "smoke": false,
+      "taught_by": [
+        "s02-lab-a:reading:1"
+      ]
     },
     {
       "id": "a1-r-19",
@@ -295,7 +248,11 @@
       "mode": "equals",
       "explain": "<span class=\"mo\">source .venv/bin/activate</span> switches this shell to the environment. It puts the environment’s own folder first in <span class=\"mo\">PATH</span>, so from then on <span class=\"mo\">python3</span> finds the environment’s Python before any other.",
       "earliest_session": 1,
-      "smoke": false
+      "smoke": false,
+      "taught_by": [
+        "s01-lab-a:reading:2",
+        "s01-lab-a:card"
+      ]
     },
     {
       "id": "a1-r-20",
@@ -314,7 +271,8 @@
       "mode": "equals",
       "explain": "<span class=\"mo\">platform.machine()</span> reports the architecture the running Python was built for. That can differ from what the machine says about itself, which is why the two are asked separately.",
       "earliest_session": 1,
-      "smoke": false
+      "smoke": false,
+      "retired": true
     },
     {
       "id": "a1-r-21",
@@ -322,16 +280,17 @@
       "prompt": "A Python file named <span class=\"mo\">report.py</span> is in the folder you are in now. Write the one command that runs it.",
       "accept_sha256": [
         "39f5aa758dca7f769850afbdf0d7cd0995d745bd8ee92088ab4c51ca9b660ed3",
-        "9fbd8a914518561f3a189d3ed629011c289dd37152f519742ae405e496b1c979",
-        "e2cb4239a258bcf2dab3a9c9aff7111393a6d862b4674a9a6f3a2bd8721a657e",
-        "256fe8223acc8d9443bc224276a8bb3601ad9150ec20b6568f5a57d08bb81e46",
-        "3f88274ddb671a09389e692e4135e8e1811b9b45a67a100f1e0ee974acc2f123"
+        "e2cb4239a258bcf2dab3a9c9aff7111393a6d862b4674a9a6f3a2bd8721a657e"
       ],
       "normalise": "lower",
       "mode": "equals",
-      "explain": "<span class=\"mo\">python3 report.py</span> hands the file to Python, which runs its lines from the top down. <span class=\"mo\">python3</span> is a name your shell has to look up, and the first match it finds is the one that runs the file.",
+      "explain": "<span class=\"mo\">python3 report.py</span> hands the file to Python, which runs its lines from the top down. <span class=\"mo\">python3</span> is a name your shell has to look up, and the first match it finds is the one that runs the file. <span class=\"mo\">python</span> is a different name: on your Mac only a switched-on environment supplies it, so outside one <span class=\"mo\">python report.py</span> stops with <span class=\"mo\">command not found</span>. <span class=\"mo\">python3</span> works with or without an environment.",
       "earliest_session": 1,
-      "smoke": false
+      "smoke": false,
+      "taught_by": [
+        "s01-lab-a:card",
+        "s01-lab-a:page"
+      ]
     },
     {
       "id": "a1-r-22",
@@ -351,7 +310,130 @@
       "mode": "equals",
       "explain": "<span class=\"mo\">ls</span> lists what is in the folder you are in. <span class=\"mo\">pwd</span> says which folder that is; <span class=\"mo\">ls</span> says what it holds.",
       "earliest_session": 1,
-      "smoke": false
+      "smoke": false,
+      "taught_by": [
+        "s01-lab-a:reading:1",
+        "s01-lab-a:card"
+      ]
+    },
+    {
+      "id": "a1-r-28",
+      "kind": "recall",
+      "prompt": "A folder named <span class=\"mo\">cs-core</span> sits in your home folder. Write the one command that moves your shell into it, from wherever you are now.",
+      "accept_sha256": [
+        "4ffabed2c2ffa72f581524f93adcd2476a218f9c0f96000795fda54b0b9deb23",
+        "9c90c363e516c4f682f07f9ee2909f9cec244ac1b81421dd07bc9b2f92af1367",
+        "b2546c6424a6bd476366902c40d8bd835d7070417fb0c38ed158eaa3349cd29b",
+        "3cd7bc3cfb9451b8b286b73ef10ec97f44895539e9ff6e0f18167fc10dce91e5",
+        "72775f272d531d518d980af9b21930444a42756f3a9492b659514c59130b3970",
+        "0b64f8aad0b1603c8867a7d16feecf11f98456843e093ce6674bc0ff534f54bd"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "<span class=\"mo\">cd ~/cs-core</span> changes the folder you are in. <span class=\"mo\">~</span> stands for your home folder, so the command works from anywhere. Nothing is printed when it works; <span class=\"mo\">pwd</span> shows where you landed.",
+      "earliest_session": 1,
+      "smoke": false,
+      "taught_by": [
+        "s01-lab-a:card",
+        "s01-lab-a:page",
+        "s01-lab-a:reading:1"
+      ]
+    },
+    {
+      "id": "a1-r-29",
+      "kind": "recall",
+      "prompt": "Write the one command that makes a new, empty folder named <span class=\"mo\">data</span> inside the folder you are in now.",
+      "accept_sha256": [
+        "8c384ff4da68c65c5d9a03dec19068294e0ef66ef3bf7bd57f4c04678c2c95c4",
+        "44bc54e0cfc07f3bf2adfa700bd0756c76a29b012f5fc9f3b3b393228be165c3",
+        "5ea8777da801b90fd9a76ad36bc91aca70a27f7bcf5ead0c6393b882c6259c02",
+        "4dbfd14e0110ccbddd9b9d2493ec9ab3b65f79435de8be732c3838df724a4184",
+        "1159639ec425b7428ad158feec750675d24317377ff4f038bd298486ad7fcc67",
+        "90137cf300abe01206bd4f5e62350ba2d06f0e02d69f714a272ba50177c73d9d"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "<span class=\"mo\">mkdir data</span> makes the folder and leaves you where you were. It does not move you into it: that is what <span class=\"mo\">cd</span> is for.",
+      "earliest_session": 1,
+      "smoke": false,
+      "taught_by": [
+        "s01-lab-a:page",
+        "s01-lab-a:reading:1"
+      ]
+    },
+    {
+      "id": "a1-r-30",
+      "kind": "recall",
+      "prompt": "A small text file named <span class=\"mo\">notes.txt</span> is in the folder you are in now. Write the one command that prints what is in it to the screen.",
+      "accept_sha256": [
+        "79da3829601cb9408ce46e55ba12ba03395bde60c39df7a711556ffdbc92e1fe",
+        "515971274caadb929f71c717b3290da1eefa249781e0ad8574f0a77e991c01fa"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "<span class=\"mo\">cat notes.txt</span> prints the file’s contents under your command and changes nothing in it. It is how you read the small file inside an environment that says which Python made it.",
+      "earliest_session": 1,
+      "smoke": false,
+      "taught_by": [
+        "s01-lab-a:card",
+        "s01-lab-a:page"
+      ]
+    },
+    {
+      "id": "a1-r-31",
+      "kind": "recall",
+      "prompt": "Inside a virtual environment’s folder sits a small text file that says which Python the environment was made from. Name that file.",
+      "accept_sha256": [
+        "52ac22c2c61c79c9655242d4af22dc97a7cfbdc1a1c1d92f964cf1d5c3de17da",
+        "3829b5fda9433cfc9f7231d93e78f9d140eadaffbbda7ddcb5f98e69a5fb234f",
+        "045b19059b36a57d3ba58a8a538c451d8d1d4c76763549c1788dc0a257bb3950"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "<span class=\"mo\">pyvenv.cfg</span>, at the top of the environment’s folder. Its <span class=\"mo\">home</span> line names the folder of the Python that made the environment, and its <span class=\"mo\">version</span> line names that Python’s version.",
+      "earliest_session": 1,
+      "smoke": false,
+      "taught_by": [
+        "s01-lab-a:card",
+        "s01-lab-a:page"
+      ]
+    },
+    {
+      "id": "a1-r-32",
+      "kind": "recall",
+      "prompt": "Two Pythons are installed, 3.12 and 3.15. The <span class=\"mo\">python3</span> your shell finds first is the 3.12 one, and you make a virtual environment with it. With the environment switched on, which version does its Python report? Answer with the first two numbers, like 3.xx.",
+      "accept_sha256": [
+        "33307da56af13f791584518fef2e49641180bfbf2ef7b2d256c9ab6fad564f80",
+        "7c835709fa60792c263c209b8ce1c9dd538cd7e5654a165e2157c6fb26f0db24",
+        "42f2b28d8258c41a63374ac4365007738900f66a9b62a7eb1a2041a2e091d41b",
+        "01d43aacad266e096176a03d5a7af8a5396e1016556f87532b019f6ba745cb7d"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "3.12. An environment keeps the Python that made it; it does not go looking for the newest one on the machine. To get 3.15 inside an environment, make the environment with the 3.15 Python.",
+      "earliest_session": 1,
+      "smoke": false,
+      "taught_by": [
+        "s01-lab-a:reading:2",
+        "s01-lab-a:page"
+      ]
+    },
+    {
+      "id": "a1-r-33",
+      "kind": "recall",
+      "prompt": "A program starts with <span class=\"mo\">import sys</span>. Write the short piece of code that gives the path of the Python that is running the program. It starts with <span class=\"mo\">sys</span>.",
+      "accept_sha256": [
+        "9664337669f250412d1d2e34c586eaa47c27a197b5be67f58cb62a4f8c6625b3",
+        "6ecc0f9e65898c69fb8f97a234ace4440b408b30fb81912669bf33948fd41f06"
+      ],
+      "normalise": "lower",
+      "mode": "equals",
+      "explain": "<span class=\"mo\">sys.executable</span> is the path of the Python running the program. With an environment switched on, it points inside <span class=\"mo\">.venv</span>: that is how a program can say which Python ran it.",
+      "earliest_session": 1,
+      "smoke": false,
+      "taught_by": [
+        "s01-interview-a:page"
+      ]
     }
   ],
   "variants": [
@@ -368,14 +450,14 @@
     },
     {
       "after_part": "s03-lab-a",
-      "ask": "A function takes two things and returns nothing. Its body is exactly two lines. First: <span class=\"mo\">label = label.upper()</span>, where <span class=\"mo\">.upper()</span> hands back an upper-case copy of the text and changes nothing. Then: <span class=\"mo\">settings[\"checked\"] = True</span>, which sets that key on the dictionary it was given. The caller sets <span class=\"mo\">name = \"ana\"</span> and <span class=\"mo\">config = {}</span>, calls the function with <span class=\"mo\">name</span> and <span class=\"mo\">config</span>, and then prints <span class=\"mo\">name</span> and <span class=\"mo\">config</span>. What does the print show?",
+      "ask": "A function takes two things and returns nothing. Its body is exactly two lines. First: <span class=\"mo\">label = label.upper()</span>, where <span class=\"mo\">.upper()</span> hands back an upper-case copy of the text and changes nothing. Then: <span class=\"mo\">notes.append(\"checked\")</span>, which adds an item to the list it was given. The caller sets <span class=\"mo\">name = \"ana\"</span> and <span class=\"mo\">log = []</span>, calls the function with <span class=\"mo\">name</span> and <span class=\"mo\">log</span>, and then prints <span class=\"mo\">name</span> and <span class=\"mo\">log</span>. What does the print show?",
       "options": [
-        "<span class=\"mo\">ANA</span> and <span class=\"mo\">{'checked': True}</span> — the function changed both of the things it was given.",
-        "<span class=\"mo\">ana</span> and <span class=\"mo\">{}</span> — it changed neither, because a function only ever works on its own copies.",
-        "<span class=\"mo\">ana</span> and <span class=\"mo\">{'checked': True}</span> — the dictionary changed and the text did not."
+        "<span class=\"mo\">ANA</span> and <span class=\"mo\">['checked']</span> — the function changed both of the things it was given.",
+        "<span class=\"mo\">ana</span> and <span class=\"mo\">[]</span> — it changed neither, because a function only ever works on its own copies.",
+        "<span class=\"mo\">ana</span> and <span class=\"mo\">['checked']</span> — the list changed and the text did not."
       ],
       "correct": 2,
-      "explain": "Assigning to <span class=\"mo\">label</span> points the function’s own name at a new string, and the caller’s <span class=\"mo\">name</span> still points at the old one. Setting a key changes the one dictionary both names point at, so the caller sees it straight away. What crosses out of a function is what you <span class=\"mo\">return</span>, plus anything you changed in place."
+      "explain": "Assigning to <span class=\"mo\">label</span> points the function’s own name at a new string, and the caller’s <span class=\"mo\">name</span> still points at the old one. <span class=\"mo\">append</span> changes the one list both names point at, so the caller sees it straight away. What crosses out of a function is what you <span class=\"mo\">return</span>, plus anything you changed in place."
     }
   ]
 }

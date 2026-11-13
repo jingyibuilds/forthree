@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
-import { ASK_FAILED, askReason, askResting } from "./ask-reason";
+import { ASK_DEGRADED, ASK_FAILED, askReason, askResting } from "./ask-reason";
 import { Html } from "./html";
 import { Icon } from "./icons";
+import { studyFetch } from "@/lib/study-fetch";
 
 // §4.0 and gate G5. Three states, and only two of them render: live, and
 // disabled with its reason. A part where no help is allowed renders nothing at
@@ -33,14 +34,14 @@ export default function AskBubble({
     setBusy(true);
     setQuestion("");
     try {
-      const response = await fetch("/api/llm", {
+      const response = await studyFetch("/api/llm", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({feature: "followup", question: asked, part, attempt}),
       });
       const data = await response.json();
       // A refusal is a sentence. No internal code ever reaches this panel (§4.1).
-      const answer = response.ok ? data.text ?? ASK_FAILED : data.error ? askReason({reason: data.error}) : ASK_FAILED;
+      const answer = response.ok ? data.text ?? ASK_DEGRADED[data.reason] ?? ASK_FAILED : data.error ? askReason({reason: data.error}) : ASK_FAILED;
       setLog(entries => [...entries, {q: asked, a: answer}]);
     } catch {
       setLog(entries => [...entries, {q: asked, a: ASK_FAILED}]);

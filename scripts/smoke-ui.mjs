@@ -15,7 +15,7 @@
 // Without a build it stops and says so. Without Chrome it is SKIPPED, loudly,
 // and exits 0 unless --require.
 import {spawn} from "node:child_process";
-import {existsSync, mkdtempSync, rmSync} from "node:fs";
+import {existsSync, mkdtempSync, readFileSync, rmSync} from "node:fs";
 import {createServer} from "node:net";
 import os from "node:os";
 import {dirname, join, resolve} from "node:path";
@@ -30,7 +30,8 @@ if (!existsSync(CHROME)) {
   console.log(`smoke-ui: SKIPPED — Chrome is not at ${CHROME} (set CHROME_PATH). No screen was checked.`);
   process.exit(required ? 1 : 0);
 }
-if (!existsSync(join(root, ".next/BUILD_ID"))) {
+const dist = process.env.FORTHREE_DIST_DIR ?? ".next-check";
+if (!existsSync(join(root, dist, "BUILD_ID"))) {
   console.error("smoke-ui: there is no production build. Run `npm run build` first; this checks what a build serves.");
   process.exit(1);
 }
@@ -47,7 +48,7 @@ const profile = mkdtempSync(join(os.tmpdir(), "forthree-smoke-chrome-"));
 const port = await freePort();
 const origin = `http://127.0.0.1:${port}`;
 const server = spawn(process.execPath, [join(root, "node_modules/next/dist/bin/next"), "start", "--hostname", "127.0.0.1", "--port", String(port)],
-  {cwd: root, env: {...process.env, FORTHREE_STUDY_ROOT: store}, stdio: "ignore"});
+  {cwd: root, env: {...process.env, FORTHREE_STUDY_ROOT: store, FORTHREE_DIST_DIR: dist}, stdio: "ignore"});
 let chrome;
 const stop = () => {
   server.kill();
@@ -93,7 +94,9 @@ socket.addEventListener("message", event => {
   const message = JSON.parse(event.data);
   if (message.id && waiting.has(message.id)) { waiting.get(message.id)(message); waiting.delete(message.id); }
   if (message.method === "Network.requestWillBeSent" && message.params.request.method !== "GET") {
-    writes.push(`${message.params.request.method} ${new URL(message.params.request.url).pathname}`);
+    // The teacher's note is not a write to her record: it reads the record
+    // and keeps its own note beside it (REBUILD.md R3), so it is not counted.
+    if (new URL(message.params.request.url).pathname !== "/api/llm") writes.push(`${message.params.request.method} ${new URL(message.params.request.url).pathname}`);
   }
   if (message.method === "Runtime.exceptionThrown") exceptions.push(message.params.exceptionDetails.exception?.description ?? "uncaught error");
 });
@@ -150,6 +153,7 @@ async function everyScreen(label) {
       offLinks: all('a').filter(el => !controls.some(c => el.matches(c)) && getComputedStyle(el).color !== ${JSON.stringify(PEACOCK)}).map(el => el.innerText.trim().slice(0, 40)),
       column: main ? Math.round(rect(main).w) : 0,
       emptyPanels: all('.panel .panel-body').filter(el => !el.innerText.trim()).length,
+      goal: !location.pathname.startsWith('/session/') || /This part is done/.test(document.querySelector('.study-body h1')?.innerText ?? '') || !!document.querySelector('.study-body .goal'),
     };`);
   check("L-UI-03", `${label}: at most one filled action`, facts.filled.length <= 1, facts.filled.join(" | "));
   check("L-UI-02", `${label}: every icon sits in its line of text`, facts.blockIcons === 0, `${facts.blockIcons} block-level icons`);
@@ -157,6 +161,7 @@ async function everyScreen(label) {
   check("L-AUTH-08", `${label}: English only`, facts.cjk === 0, `${facts.cjk} CJK characters`);
   check("L-UI-04", `${label}: every link looks like a link`, facts.offLinks.length === 0, facts.offLinks.join(" | "));
   check("L-UI-03", `${label}: no panel is a header over an empty box`, facts.emptyPanels === 0);
+  check("L-AUTH-16", `${label}: a part opens with its goal`, facts.goal);
   return facts;
 }
 
@@ -240,7 +245,7 @@ try {
     const el = document.querySelector('.askpanel');
     return el ? {w: Math.round(rect(el).w), inside: rect(el).t >= 0 && rect(el).b <= innerHeight, text: el.innerText, column: Math.round(rect(document.querySelector('.study-body')).w)} : null;`);
   check("L-UI-09", "the open Ask panel is 330px wide and inside the viewport", panel?.w === 330 && panel?.inside, JSON.stringify(panel && {w: panel.w, inside: panel.inside}));
-  check("L-ASK-03", "the open Ask panel says it is not switched on, before she types", !!panel?.text.includes("not switched on"));
+  check("L-ASK-03", "the open Ask panel says what it is for, before she types", !!panel?.text.includes("It explains; it will not write the answer for you"));
   check("L-AUTH-09", "the open Ask panel lists the words this part uses", !!panel?.text.includes("Words this part uses"));
   check("L-UI-05", "the content column is the same width with Ask off, on and open",
     first.column === locked.column && locked.column === panel?.column, `${first.column} / ${locked.column} / ${panel?.column}`);
@@ -253,10 +258,17 @@ try {
 
   // ---- a finished part is read-only, and reading it writes nothing ----
   await post("s01-lab-a", "step", {step: "attempt"});
+  // The lab step lists the session's readings again, without ticks: a reading
+  // has one place to tick it, the session card (owner, 2026-11-13; L-UI-12).
+  await open("/session/s01-lab-a", ".lad");
+  check("L-UI-12", "the lab step: its readings are listed, with no ticks",
+    await js(`const card = [...document.querySelectorAll('.refcard')].find(el => el.textContent.includes('Read this first'));
+      return !!card && !card.querySelector('input[type=checkbox]') && !document.querySelector('.read-tick, .session-note');`));
   await post("s01-lab-a", "task/0", {did_pass: true});
-  await post("s01-lab-a", "receipt", {raw: "$ uname -m\narm64\n$ python3 -c \"import platform; print(platform.machine())\"\nx86_64"});
-  for (const step of ["compare", "record"]) await post("s01-lab-a", "step", {step});
-  await post("s01-lab-a", "label", {label: 1});
+  // A real run of the three tasks, from curriculum/receipts (Python 3.15, zsh prompt).
+  const s01Run = JSON.parse(readFileSync(join(root, "curriculum/receipts/s01-lab-a.json"), "utf8")).receipts.find(entry => entry.name.includes("3.15")).raw;
+  await post("s01-lab-a", "receipt", {raw: s01Run});
+  await post("s01-lab-a", "step", {step: "compare"});
   const finished = await post("s01-lab-a", "step", {step: "done"});
   check("L-REC-03", "(setup) the lab finished through the routes", finished.status === 200 && !!finished.data?.record?.finished_at, String(finished.status));
   await open("/session/s01-lab-a");
@@ -282,6 +294,21 @@ try {
     const there = await js(`const pip = document.querySelectorAll('.pip')[${position}]; if (!pip) return false; pip.click(); await new Promise(r => setTimeout(r, 200)); return true;`);
     if (there) await everyScreen(`a finished lab, step ${position + 1}`);
   }
+  // Her guess is explained beside the answer, in its own card, and never as a
+  // verdict; the reference panes say they are not hers (owner, 2026-11-11).
+  const compareStep = await js(`const pip = document.querySelectorAll('.pip')[2]; pip.click(); await new Promise(r => setTimeout(r, 200));
+    const body = document.querySelector('.study-body');
+    return {guess: !!body.querySelector('.guessbox .pick'), wrong: /guess was wrong/i.test(body.innerText),
+      refs: !!body.querySelector('.refs .refh'), order: [...body.querySelectorAll('.yours, .guessbox, .refs, .note')].map(el => el.className)};`);
+  check("L-COPY-07", "compare: her guess sits beside the answer, in its own card", compareStep.guess);
+  check("L-COPY-07", "compare: nothing says her guess was wrong", !compareStep.wrong);
+  // And back on the guess step, the right option is marked and the same card is there.
+  const guessStep = await js(`const pip = document.querySelectorAll('.pip')[0]; pip.click(); await new Promise(r => setTimeout(r, 200));
+    return {answer: document.querySelectorAll('.opt.answer').length, card: !!document.querySelector('.study-body .guessbox')};`);
+  check("L-COPY-07", "guess step, after her run: the right option is marked, and the card says why", guessStep.answer === 1 && guessStep.card, JSON.stringify(guessStep));
+  // Session 1's results page is three blocks: her run, her guess, one explanation (REBUILD.md, R2).
+  check("L-UI-10", "compare: her run, her guess, one explanation, in that order, and no panes that are not hers",
+    !compareStep.refs && compareStep.order.join(",") === "yours,guessbox,note", compareStep.order.join(","));
 
   // ---- Today once the lab is done: the next part, and the lab as a link ----
   await open("/");
@@ -297,6 +324,11 @@ try {
   check("L-ASK-01", "the interview: Ask is not on the screen (its three questions are the conversation)", await js(`return !document.querySelector('.fab');`));
   check("L-AUTH-05", "the interview shows its program and three questions",
     await js(`return !!document.querySelector('.study-body pre') && document.querySelectorAll('.study-body textarea').length === 3;`));
+  // Two questions, then the program with its note, then the third (REBUILD.md, R2).
+  check("L-UI-10", "the interview: the program, with its note, sits between question 2 and question 3",
+    await js(`const boxes = document.querySelectorAll('.study-body textarea'); const program = document.querySelector('.refcard.program');
+      return !!program && !!program.querySelector('.undercode') && !!(boxes[1].compareDocumentPosition(program) & Node.DOCUMENT_POSITION_FOLLOWING)
+        && !!(program.compareDocumentPosition(boxes[2]) & Node.DOCUMENT_POSITION_FOLLOWING);`));
   await post("s01-interview-a", "answers", {q1: "a".repeat(20), q2: "b".repeat(20), q3: "c".repeat(20)});
   const talked = await post("s01-interview-a", "step", {step: "done"});
   check("L-GATE-04", "(setup) the interview finished through the routes", talked.status === 200, String(talked.status));
@@ -305,12 +337,61 @@ try {
   check("L-ASK-01", "the no-help check: Ask is not on the screen at all", await js(`return !document.querySelector('.fab');`));
   check("L-GATE-01", "the no-help check: one question at a time, 0 of 3 answered, one box to type in",
     await js(`return document.querySelectorAll('.study-body textarea').length === 1 && document.querySelector('.study-body').innerText.includes('0 of 3 answered');`));
+  // Answered on the page itself: the last answer goes straight to how it went,
+  // with no extra button (owner, 2026-11-11; L-UI-11).
+  const answered = await js(`const wait = ms => new Promise(r => setTimeout(r, ms));
+    const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value").set;
+    for (let k = 0; k < 3; k += 1) {
+      const box = document.querySelector(".study-body textarea");
+      if (!box) return "no box at question " + (k + 1);
+      setter.call(box, "my answer " + k); box.dispatchEvent(new Event("input", {bubbles: true}));
+      await wait(150);
+      [...document.querySelectorAll(".study-body button.go")].find(b => /Lock in my answer/.test(b.innerText))?.click();
+      await wait(900);
+    }
+    return document.querySelector(".study-body h2")?.innerText ?? "";`);
+  check("L-UI-11", "the no-help check: the last answer goes straight to how it went", answered === "How it went", answered);
 
   // ---- the board ----
   await open("/board");
   await everyScreen("the board");
   check("L-COPY-01", "the board: eight skills, no percentages",
     await js(`return document.querySelectorAll('.bar2').length === 8 && !document.querySelector('.study-body').innerText.includes('%');`));
+
+  // ---- her reading log (owner, 2026-11-13; L-UI-12) ----
+  // One tick per reading and one note, on the session page; the log page
+  // shows both and changes neither; a tick taken back is gone from it.
+  await open("/", ".read .ticked-row input:not([disabled])");
+  const ticks = await js(`${PAGE}
+    // The readings' own section: the environment check above reuses the row style.
+    const list = document.querySelector('.session-note')?.closest('.read');
+    return {rows: list ? list.querySelectorAll('.reading-row').length : 0, boxes: all('.read-tick input').length, notes: all('.session-note textarea').length};`);
+  check("L-UI-12", "Today: a tick beside every reading, and one note box", ticks.rows > 0 && ticks.rows === ticks.boxes && ticks.notes === 1, JSON.stringify(ticks));
+  const logged = await js(`const wait = ms => new Promise(r => setTimeout(r, ms));
+    document.querySelector('.read .read-tick input').click();
+    const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value").set;
+    const box = document.querySelector('.session-note textarea');
+    setter.call(box, "Read the shell lecture."); box.dispatchEvent(new Event("input", {bubbles: true}));
+    for (let k = 0; k < 30 && !/Saved/.test(document.querySelector('.note-state').innerText); k += 1) await wait(100);
+    return {title: document.querySelector('.read .reading-row a').innerText.trim(), said: document.querySelector('.note-state').innerText};`);
+  check("L-UI-12", "Today: the note saves itself and says so", /Saved/.test(logged.said), logged.said);
+  await open("/reading-log", ".log");
+  await everyScreen("the reading log");
+  check("L-UI-12", "the reading log: the tick and the note made on Today are here",
+    await js(`const row = [...document.querySelectorAll('.log-row')].find(entry => entry.innerText.includes(${JSON.stringify(logged.title)}));
+      return !!row?.classList.contains('is-read') && document.querySelector('.log-note').innerText.includes('Read the shell lecture.');`));
+  check("L-UI-12", "the reading log: nothing to change here; that is on the session page",
+    await js(`return document.querySelectorAll('.study-body input, .study-body textarea').length === 0;`));
+  await open("/", ".read .ticked-row input:not([disabled])");
+  await js(`document.querySelector('.read .read-tick input').click();
+    for (let k = 0; k < 40; k += 1) {
+      const log = await (await fetch('/api/reading-log')).json();
+      if (log.sessions.every(entry => entry.readings.every(row => !row.read_at))) return;
+      await new Promise(r => setTimeout(r, 100));
+    }`);
+  await open("/reading-log", ".log");
+  check("L-UI-12", "the reading log: a tick taken back on Today is gone here",
+    await js(`return document.querySelectorAll('.log-row.is-read').length === 0;`));
 
   check("L-UI-01", "no screen threw an error", exceptions.length === 0, exceptions.join(" | ").slice(0, 300));
 } catch (error) {
@@ -319,7 +400,7 @@ try {
 
 // The number of checks is part of the result: a scenario that silently stops
 // running would otherwise read as a pass. Raise this when checks are added.
-const EXPECTED_AT_LEAST = 141;
+const EXPECTED_AT_LEAST = 168;
 if (results.length < EXPECTED_AT_LEAST) check("smoke", `at least ${EXPECTED_AT_LEAST} checks ran`, false, `${results.length} ran`);
 const failed = results.filter(result => !result.pass);
 for (const result of failed) console.error(`FAIL  ${result.lesson}  ${result.name}${result.detail ? `  [${result.detail}]` : ""}`);

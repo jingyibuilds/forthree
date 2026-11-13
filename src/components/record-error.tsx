@@ -2,7 +2,7 @@ import Shell from "./shell";
 
 /** §19.0: a file the app cannot read is named on the screen, with the rest of
  *  the semester declared intact — never an unhandled crash. */
-export default function RecordError({active, message}: {active: "/" | "/curriculum" | "/board"; message: string}) {
+export default function RecordError({active, message}: {active: "/" | "/curriculum" | "/board" | "/reading-log"; message: string}) {
   return (
     <Shell active={active}>
       <h1>Your record could not be read</h1>

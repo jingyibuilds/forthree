@@ -4,12 +4,17 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1",
+    "dev:web": "FORTHREE_MODE=web FORTHREE_DIST_DIR=.next-web next dev --hostname 127.0.0.1 --port 3010",
     "build": "node scripts/validate-content.mjs && next build --webpack",
     "start": "next start --hostname 127.0.0.1",
     "lint": "eslint",
     "validate:content": "node scripts/validate-content.mjs",
     "check": "node scripts/check.mjs",
     "test:study": "node scripts/test-study.mjs",
+    "test:store": "node scripts/test-store.mjs",
+    "test:web": "node scripts/test-web.mjs",
+    "test:trial": "node scripts/test-web-screens.mjs",
+    "test:gate": "node scripts/test-public-gate.mjs",
     "test:ui": "node scripts/smoke-ui.mjs",
     "measure": "node scripts/measure-content.mjs"
   },

@@ -32,8 +32,7 @@ if [[ ! -x .venv/bin/python3 ]]; then
   uv venv --python "$native_python" .venv
 fi
 echo 'Installing the pinned tools needed by the semester into .venv.'
-uv pip install --python .venv/bin/python3 \
-  pytest==8.3.5 hypothesis==6.131.9 psutil==7.0.0 numpy==2.2.5 ruff==0.11.8 pyright==1.1.400
+uv pip install --python .venv/bin/python3 -r requirements-course.txt
 # Report what was installed, and nothing about the terminal: this script's
 # PATH is its own, so "the first python3 on PATH" here says nothing true about
 # the terminal she types in.
@@ -42,6 +41,6 @@ echo 'Checking what was installed.'
 # The full path, quoted: she runs this from her own folder, where a relative
 # `.venv/bin/activate` is a different environment — the one session 1 has her
 # build from the wrong Python.
-echo "Next, in the terminal where you do the labs:"
-echo "  source '$PWD/.venv/bin/activate'"
-echo 'That makes python3 in that terminal the course Python. Nothing above changed which python3 your terminal uses.'
+echo "The course's own Python is ready. Your labs run in an environment of your own in ~/cs-core;"
+echo "the end of session 1's lab shows how to make one from this Python, or to keep yours if it is 3.12 or newer."
+echo 'Nothing above changed which python3 your terminal uses.'

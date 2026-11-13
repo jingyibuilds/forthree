@@ -29,8 +29,7 @@ const CHECK_FIELDS = {
   accept_any: {required: ["accept_sha256", "normalise"], optional: ["field", "mode"]},
 };
 const NORMALISE = ["trim", "collapse", "lower", "sorted_lines", "sequence"];
-const RIGHT_REASON = "I had it right, and for the right reason.";
-const STEP_KEYS = ["learn", "predict", "attempt", "compare", "record", "resurface"];
+const STEP_KEYS = ["learn", "predict", "attempt", "compare", "resurface"];
 // CURRICULUM §10's per-size table; an exposure has no medium figure at all.
 const TEARDOWN_MINUTES = {
   "simple:true": 45, "medium:true": 90, "difficult:true": 150,
@@ -101,6 +100,25 @@ export function validateContent(root = process.cwd()) {
     else if (Array.isArray(value)) value.forEach((entry, index) => eachString(entry, key, visit, `${trail}[${index}]`));
     else if (object(value)) for (const [name, entry] of Object.entries(value)) eachString(entry, name, visit, `${trail}.${name}`);
   };
+  // ---- the voice (L-COPY-10): the mechanical marks of lines written for
+  // someone who already knows. A cold-read reviewer holds the rest. ----
+  const VOICE_PHRASES = ["is not a style choice", "never asked you", "survive the loop", "survives the loop", "that is the shape of",
+    "the whole of this", "and that silence", "worse than broken", "that is it:"];
+  eachString(block, "", (string, key, trail) => {
+    if (CODE_FIELDS.has(key)) return;
+    const prose = proseOf(string).replace(/<[^>]+>/g, "");
+    check((prose.match(/—/g) ?? []).length <= 1, trail, "more than one dash in a line: join the clauses by their reason instead (L-COPY-10)");
+    for (const phrase of VOICE_PHRASES) {
+      check(!prose.toLowerCase().includes(phrase), trail, `"${phrase}" is the slogan voice she could not parse: say it plainly (L-COPY-10)`);
+    }
+  });
+  for (const session of block.sessions) {
+    const where = `A1.session ${session.session}`;
+    check(/\byou\b/i.test(String(session.subtitle ?? "")), where, "subtitle: say what she will do, to her (\"In this session you …\"), not a summary for someone who already knows (L-COPY-10)");
+    for (const [label, value] of [["subtitle", session.subtitle], ...session.parts.flatMap(part => [[`${part.id}.why`, part.why], [`${part.id}.setup`, part.setup], [`${part.id}.goal`, part.goal]])]) {
+      check(!/^\s*The\s/.test(proseOf(String(value ?? ""))), `${where} ${label}`, "opens on \"The\": introduce what it names first; she has not been shown it yet (L-COPY-10)");
+    }
+  }
   eachString(block, "", (string, key, trail) => {
     // A field the scaffold left for the author (scripts/new-session.mjs).
     check(!/\bTODO\b/.test(string), trail, "still says TODO: a session lands whole or not at all");
@@ -148,7 +166,10 @@ export function validateContent(root = process.cwd()) {
 
   for (const session of sessions) {
     const where = `session ${session?.session}`;
-    keys(session, ["session", "title", "subtitle", "double", "covers", "parts"], where);
+    keys(session, ["session", "title", "subtitle", "double", "covers", "constructs", "parts"], where);
+    // What Python a session teaches, by keyword, so a program can be checked
+    // against everything taught so far (REBUILD.md, R1).
+    check(array(session?.constructs).every(text), where, "constructs lists the Python keywords this session teaches ([] is legal)");
     check(text(session?.title), where, "missing non-empty title");
     if (session?.subtitle !== undefined) check(text(session.subtitle), where, "subtitle must be non-empty when present");
     if (session?.double !== undefined) check(typeof session.double === "boolean", where, "double must be boolean");
@@ -203,11 +224,13 @@ export function validateContent(root = process.cwd()) {
         "id", "kind", "shows", "minutes", "ai_allowed", "why", "setup", "needs_environment",
         "before_you_start", "reading", "tasks", "reference_card", "reference_card_bans", "rules",
         "predict", "acceptance_checks", "verdicts", "leak_guard", "receipt_commands", "receipt_fields",
-        "receipt_prompt", "receipt_hint", "compare", "labels", "concepts", "provenance",
-        "bar", "item_kind", "brief", "questions", "looks_for", "target",
+        "receipt_prompt", "receipt_hint", "compare", "concepts", "provenance", "goal",
+        "bar", "item_kind", "brief", "questions", "looks_for", "target", "target_note",
         "anatomy_example", "product", "size", "scored", "scorable", "held",
       ], here);
       if (!object(part)) continue;
+      // Every part says what she can do at its end, first (REBUILD.md, R1).
+      check(text(part.goal) && !/[<>]/.test(part.goal), here, "goal: one plain sentence, what she can do at the end of this part");
 
       const match = /^s(\d{2})-(lab|teardown|withdraw|interview|exam)-([a-z])$/.exec(part.id ?? "");
       check(!!match, here, "id must be s<NN>-<kind>-<letter>");
@@ -259,7 +282,18 @@ export function validateContent(root = process.cwd()) {
         check(tasks.some(task => task?.guess === true), here,
           "at least one task must ask for a pass/fail guess, or the retrieval loop never fires");
         for (const task of tasks) {
-          keys(task, ["name", "brief", "passes_when", "minutes", "guess"], `${here}.task`);
+          keys(task, ["name", "brief", "passes_when", "minutes", "guess", "taught_by"], `${here}.task`);
+          // Every task names what teaches it, and every name resolves (R1).
+          check(array(task?.taught_by).length > 0, `${here}.task`, `"${task?.name}" names nothing that teaches it (taught_by)`);
+          for (const ref of array(task?.taught_by)) {
+            const [kind, value] = String(ref).split(":");
+            const ok = kind === "reading" ? Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= array(part.reading).length
+              : kind === "card" ? array(part.reference_card).length > 0
+              : kind === "page" ? true
+              : kind === "session" ? Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) < session.session
+              : false;
+            check(ok, `${here}.task`, `taught_by "${ref}" resolves to nothing: reading:N, card, page or session:N (an earlier one)`);
+          }
           check(text(task?.name) && text(task?.brief) && text(task?.passes_when), `${here}.task`,
             "name, brief and passes_when are required");
           check(integer(task?.minutes) && task.minutes > 0, `${here}.task`,
@@ -284,11 +318,12 @@ export function validateContent(root = process.cwd()) {
         }
         check(text(part.receipt_prompt), here, "a lab names the evidence it wants pasted back");
         check(array(part.acceptance_checks).length > 0, here, "a lab is graded by at least one acceptance check");
-        check(array(part.labels).length >= 2 && array(part.labels).includes(RIGHT_REASON), here,
-          `labels need at least two entries, one of them exactly "${RIGHT_REASON}"`);
         keys(part.compare, ["mine_label", "mine", "theirs_label", "theirs", "note", "table", "after"], `${here}.compare`);
-        for (const field of ["mine_label", "mine", "theirs_label", "theirs", "note"]) {
-          check(text(part.compare?.[field]), `${here}.compare`, `missing non-empty ${field}`);
+        check(text(part.compare?.note), `${here}.compare`, "missing non-empty note");
+        // Reference panes only where the chain makes them evidence; when
+        // there, both are labelled (REBUILD.md, R2).
+        for (const pane of ["mine", "theirs"]) {
+          if (part.compare?.[pane] !== undefined) check(text(part.compare[pane]) && text(part.compare[`${pane}_label`]), `${here}.compare`, `${pane} needs its label`);
         }
         if (part.compare?.table !== undefined) {
           const table = part.compare.table;
@@ -357,8 +392,6 @@ export function validateContent(root = process.cwd()) {
         if (part.bar === "build") {
           check(["recall", "cold_write"].includes(part.item_kind), here, "a build check declares item_kind");
         }
-        check(array(part.labels).length >= 2 && array(part.labels).includes(RIGHT_REASON), here,
-          `labels need at least two entries, one of them exactly "${RIGHT_REASON}"`);
         check(part.provenance === undefined, here, "a no-help check's provenance is the sealed bank's");
       }
 
@@ -375,13 +408,12 @@ export function validateContent(root = process.cwd()) {
         if (text(part.target?.path)) {
           check(existsSync(join(root, part.target.path)), `${here}.target`, `no such file: ${part.target.path}`);
         }
-        check(part.labels === undefined, here, "an interview skips the record step");
       }
 
       // ---- predict ----
       if (part.predict !== undefined) {
         const where2 = `${here}.predict`;
-        keys(part.predict, ["type", "ask", "options", "correct", "why_prompt", "unit", "magnitude"], where2);
+        keys(part.predict, ["type", "ask", "options", "correct", "why_prompt", "unit", "magnitude", "because"], where2);
         check(text(part.predict.ask) && text(part.predict.why_prompt), where2, "ask and why_prompt are required");
         if (part.predict.type === "choice") {
           const options = array(part.predict.options);
@@ -389,6 +421,10 @@ export function validateContent(root = process.cwd()) {
             "a choice needs at least three distinct options, each a real mental model");
           check(integer(part.predict.correct) && part.predict.correct < options.length, where2,
             "correct is one valid option index");
+          // The reveal explains her own pick, whichever she made: what that
+          // option expects, and what the run shows (DECISIONS 2026-11-11).
+          check(Array.isArray(part.predict.because) && part.predict.because.length === options.length && part.predict.because.every(text), where2,
+            "because: one explanation per option, in the options' order");
         } else if (part.predict.type === "quantity") {
           check(text(part.predict.unit), where2, "a quantity names its unit");
           check(Number.isFinite(part.predict.correct) && typeof part.predict.magnitude === "boolean", where2,
@@ -475,8 +511,7 @@ export function validateContent(root = process.cwd()) {
       }
       // Markup in a field the runner prints as plain text reaches her as
       // `<span class="mo">`. These are the fields rendered without <Html>.
-      check(!/[<>]/.test(String(part.brief ?? "")), here, "brief is rendered as plain text and may not contain markup");
-      for (const field of ["labels", "questions", "shows", "before_you_start"]) {
+      for (const field of ["questions", "shows", "before_you_start"]) {
         for (const value of array(part[field])) {
           check(!/[<>]/.test(String(value)), here, `${field} is rendered as plain text and may not contain markup`);
         }
@@ -488,8 +523,26 @@ export function validateContent(root = process.cwd()) {
         check(object(part.verdicts), `${here}.verdicts`, "verdicts is an object keyed by check id");
         for (const [id, words] of Object.entries(part.verdicts ?? {})) {
           check(ids.has(id), `${here}.verdicts`, `${id} is not a check on this part`);
-          keys(words, ["pass", "fail", "partial", "missing"], `${here}.verdicts.${id}`);
+          keys(words, ["pass", "fail", "partial", "missing", "wrong"], `${here}.verdicts.${id}`);
           check(text(words?.pass) && text(words?.fail), `${here}.verdicts.${id}`, "pass and fail wording are required");
+          // A verdict is stored in her record and read back out of it, so it
+          // is rendered through the sanitizer in src/components/html.tsx
+          // rather than trusted. That function re-emits a fixed list of tags
+          // written one exact way; anything else survives as visible escaped
+          // text on her screen. Catch it here, where it is written.
+          const TAG = /<\/?(?:span|b|i|em|strong|code|pre|br)(?: class="[A-Za-z0-9 _-]*")?>/g;
+          for (const [field, wording] of Object.entries(words ?? {})) {
+            // `missing` and `wrong` are both objects keyed by binding, and
+            // `wrong` is the one already authored with markup, so treating it
+            // as a string skipped exactly the field an author touches next.
+            for (const say of field === "missing" || field === "wrong" ? Object.values(wording ?? {}) : [wording]) {
+              if (typeof say !== "string") continue;
+              const left = say.replace(TAG, "");
+              check(!left.includes("<"), `${here}.verdicts.${id}.${field}`,
+                "a verdict may use <span class=\"…\">, <b>, <i>, <em>, <strong>, <code>, <pre> or <br> and nothing else — "
+                + "single quotes, extra attributes and extra spaces are not markup here, they are text on her screen");
+            }
+          }
         }
       }
 
@@ -556,6 +609,94 @@ export function validateContent(root = process.cwd()) {
     }
   }
 
+  // ---- a lab's checks are tried on real runs, right and wrong (L-AUTH-11) ----
+  // From session 4 on, every lab carries curriculum/receipts/<id>.json, and
+  // every check in it is shown at least one run it must pass and one it must
+  // refuse. scripts/test-study.mjs grades them. Sessions 1-3 predate the rule
+  // and hold their receipt cases in the tests themselves.
+  for (const lab of labParts) {
+    if (Number(lab.id.slice(1, 3)) < 4) continue;
+    const fixturePath = join(root, "curriculum/receipts", `${lab.id}.json`);
+    check(existsSync(fixturePath), lab.id,
+      `no curriculum/receipts/${lab.id}.json: real runs of her file, right ones written several ways and the wrong ones each wrong belief would paste`);
+    if (!existsSync(fixturePath)) continue;
+    let fixture;
+    try { fixture = JSON.parse(readFileSync(fixturePath, "utf8")); } catch { check(false, lab.id, `curriculum/receipts/${lab.id}.json is not valid JSON`); continue; }
+    const receipts = array(fixture?.receipts);
+    for (const checkDef of array(lab.acceptance_checks)) {
+      check(receipts.some(receipt => receipt?.expect?.[checkDef.id] === true) && receipts.some(receipt => receipt?.expect?.[checkDef.id] === false),
+        lab.id, `check ${checkDef.id} needs a receipt it must pass and one it must refuse in curriculum/receipts/${lab.id}.json`);
+    }
+  }
+
+  // ---- a program uses only Python she has been taught (REBUILD.md, R1) ----
+  // Every keyword in an interview's program or a lab's kit must be in the
+  // `constructs` of its session or an earlier one. Session 1's interview once
+  // turned on `try/except`, which nothing before it taught.
+  {
+    const KEYWORDS = ["and", "as", "assert", "async", "await", "break", "class", "continue", "def", "del", "elif", "else", "except",
+      "finally", "for", "from", "global", "if", "import", "in", "is", "lambda", "nonlocal", "not", "or", "pass", "raise",
+      "return", "try", "while", "with", "yield"];
+    const keywordsIn = source => {
+      const code = source
+        .replace(/("""|''')[\s\S]*?\1/g, "")
+        .replace(/"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'/g, "")
+        .replace(/#.*$/gm, "");
+      return new Set(KEYWORDS.filter(word => new RegExp(`\\b${word}\\b`).test(code)));
+    };
+    const taught = new Set();
+    for (const session of [...block.sessions].sort((x, y) => x.session - y.session)) {
+      for (const word of array(session.constructs)) taught.add(word);
+      for (const part of session.parts) {
+        const programs = [];
+        if (part.kind === "interview" && text(part.target?.path) && part.target.path.endsWith(".py") && existsSync(join(root, part.target.path))) programs.push(part.target.path);
+        if (part.kind === "lab" && existsSync(join(root, "public/labs", part.id))) {
+          for (const name of readdirSync(join(root, "public/labs", part.id)).filter(name => name.endsWith(".py"))) programs.push(`public/labs/${part.id}/${name}`);
+        }
+        for (const program of programs) {
+          const untaught = [...keywordsIn(readFileSync(join(root, program), "utf8"))].filter(word => !taught.has(word));
+          check(untaught.length === 0, `${part.id}`, `${program} uses ${untaught.join(", ")}, which no session up to ${session.session} lists in constructs: teach it first, or write the program without it`);
+        }
+      }
+    }
+  }
+
+  // ---- what the compare step shows was taught or asked (L-AUTH-16) ----
+  // A command shown in a compare pane must be one she has been given: on this
+  // lab's card or an earlier lab's, or named in this lab's tasks or receipt
+  // prompt. Session 1 once showed `python3 --version` output she was never
+  // asked for, beside her own correct result. Compared by command and flags,
+  // so `python3 bump.py` is covered by the card's `python3 hello.py`.
+  {
+    const plainText = value => String(value ?? "").replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+    const commandKey = line => {
+      const words = line.trim().split(/\s+/);
+      const name = words[0].split("/").pop();
+      const flags = [];
+      for (const word of words.slice(1)) { if (!word.startsWith("-")) break; flags.push(word); }
+      return [name, ...flags].join(" ");
+    };
+    const keysIn = text => new Set(plainText(text).split("\n").map(line => line.replace(/#.*$/, "").trim()).filter(Boolean).map(commandKey));
+    const taughtSoFar = new Set();
+    for (const session of [...block.sessions].sort((x, y) => x.session - y.session)) {
+      for (const part of session.parts) {
+        if (part.kind !== "lab") continue;
+        for (const row of part.reference_card ?? []) for (const key of keysIn(row.code)) taughtSoFar.add(key);
+        const asked = new Set([...(part.tasks ?? []).flatMap(task => [...keysIn(task.brief.replace(/<\/span>/g, "\n").replace(/<span class="mo">/g, "\n"))]),
+          ...keysIn(String(part.receipt_prompt ?? "").replace(/<\/span>/g, "\n").replace(/<span class="mo">/g, "\n"))]);
+        for (const pane of ["mine", "theirs"]) {
+          for (const line of plainText(part.compare?.[pane]).split("\n")) {
+            const command = line.match(/^\s*[$%]\s+(.+)$/)?.[1];
+            if (!command) continue;
+            const key = commandKey(command);
+            check(taughtSoFar.has(key) || asked.has(key), `${part.id}.compare.${pane}`,
+              `shows "${command}", but "${key}" is on no card so far and not in this lab's tasks or receipt prompt: what the compare step shows must have been taught or asked (L-AUTH-16)`);
+          }
+        }
+      }
+    }
+  }
+
   // ---- the sealed bank must be able to fill every draw this slice makes ----
   const sealedPath = "curriculum/sealed/a1.json";
   if (!existsSync(join(root, sealedPath))) {
@@ -575,6 +716,24 @@ export function validateContent(root = process.cwd()) {
         check(text(item?.prompt) && text(item?.explain), where, "prompt and explain are required");
         check(integer(item?.earliest_session) && item.earliest_session >= 1, where, "earliest_session is required");
         if (item?.smoke !== undefined) check(typeof item.smoke === "boolean", where, "smoke must be boolean");
+        if (item?.retired !== undefined) check(typeof item.retired === "boolean", where, "retired must be boolean");
+        // A live item names what teaches it, and that comes no later than the
+        // item's own session (REBUILD.md, R7): the bank was once left behind
+        // when the sessions it tested were rebuilt.
+        if (item?.retired !== true && item?.smoke !== true) {
+          check(array(item?.taught_by).length > 0, where, "taught_by: what teaches this item, as sNN-<part>:reading:N, :card or :page");
+          for (const ref of array(item?.taught_by)) {
+            const [partId, kind, value] = String(ref).split(":");
+            const owner = block.sessions.flatMap(session => session.parts.map(part => ({part, session: session.session}))).find(entry => entry.part.id === partId);
+            // From session 2 the check opens the session (check_first), so what it asks
+            // must be taught in an earlier session; session 1's check comes last.
+            const ok = !!owner && (owner.session < item.earliest_session || item.earliest_session === 1) && (
+              kind === "reading" ? Number(value) >= 1 && Number(value) <= array(owner.part.reading).length
+              : kind === "card" ? array(owner.part.reference_card).length > 0
+              : kind === "page" ? true : false);
+            check(ok, where, `taught_by "${ref}" resolves to nothing taught by session ${item.earliest_session}`);
+          }
+        }
         if (item?.kind === "recall") {
           check(NORMALISE.includes(item?.normalise), where, `normalise is one of ${NORMALISE.join(", ")}`);
           check(array(item?.accept_sha256).length > 0
@@ -595,13 +754,13 @@ export function validateContent(root = process.cwd()) {
         const want = part.item_kind === "cold_write" ? 1 : 3;
         const kind = part.item_kind ?? "recall";
         const eligible = bank.filter(item =>
-          item?.kind === kind && item?.smoke !== true && item?.earliest_session <= session && !seen.has(item.id));
+          item?.kind === kind && item?.smoke !== true && item?.retired !== true && item?.earliest_session <= session && !seen.has(item.id));
         check(eligible.length >= want, `${part.id}`,
           `needs ${want} unseen ${kind} item(s) at session ${session}; the bank offers ${eligible.length}`);
         for (const item of eligible.slice(0, want)) seen.add(item.id);
       }
       const spare = bank.filter(item =>
-        item?.kind === "recall" && item?.smoke !== true && item.earliest_session <= AUTHORED_THROUGH && !seen.has(item.id));
+        item?.kind === "recall" && item?.smoke !== true && item?.retired !== true && item.earliest_session <= AUTHORED_THROUGH && !seen.has(item.id));
       check(spare.length >= 3, sealedPath,
         `a failed check must be retakeable: ${spare.length} unseen recall items are left after sessions 1-${AUTHORED_THROUGH}, and a retake draws 3`);
 
@@ -632,7 +791,10 @@ export function validateContent(root = process.cwd()) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const {errors, notes, authored} = validateContent(process.argv[2] ? resolve(process.argv[2]) : process.cwd());
+  // The first argument that is not a flag is the root: new-session.mjs runs
+  // this with --require, which was once read as the root itself.
+  const rootArg = process.argv.slice(2).find(arg => !arg.startsWith("--"));
+  const {errors, notes, authored} = validateContent(rootArg ? resolve(rootArg) : process.cwd());
   if (errors.length) {
     console.error(errors.join("\n"));
     process.exitCode = 1;

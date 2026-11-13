@@ -2,6 +2,13 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { StudyError } from "./types";
+import * as memory from "./store-memory";
+
+// The public web trial runs this store in memory instead (PUBLISH.md §6): the
+// visitor's record travels with the request and the server writes no files.
+// Every caller keeps the same five primitives and the same observable rules;
+// only where the bytes live changes.
+const web = () => process.env.FORTHREE_MODE === "web";
 
 export function studyRoot() {
   return process.env.FORTHREE_STUDY_ROOT || path.join(process.cwd(), "study");
@@ -23,6 +30,7 @@ function missing(error: unknown) {
 // one lock so plan + attempt cannot race across tabs or Next worker processes.
 // A stale lock is deliberately never stolen; an interrupted writer needs review.
 export async function transaction<T>(run: () => Promise<T>): Promise<T> {
+  if (web()) return memory.transaction(run);
   await fs.mkdir(studyRoot(), {recursive: true, mode: 0o700});
   const lock = filePath(".write.lock");
   const until = Date.now() + 5000;
@@ -54,6 +62,7 @@ async function corruptionMarker(file: string) {
 }
 
 export async function readJson<T extends {version: number}>(relative: string): Promise<T | null> {
+  if (web()) return memory.readJson<T>(relative);
   const file = filePath(relative);
   let text: string;
   try {
@@ -75,6 +84,7 @@ export async function readJson<T extends {version: number}>(relative: string): P
 }
 
 export async function writeJson(relative: string, data: {version: number}) {
+  if (web()) return memory.writeJson(relative, data);
   const file = filePath(relative);
   await fs.mkdir(path.dirname(file), {recursive: true, mode: 0o700});
   if (await corruptionMarker(file)) {
@@ -96,6 +106,7 @@ export async function writeJson(relative: string, data: {version: number}) {
 }
 
 export async function appendJsonl(relative: string, row: object) {
+  if (web()) return memory.appendJsonl(relative, row);
   const file = filePath(relative);
   await fs.mkdir(path.dirname(file), {recursive: true, mode: 0o700});
   let previous = "";
@@ -116,6 +127,7 @@ export async function appendJsonl(relative: string, row: object) {
 }
 
 export async function readJsonl(relative: string): Promise<Record<string, unknown>[]> {
+  if (web()) return memory.readJsonl(relative);
   let raw: string;
   try { raw = await fs.readFile(filePath(relative), "utf8"); }
   catch (error) { if (missing(error)) return []; throw error; }

@@ -3,28 +3,34 @@ import { useCallback, useEffect, useState } from "react";
 import { askReason } from "./ask-reason";
 import Link from "next/link";
 import AskBubble, { BubbleMode } from "./ask-bubble";
+import TeacherNote from "./teacher-note";
+import ReadingList from "./reading-list";
 import Shell from "./shell";
 import { Icon } from "./icons";
-import { Html } from "./html";
+import { Html, HtmlFromRecord } from "./html";
+import { WEB, studyFetch } from "@/lib/study-fetch";
 
-type Task = {name: string; brief: string; passes_when?: string; guess?: boolean};
+type Task = {name: string; brief: string; passes_when?: string; guess?: boolean; uses: string[]};
 type Course = {name: string; url: string; kind: string; checked: string};
 type Part = {
   id: string; kind: string; session: number; block: string; ai_allowed: boolean;
   steps: string[]; step_labels: string[]; step_names: string[];
   why?: string; setup?: string; reading?: {title: string; url: string; teaches: string; minutes: number}[];
+  goal?: string; target_note?: string;
   tasks?: Task[]; reference_card?: {label: string; code: string}[]; rules?: string[];
   predict?: {type: string; ask: string; options?: string[]; unit?: string; why_prompt: string};
   receipt_prompt?: string; receipt_hint?: string;
-  compare?: {mine_label: string; mine: string; theirs_label: string; theirs: string; note: string; table?: string[][]; after?: string};
-  labels?: string[]; concepts?: {term: string; anchor: string; explain: string}[];
+  compare?: {mine_label?: string; mine?: string; theirs_label?: string; theirs?: string; note: string; table?: string[][]; after?: string};
+  concepts?: {term: string; anchor: string; explain: string}[];
   provenance?: {level: string; courses: Course[]};
   brief?: string; questions?: string[]; looks_for?: string[]; target_text?: string; target_locked?: boolean; target_kind?: string;
   product?: string; size?: string; scored?: boolean;
   teardown_fields?: string[];
   teardown_reveal?: {what_it_is: string; parts: {part: string; does: string}[]; flow?: string; tricky?: {what: string; why: string}[]};
   item_count?: number; needs_environment?: boolean; environment_ready?: boolean;
-  setup_command?: string; activate_command?: string;
+  setup_command?: string; activate_command?: string; venv_command?: string; packages_command?: string;
+  reveal?: {picked: string; answer: string; right: boolean; because: string};
+  pass_messages?: Record<string, string>;
   before_you_start?: string[];
 };
 type Run = {
@@ -34,6 +40,7 @@ type Run = {
   drawn?: string[]; items?: {item_id: string; answer: string; pass: boolean}[];
   answers?: Record<string, unknown>;
   receipt_raw?: string; checks?: {id: string; pass: boolean; message?: string}[];
+  lab_skipped_at?: string;
   task_predictions?: {will_pass?: boolean; did_pass?: boolean}[];
   variant_result?: {choice: number; pass: boolean};
   mental_model?: string; finished_at?: string | null;
@@ -75,6 +82,7 @@ const SAY: Record<string, string> = {
   not_sealed: "Lock in your answer first, on step 1.",
   already_sealed: "That answer is already in. Carry on to the next step.",
   already_passed: "This one is already accepted. There is nothing more to paste.",
+  already_skipped: "You moved past this lab without running it, so nothing more can be marked on it. Start it again to do it for real.",
   already_recorded: "That one is already answered.",
   already_finished: "This part is finished, so nothing here can be changed. Run it again to start a new try.",
   program_locked: "The program for this part is still closed. Lock this session’s lab guess first, then come back and finish.",
@@ -83,7 +91,6 @@ const SAY: Record<string, string> = {
   receipt_not_accepted: "What you pasted has not been accepted yet. Fix it on the step before this one.",
   task_not_marked: "Mark at least one task yes or not yet first.",
   task_not_predicted: "Say yes or no to “will yours pass?” first.",
-  label_required: "Pick one of the lines above first.",
   answers_required: "Hand in what you named first.",
   invalid_body: "That did not save. Reload the page and try again — nothing was lost.",
   ai_not_allowed: "Ask is off for this part.",
@@ -127,7 +134,6 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
   const [why, setWhy] = useState("");
   const [paste, setPaste] = useState("");
   const [answer, setAnswer] = useState("");
-  const [selected, setSelected] = useState<number | null>(null);
   const [fields, setFields] = useState<Record<string, string>>({});
   const [replies, setReplies] = useState<Record<string, string>>({});
   const [variantChoice, setVariantChoice] = useState<number | null>(null);
@@ -146,7 +152,7 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
   }, [draftKey]);
 
   const load = useCallback(async (n: number) => {
-    const response = await fetch(path(n), {cache: "no-store"});
+    const response = await studyFetch(path(n), {cache: "no-store"});
     const data = await response.json();
     if (!response.ok) throw Error(say(data));
     let served: Part = data.part;
@@ -156,7 +162,7 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
       || (served.kind === "withdraw" && (data.record.drawn ?? []).length > 0 && (data.record.drawn ?? []).length === (data.record.items ?? []).length)
       || (served.kind === "teardown" && served.scored === false));
     if (sealedEnough) {
-      const open = await fetch(path(n) + "/beyond-predict", {cache: "no-store"});
+      const open = await studyFetch(path(n) + "/beyond-predict", {cache: "no-store"});
       if (open.ok) {
         const body = await open.json();
         served = body.part;
@@ -181,7 +187,6 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
     setAttempt(n);
     setAttemptsTotal(data.attempts_total ?? n);
     setChoice(data.record.prediction?.choice ?? null);
-    setSelected(null);
     let draft: Record<string, string> = {};
     try { draft = JSON.parse(sessionStorage.getItem(draftKey(n)) || "{}"); } catch { /* storage off */ }
     setWhy(data.record.prediction?.why ?? draft.why ?? "");
@@ -194,7 +199,7 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
       const next = (data.record.items ?? []).length;
       const total = (data.record.drawn ?? []).length;
       if (next < total) {
-        const got = await fetch(path(n) + `/item/${next}`, {cache: "no-store"});
+        const got = await studyFetch(path(n) + `/item/${next}`, {cache: "no-store"});
         setItem(got.ok ? await got.json() : null);
       } else setItem(null);
       setAnswer("");
@@ -204,7 +209,7 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
   useEffect(() => {
     // A refused overview used to open attempt 1 silently, which with several
     // tries in play is the wrong one shown as current.
-    fetch("/api/study/current", {cache: "no-store"})
+    studyFetch("/api/study/current", {cache: "no-store"})
       .then(async response => {
         const data = await response.json();
         if (!response.ok) throw Error(say(data));
@@ -224,7 +229,7 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
     setBusy(true);
     setError("");
     try {
-      const response = await fetch(path(attempt) + "/" + action, {
+      const response = await studyFetch(path(attempt) + "/" + action, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(body),
@@ -246,7 +251,7 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
     setBusy(true);
     setError("");
     try {
-      const response = await fetch(`/api/resurface/${entry.id}`, {
+      const response = await studyFetch(`/api/resurface/${entry.id}`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({pool: entry.pool, part: partId, attempt, ...body}),
@@ -273,7 +278,7 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
         <p className="inline miss" role="alert">{error}</p>
         <p className="after">
           {Number.isInteger(ownSession) && ownSession > 0 && <><Link href={`/sessions/${ownSession}`}>Session {ownSession}</Link> · </>}
-          <Link href="/">Today</Link>
+          <Link href="/">{WEB ? "What this is" : "Today"}</Link>
         </p>
       </Shell>
     );
@@ -290,10 +295,10 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
   const index = Math.max(0, steps.indexOf(run.step));
   const locked = !!run.prediction?.sealed_at;
   const passed = !!run.checks?.length && run.checks.every(check => check.pass);
+  // The web trial's escape (PUBLISH.md §6): the lab was moved past unrun. It
+  // is never set in her own copy.
+  const skipped = !!run.lab_skipped_at;
   const atDone = run.step === "done";
-  const missedSomething = part.kind === "withdraw"
-    ? (run.items ?? []).some(entry => !entry.pass)
-    : run.predict_result?.correct === false;
   // An interview's answers are in once all three are long enough to be one.
   const saved = ["q1", "q2", "q3"].every(key => String(run.answers?.[key] ?? "").trim().length >= 20);
   const labels = part.step_labels;
@@ -326,7 +331,31 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
   const away = todaySession !== undefined && part.session !== todaySession;
   const home = away
     ? {href: `/sessions/${part.session}`, label: `Session ${part.session}`}
-    : {href: "/", label: "Today"};
+    // On the web trial "/" is the page that says what this is, not Today.
+    : {href: "/", label: WEB ? "What this is" : "Today"};
+
+  // Her guess beside the answer, with why — on the compare step, and on the
+  // guess step itself once her run is accepted (owner, 2026-11-11).
+  const guessCard = part.reveal ? (
+    <section className="guessbox">
+      <p className="lbl">Your guess</p>
+      <p className="pick">
+        <b>You picked:</b> <Html text={part.reveal.picked} />
+      </p>
+      {!part.reveal.right && (
+        <p className="pick">
+          <b>The answer:</b> <Html text={part.reveal.answer} />
+        </p>
+      )}
+      {part.reveal.because && <p><Html text={part.reveal.because} /></p>}
+      {run.prediction?.why && (
+        <blockquote>
+          <b>Your reason</b>
+          <p>{run.prediction.why}</p>
+        </blockquote>
+      )}
+    </section>
+  ) : null;
 
   return (
     <Shell
@@ -379,6 +408,7 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
               </li>
             ))}
           </ol>
+          {part.goal && <p className="goal"><b>By the end:</b> {part.goal}</p>}
           <div className="navline">
             {index === 0 ? (
               <Link className="bk" href={home.href}><Icon name="back" /> {home.label}</Link>
@@ -408,7 +438,7 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
           {part.predict.type === "choice" ? (
             <div className="opts">
               {(part.predict.options ?? []).map((option, position) => (
-                <label className={choice === position ? "opt sel" : "opt"} key={option}>
+                <label className={(choice === position ? "opt sel" : "opt") + (part.reveal?.answer === option ? " answer" : "")} key={option}>
                   <input
                     type="radio"
                     name="prediction"
@@ -441,6 +471,7 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
             placeholder={part.predict.why_prompt}
             onChange={event => { setWhy(event.target.value); saveDraft(attempt, {why: event.target.value}); }}
           />
+          {guessCard}
           <div className="row">
             {locked ? next(steps[1], "Step 2") : (
               <button
@@ -496,17 +527,24 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
             <div className="refcard">
               {part.environment_ready === false ? (
                 <>
-                  <span className="rl">This one needs the course Python</span>
-                  <p className="undercode">It is not on this machine yet. This installs it, and prints each step as it goes:</p>
+                  <span className="rl">This one needs Python 3.12 or newer, with the course’s packages</span>
+                  <p className="undercode">The course’s Python is not on this machine yet. This installs it, and prints each step as it goes:</p>
                   <pre>{part.setup_command}</pre>
-                  <p className="undercode">Then switch this terminal to it:</p>
-                  <pre>{part.activate_command}</pre>
+                  <p className="undercode">Then make your lab environment from it: the environment check on Today shows the commands.</p>
                 </>
               ) : (
                 <>
-                  <span className="rl">This one runs in the course Python</span>
-                  <pre>{part.activate_command}</pre>
-                  <p className="undercode">That switches this terminal to that Python; your own files stay where they are.</p>
+                  <span className="rl">This one runs in your lab environment, with the course’s packages</span>
+                  <pre>{"cd ~/cs-core\nsource .venv/bin/activate"}</pre>
+                  <p className="undercode">That goes to your lab folder and switches this terminal to its Python. If <code>python3 --version</code> there is older than 3.12, the environment check on Today shows how to make a newer one.</p>
+                  {/* What the environment must contain is on the part that needs it,
+                      with the one command (REBUILD.md R8). */}
+                  {part.packages_command && (
+                    <>
+                      <p className="undercode">Once, with that environment switched on: this installs the packages the course uses, numpy among them, at the versions the course was measured with.</p>
+                      <pre>{part.packages_command}</pre>
+                    </>
+                  )}
                 </>
               )}
             </div>
@@ -539,11 +577,18 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
                 <div className="task-copy">
                   <b>{task.name}</b>
                   <p><Html text={task.brief} /></p>
+                  {task.uses.length > 0 && (
+                    <p className="uses">Uses:{" "}
+                      {task.uses.map((use, at) => (
+                        <span key={use}>{at ? " · " : ""}{use === "the reference card on this page" ? <a href="#card">{use}</a> : use}</span>
+                      ))}
+                    </p>
+                  )}
                   {task.guess && run.task_predictions?.[position]?.will_pass === undefined ? (
                     <div className="pass">
-                      Before you look — will yours pass?{" "}
-                      <button disabled={busy || frozen} onClick={() => send(`task/${position}`, {will_pass: true})}>yes</button>{" "}
-                      <button disabled={busy || frozen} onClick={() => send(`task/${position}`, {will_pass: false})}>no</button>
+                      Guess first: will this one work when you run it?{" "}
+                      <button disabled={busy || frozen || skipped} onClick={() => send(`task/${position}`, {will_pass: true})}>yes</button>{" "}
+                      <button disabled={busy || frozen || skipped} onClick={() => send(`task/${position}`, {will_pass: false})}>no</button>
                     </div>
                   ) : (
                     <p className="pass"><b>Passes when</b> <Html text={task.passes_when} /></p>
@@ -554,12 +599,12 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
                     <div className="pass">
                       Did it work?{" "}
                       <button
-                        disabled={busy || passed}
+                        disabled={busy || passed || skipped}
                         aria-pressed={run.task_predictions?.[position]?.did_pass === true}
                         onClick={() => send(`task/${position}`, {did_pass: true})}
                       >yes</button>{" "}
                       <button
-                        disabled={busy || passed}
+                        disabled={busy || passed || skipped}
                         aria-pressed={run.task_predictions?.[position]?.did_pass === false}
                         onClick={() => send(`task/${position}`, {did_pass: false})}
                       >not yet</button>
@@ -569,7 +614,9 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
               </div>
             ))}
           </div>
-          <details className="refcard">
+          {/* Open, and the target of "Uses: the reference card": a task that
+              needs it once pointed at a card folded shut below the tasks. */}
+          <details className="refcard" id="card" open>
             <summary>
               <span className="rl">Reference card</span>
               <span className="refsum">{(part.reference_card ?? []).length} lines of syntax <Icon name="chev" /></span>
@@ -615,17 +662,19 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
           <textarea
             id="receipt"
             value={paste}
-            readOnly={passed}
+            readOnly={passed || skipped}
             placeholder={part.receipt_hint}
             onChange={event => { setPaste(event.target.value); saveDraft(attempt, {paste: event.target.value}); }}
           />
           {run.checks?.map(check => (
             <p className={check.pass ? "inline good" : "inline miss"} key={check.id}>
-              <Icon name={check.pass ? "check" : "close"} /> <Html text={check.message} />
+              {/* Out of the record, so on the trial it is whatever file the
+                  visitor loaded: sanitized, not trusted. */}
+              <Icon name={check.pass ? "check" : "close"} /> <HtmlFromRecord text={check.message} />
             </p>
           ))}
           <div className="row">
-            {passed ? next(steps[index + 1], "See what happened") : (
+            {passed || skipped ? next(steps[index + 1], skipped ? "Read the explanation" : "See the explanation") : (
               <button
                 className="go"
                 disabled={busy || frozen || !paste.trim() || !run.task_predictions?.some(task => task.did_pass !== undefined)}
@@ -634,7 +683,14 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
                 Check it
               </button>
             )}
-            {!passed && <span className="hint">Paste what came back. Mark at least one task above.</span>}
+            {!passed && !skipped && <span className="hint">Paste what came back. Mark at least one task above.</span>}
+            {/* No terminal and no course Python on a web page, so the trial
+                lets a visitor past the lab and keeps that it was not run. */}
+            {WEB && !passed && !skipped && (
+              <button className="secondary" disabled={busy || frozen} onClick={() => send("skip-lab", {})}>
+                I can’t run this here
+              </button>
+            )}
           </div>
         </>
       )}
@@ -655,13 +711,9 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
                 <b>Read this</b>
                 <span>{part.reading!.reduce((total, row) => total + row.minutes, 0)} min</span>
               </header>
-              {part.reading!.map(row => (
-                <div className="reading-row" key={row.url}>
-                  <a href={row.url} target="_blank" rel="noreferrer">{row.title} <Icon name="out" /></a>
-                  <span className="reading-description">{row.teaches}</span>
-                  <span className="reading-duration">{row.minutes} min</span>
-                </div>
-              ))}
+              {/* A teardown's readings are first given here, so their ticks
+                  are here; the session's note is on the session page. */}
+              <ReadingList session={part.session} rows={part.reading!} />
             </section>
           )}
           <div className="panel">
@@ -675,7 +727,6 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
               ))}
             </div>
           </div>
-          <p className="after">The next one of these asks you to name the parts before you read them.</p>
           <div className="row">{next("done", "Done reading")}</div>
         </>
       )}
@@ -732,7 +783,16 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
                 <button
                   className="go"
                   disabled={busy || !answer.trim()}
-                  onClick={() => { const at = item.index; setAnswer(""); send(`item/${at}/seal`, {text: answer}); }}
+                  onClick={async () => {
+                    // The last answer goes straight to the comparison: a
+                    // click that only moved the engine on was one too many
+                    // (owner, 2026-11-11; L-UI-11).
+                    const at = item.index;
+                    const last = (run.items ?? []).length + 1 >= (run.drawn ?? []).length;
+                    setAnswer("");
+                    const sealed = await send(`item/${at}/seal`, {text: answer});
+                    if (sealed && last) await go(steps[index + 1]);
+                  }}
                 >
                   {busy ? "Locking it in…" : "Lock in my answer"}
                 </button>
@@ -748,11 +808,32 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
       {run.step === "attempt" && part.kind === "interview" && (
         <>
           <h2>Talk through someone else’s code</h2>
-          {part.brief && <p className="sub">{part.brief}</p>}
-          <p className="sub">
-            Three questions, in order. Answer the first two before you open the program.
-          </p>
+          {part.brief && <p className="sub"><Html text={part.brief} /></p>}
+          {/* Two questions without the program, then the program, open, with
+              its note beside it, then the third (REBUILD.md, R2): a box at the
+              end headed "for question 3" read as context for 3 alone. */}
+          <h3 className="qhead">First, without the program</h3>
           {(part.questions ?? []).map((question, position) => (
+            <div key={question}>
+            {position === 2 && (
+              <>
+                {part.target_locked ? (
+                  <div className="refcard">
+                    <span className="rl">The program</span>
+                    <p className="undercode">
+                      It opens once you have locked this session&rsquo;s guess in the lab — it gives that answer away.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="refcard program">
+                    <span className="rl">Now read the program</span>
+                    {part.target_note && <p className="undercode"><Html text={part.target_note} /></p>}
+                    <pre>{part.target_text}</pre>
+                  </div>
+                )}
+                <h3 className="qhead">Then, with the program in front of you</h3>
+              </>
+            )}
             <div key={question}>
               <label className="receipt-label" htmlFor={`q${position + 1}`}>{position + 1}. {question}</label>
               <textarea
@@ -768,24 +849,8 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
                 }}
               />
             </div>
-          ))}
-          {part.target_locked ? (
-            <div className="refcard">
-              <span className="rl">The program</span>
-              <p className="undercode">
-                It opens once you have locked this session&rsquo;s guess in the lab — it gives that answer away.
-                Questions 1 and 2 are meant to be answered without it.
-              </p>
             </div>
-          ) : (
-            <details className="refcard">
-              <summary>
-                <span className="rl">The program</span>
-                <span className="refsum">open it for question 3 <Icon name="chev" /></span>
-              </summary>
-              <pre>{part.target_text}</pre>
-            </details>
-          )}
+          ))}
           {part.looks_for && (
             <div className="panel">
               <header><b>What each question was getting at</b></header>
@@ -846,77 +911,76 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
 
       {run.step === "compare" && part.kind === "lab" && part.compare && (
         <>
-          <h2>What actually happened</h2>
-          <div className="verdict good">
-            <span className="big">Output accepted</span>
-            <span><Html text={run.checks?.find(check => check.pass)?.message} /></span>
-          </div>
-          <div className="verdict flat">
-            <span className="big">
-              {run.predict_result?.correct ? "Your guess was right" : "Your guess was wrong"}
-            </span>
-            {!run.predict_result?.correct && <span>This is the one worth keeping.</span>}
-          </div>
-          {run.prediction?.why && (
-            <blockquote>
-              <b>Your reason</b>
-              <p>{run.prediction.why}</p>
-            </blockquote>
-          )}
-          {/* Her own evidence sits beside the reference for the same two
-              commands; the second reference, which answers a different
-              question, goes underneath rather than competing with it. */}
-          <div className="code2">
-            <div>
-              <p className="lbl">What you pasted</p>
-              <pre>{run.receipt_raw}</pre>
+          <h2>{skipped ? "What this lab shows" : "Your result, explained"}</h2>
+          {/* One reading order (owner, 2026-11-11): her run, then her guess
+              beside the answer, then the reference panes, quieter, then the
+              margin note. Nothing here says "wrong". */}
+          <section className="yours">
+            <div className={skipped ? "verdict" : "verdict good"}>
+              <span className="big">{skipped ? "You did not run this lab" : "Output accepted"}</span>
+              {skipped && (
+                <span>
+                  The labs are run in a terminal against the course’s own Python, and this page has
+                  neither. What follows is still worth reading; the result it explains is one you have
+                  not seen.
+                </span>
+              )}
+              {/* Today's wording for each check she passed, not the wording
+                  saved when it was graded (review, 2026-11-11). */}
+              {!skipped && (run.checks ?? []).filter(check => check.pass).map(check => (
+                // A check that no longer exists (an attempt made before a
+                // rebuild) keeps only "Output accepted": its old wording may
+                // no longer be true.
+                part.pass_messages && !(check.id in part.pass_messages) ? null :
+                // The served wording is this repository's; the stored one is
+                // the record's, so only the first is trusted as markup.
+                <span key={check.id}>{part.pass_messages?.[check.id] !== undefined
+                  ? <Html text={part.pass_messages[check.id]} />
+                  : <HtmlFromRecord text={check.message} />}</span>
+              ))}
             </div>
-            <div>
-              <p className="lbl">{part.compare.mine_label}</p>
-              <pre><Html text={part.compare.mine} /></pre>
-              <small>not your result</small>
-            </div>
-          </div>
-          <div className="code2 one">
-            <div>
-              <p className="lbl">{part.compare.theirs_label}</p>
-              <pre><Html text={part.compare.theirs} /></pre>
-              <small>not your result</small>
-            </div>
-          </div>
-          {part.compare.table && (
-            <table className="wk">
-              <tbody>
-                {part.compare.table.map((row, position) => (
-                  <tr key={position}>
-                    {row.map((cell, column) =>
-                      position === 0 ? <th key={column}>{cell}</th> : <td key={column}>{cell}</td>)}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {/* Nothing was pasted and there is no result of hers to explain. */}
+            {!skipped && (
+              <>
+                <p className="lbl">What you pasted</p>
+                <pre>{run.receipt_raw}</pre>
+                {part.ai_allowed !== false && <TeacherNote part={part.id} attempt={attempt} />}
+              </>
+            )}
+          </section>
+          {guessCard}
+          {/* Reference panes only where the chain makes them evidence (REBUILD.md, R2). */}
+          {(part.compare.mine || part.compare.theirs || part.compare.table) && (
+            <section className="refs">
+              <p className="refh">For comparison: not your run</p>
+              <div className="code2">
+                <div>
+                  <p className="lbl">{part.compare.mine_label}</p>
+                  <pre><Html text={part.compare.mine} /></pre>
+                </div>
+                <div>
+                  <p className="lbl">{part.compare.theirs_label}</p>
+                  <pre><Html text={part.compare.theirs} /></pre>
+                </div>
+              </div>
+              {part.compare.table && (
+                <table className="wk">
+                  <tbody>
+                    {part.compare.table.map((row, position) => (
+                      <tr key={position}>
+                        {row.map((cell, column) =>
+                          position === 0 ? <th key={column}>{cell}</th> : <td key={column}>{cell}</td>)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </section>
           )}
           <div className="note">
-            <b className="nh">In the margin</b>
+            <b className="nh">Why it works this way</b>
             <Html text={part.compare.note} />
             {part.compare.after && <p><Html text={part.compare.after} /></p>}
-            {/* The cure matches the state (L-ENV-04): the installer is offered
-                only when the course Python is not on this machine. */}
-            {part.activate_command && part.id === "s01-lab-a" && (
-              part.environment_ready === false ? (
-                <>
-                  <p>The course Python is not on this machine yet. This installs it, and prints each step as it goes:</p>
-                  <pre>{part.setup_command}</pre>
-                  <p>Then switch this terminal to it; your own files stay in ~/cs-core:</p>
-                  <pre>{part.activate_command}</pre>
-                </>
-              ) : (
-                <>
-                  <p>The course Python is already on this machine. This switches this terminal to it; your own files stay in ~/cs-core:</p>
-                  <pre>{part.activate_command}</pre>
-                </>
-              )
-            )}
           </div>
           {gated.variant && (
             <div className="panel">
@@ -960,8 +1024,7 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
         <>
           <h2>How it went</h2>
           <p className="sub">
-            {(run.items ?? []).filter(entry => entry.pass).length} of {(run.items ?? []).length} right, with
-            nothing open.
+            {(run.items ?? []).filter(entry => entry.pass).length} of {(run.items ?? []).length} right.
           </p>
           {(gated.items ?? []).map((entry, position) => (
             <div className="panel" key={entry.item_id}>
@@ -1003,47 +1066,13 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
         </>
       )}
 
-      {run.step === "record" && (
-        <>
-          <h2>Which was it?</h2>
-          <p className="sub">One tap. If an idea misfired, the log needs that idea — not a paragraph.</p>
-          <div className="opts">
-            {(part.labels ?? []).map((label, position) => (
-              // With something missed, "I had it right" is not on offer: it
-              // was being filed against a question she had got wrong.
-              !run.mental_model && missedSomething && label.startsWith("I had it right") ? null :
-              <label className={selected === position || run.mental_model === label ? "opt sel" : "opt"} key={label}>
-                <input
-                  type="radio"
-                  name="label"
-                  checked={selected === position || (selected === null && run.mental_model === label)}
-                  disabled={busy || !!run.mental_model}
-                  onChange={() => setSelected(position)}
-                />
-                <span>{label}</span>
-              </label>
-            ))}
-          </div>
-          <button
-            className="go"
-            disabled={busy || (selected === null && !run.mental_model)}
-            onClick={async () => {
-              if (!frozen && !run.mental_model && selected !== null && !(await send("label", {label: selected}))) return;
-              await go(steps[index + 1]);
-            }}
-          >
-            {steps[index + 1] !== "done" ? "Next" : frozen ? "Back to the end" : "Finish this part"}
-          </button>
-        </>
-      )}
-
       {run.step === "resurface" && (
         <>
           <h2>From before</h2>
           {resurfaced.length > 0 && (
             <p className="sub">
               {["", "One thing", "Two things", "Three things"][resurfaced.length] ?? "A few things"} you have already
-              met. Nothing here is timed or late.
+              met.
             </p>
           )}
           {resurfaced.length === 0 && <p className="inline">Nothing came back this time.</p>}
@@ -1118,7 +1147,7 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
                       <p className={done.pass ? "inline good" : "inline miss"}>
                         <Icon name={done.pass ? "check" : "close"} />{" "}
                         {done.pass
-                          ? entry.kind === "recall" ? "Right. It comes back once more, later." : "Right. That one is off your list."
+                          ? entry.kind === "recall" ? "Right. It comes back once more, later." : "Right. It will not come back."
                           : "Not that one. It comes back later."}
                       </p>
                       {done.explain_after
@@ -1158,22 +1187,8 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
                 skill moved. This part is saved, and so is everything else.
               </p>
             </div>
-          ) : (
-            <p className="sub">
-              No skill moved.
-              {summary?.next_gate ? ` The next no-help check that can move one is in session ${summary.next_gate}.` : ""}
-            </p>
-          )}
-          {run.mental_model && (
-            <div className="panel">
-              <header>
-                <b>{run.mental_model === RIGHT_REASON ? "Logged for this part" : "Filed from this part"}</b>
-                {run.mental_model !== RIGHT_REASON && <span className="chip">comes back later</span>}
-              </header>
-              <div className="panel-body"><p>{run.mental_model}</p></div>
-            </div>
-          )}
-          {part.kind === "teardown" && part.teardown_reveal && (
+          ) : null}
+          {part.kind === "teardown" && part.scored && part.teardown_reveal && (
             <div className="panel">
               <header><b>What {part.product} is made of</b></header>
               <div className="panel-body">
@@ -1273,7 +1288,9 @@ export default function Runner({partId, blockName}: {partId: string; blockName: 
                 if (!window.confirm(
                   `Start this part again from step 1?\n\nThis try stays saved — "Back to try ${attempt}" sits at the `
                   + `top of every step of the new one. ${
-                    todayNow !== undefined && part.session !== todayNow ? `Session ${part.session}’s card` : "Today"
+                    todayNow !== undefined && part.session !== todayNow
+                      ? `Session ${part.session}’s card`
+                      : WEB ? "The session’s card" : "Today"
                   } will offer `
                   + "the new try until you finish it.",
                 )) return;

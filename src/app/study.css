@@ -2113,3 +2113,202 @@ body {
 .study-page .nav:hover {
   color: var(--ink);
 }
+
+/* ---- the lab's compare step: one reading order (owner, 2026-11-11) ----
+   Her run is the strongest box, her guess the second, the reference panes the
+   quietest, and the margin note keeps its own colour. Before this, every box
+   was the same grey and nothing said where to look. */
+.study-page .yours {
+  margin: 0 0 20px;
+}
+.study-page .yours .verdict {
+  margin-bottom: 12px;
+}
+.study-page .yours pre {
+  margin: 0;
+}
+.study-page .guessbox {
+  border: 1px solid var(--line-mid);
+  border-left: 3px solid var(--ink);
+  border-radius: 0 8px 8px 0;
+  background: var(--surface);
+  padding: 14px 16px;
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.study-page .guessbox p {
+  margin: 6px 0 0;
+}
+.study-page .guessbox .pick b {
+  font-weight: 600;
+  color: var(--ink);
+}
+.study-page .guessbox .lbl {
+  font-family: var(--serif);
+  font-size: 15px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+.study-page .guessbox blockquote {
+  margin: 10px 0 0;
+}
+.study-page .refs {
+  margin: 0 0 16px;
+  padding-top: 4px;
+}
+.study-page .refs .refh {
+  font-size: 12px;
+  color: var(--faint);
+  margin: 0 0 6px;
+  text-transform: none;
+}
+.study-page .refs pre {
+  background: var(--surface-3);
+  color: var(--muted);
+  border-style: dashed;
+}
+/* The right option, once her run is accepted: marked by an edge, not a colour
+   that reads as a verdict on her own pick. */
+.study-page .opt.answer {
+  border-color: var(--ink);
+  box-shadow: inset 3px 0 0 var(--ink);
+}
+.study-page textarea + .guessbox {
+  margin-top: 16px;
+}
+/* The part's goal, first line under the rail; what teaches each task; the
+   interview's two headings (REBUILD.md). */
+.study-page .goal {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 10px 0 14px;
+  color: var(--ink);
+}
+.study-page .goal b {
+  font-weight: 600;
+}
+.study-page .uses {
+  font-size: 12px;
+  color: var(--faint);
+  margin: 4px 0 0;
+}
+.study-page .qhead {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 500;
+  margin: 18px 0 8px;
+}
+.study-page .refcard.program pre {
+  margin-top: 8px;
+}
+/* The teacher's reading of her run, inside her result block (REBUILD.md R3). */
+.study-page .yours .teacher {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.study-page .yours .teacher p {
+  margin: 4px 0 0;
+}
+.study-page .yours .teacher.waiting {
+  color: var(--faint);
+}
+
+/* Her reading log (owner, 2026-11-13): a tick beside each reading on the
+   session page, a note under them, and the log page that shows them all. */
+.study-page .ticked-row {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+.study-page .read-tick {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.study-page .read-tick input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--peacock);
+}
+.study-page .session-note {
+  padding: 12px 16px 14px;
+  border-top: 1px solid var(--line);
+  background: var(--surface-3);
+}
+.study-page .session-note label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.study-page .session-note textarea {
+  min-height: 64px;
+  font-size: 13.5px;
+}
+.study-page .note-state {
+  display: block;
+  min-height: 18px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.study-page .log header a {
+  color: var(--peacock);
+}
+.study-page .log-row {
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: center;
+}
+.study-page .log-row .reading-duration {
+  grid-column: 3;
+  grid-row: 1;
+}
+.study-page .log-mark {
+  color: var(--pine);
+  display: inline-flex;
+}
+.study-page .log-row .unknown {
+  color: var(--faint);
+}
+.study-page .log-note {
+  padding: 12px 16px 14px;
+  border-top: 1px solid var(--line);
+  background: var(--surface-3);
+  font-size: 13.5px;
+}
+.study-page .log-note p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.study-page .log-note .empty {
+  color: var(--muted);
+}
+.study-page .log-note small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.study-page .tick-state {
+  margin: 0;
+  padding: 8px 16px 10px;
+  border-top: 1px solid var(--line);
+}
+
+/* The web trial's record keeper (PUBLISH.md §6): three plain buttons and one
+   line of status, under the warning that explains why they exist. */
+.study-page .keeper {
+  margin: 14px 0 22px;
+}
+.study-page .keeper .hint {
+  margin-top: 8px;
+}

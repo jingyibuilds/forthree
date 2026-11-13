@@ -1,13 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": null,
-  "installCommand": "echo skip",
-  "buildCommand": "echo skip",
-  "outputDirectory": "demo",
+  "framework": "nextjs",
   "rewrites": [
-    {
-      "source": "/",
-      "destination": "/day-one.html"
-    }
+    {"source": "/demo", "destination": "/demo/day-one.html"},
+    {"source": "/skill-tree", "destination": "/skill-tree.html"}
   ]
 }

@@ -1,0 +1,1125 @@
+<title>CS Core Study Console</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Three screens in one window: Today, Curriculum, the board. The session runner lives inside
+   Today. Single-theme light by design: every colour is an
+   explicit token. */
+:root{
+  --paper:#eef3f5; --surface:#fdfeff; --surface-2:#e9eff2; --surface-3:#f7fafb; --surface-4:#e2eaee;
+  --ink:#17252b; --muted:#44565f; --faint:#5c6a72;
+  --line:#d6e0e5; --line-mid:#a8b8c0;
+  --peacock:#126f67; --peacock-deep:#0a554f; --peacock-soft:#e6f2f1; --peacock-line:#b4d2ce;
+  --peacock-tint:#dfeeec; --on-peacock:#fdfeff; --peacock-pale:#8dbdb7;
+  --cinnabar:#ad4231; --cinnabar-soft:#fbeee9; --cinnabar-line:#e3bdb2;
+  --pine:#1a6b58; --pine-soft:#e4f1ed; --pine-line:#bbddd2;
+  --amber:#80570f; --amber-soft:#faf0d8; --amber-line:#e3cf9b;
+  --slate:#c6d2d8; --disabled:#bdcad1;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --serif:Georgia,serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+::selection{background:var(--peacock-tint);color:var(--ink)}
+:root{scrollbar-color:var(--line-mid) transparent;scrollbar-width:thin}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line-mid);border-radius:6px;
+  border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:var(--muted);background-clip:content-box}
+::-webkit-scrollbar-track{background:transparent}
+a{text-underline-offset:2px;text-decoration-thickness:1px}
+input,textarea{caret-color:var(--peacock)}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);margin:0;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.page{padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:28px 48px;max-width:1040px;margin:0 auto}
+
+.win{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface);
+  box-shadow:0 1px 2px rgba(31,43,47,.05),0 12px 32px -16px rgba(31,43,47,.18)}
+.bar{display:flex;align-items:center;gap:7px;padding:9px 13px;background:var(--surface-4);
+  border-bottom:1px solid var(--line)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--slate)}
+.url{margin-left:9px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.app{display:flex;min-height:620px;position:relative;min-width:0}
+.win,.body,.rail,.panel,.read,.parts{min-width:0}
+
+.rail{width:168px;flex-shrink:0;border-right:1px solid var(--line);background:var(--surface-3);
+  padding-block:16px;display:flex;flex-direction:column;gap:2px}
+.brand{font-family:var(--serif);font-size:15px;padding:0 16px 16px;display:flex;align-items:center;gap:8px}
+.sealmk{width:23px;height:23px;border-radius:3px;background:var(--cinnabar);color:var(--on-peacock);
+  font-size:11px;display:grid;place-items:center;font-family:var(--sans);font-weight:700;letter-spacing:-.4px}
+.nav{appearance:none;border:0;background:none;text-align:left;font:inherit;font-size:14px;
+  color:var(--muted);padding:7px 16px;cursor:pointer;border-left:2px solid transparent;width:100%}
+.nav:hover{color:var(--ink)}
+.nav[aria-current="true"]{color:var(--ink);font-weight:600;border-left-color:var(--peacock);
+  background:var(--surface-2)}
+.railfoot{margin-top:auto;padding:0 16px;font-size:12px;color:var(--muted);line-height:1.5}
+.railfoot strong{color:var(--ink);font-weight:700;letter-spacing:.04em;font-size:11.5px}
+
+.body{flex:1;min-width:0;padding:26px 30px 30px;display:flex;flex-direction:column}
+.kicker{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+  font-weight:600;margin:0 0 5px}
+h1{font-family:var(--serif);font-size:25px;font-weight:600;margin:0 0 5px;letter-spacing:-.2px;text-wrap:balance}
+h2{font-family:var(--serif);font-size:18px;font-weight:600;margin:0 0 4px;text-wrap:balance}
+.sub{color:var(--muted);font-size:14px;margin:0 0 20px;max-width:60ch}
+
+.card{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:15px 17px}
+.lbl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+  font-weight:600;margin:0 0 7px}
+.done{display:flex;gap:9px;align-items:baseline;font-size:13px;color:var(--muted);margin:0 0 14px}
+.done .tick{color:var(--pine);font-weight:700}
+
+/* the task panel */
+.panel{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.panel .hd{padding:11px 16px;background:var(--surface-2);border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.panel .hd .l{font-weight:600;font-size:15px}
+.panel .bd{padding:15px 17px}
+.srcbtn{appearance:none;border:1px solid var(--peacock-line);background:var(--peacock-soft);
+  color:var(--peacock);border-radius:20px;font:inherit;font-size:12px;font-weight:500;
+  padding:3px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.srcbtn:hover{border-color:var(--peacock)}
+.srcbox{border:1px solid var(--peacock-line);background:var(--peacock-soft);border-radius:7px;
+  padding:12px 15px;margin:0 0 14px;font-size:13px;color:var(--muted);line-height:1.6}
+.srcbox .sl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--peacock);
+  font-weight:600;margin:0 0 7px;display:block}
+.srcbox a{color:var(--peacock)}
+.srclist{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 9px}
+
+.read{border:1px solid var(--line);border-radius:8px;margin:0 0 12px;overflow:hidden}
+.read .rh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;
+  padding:10px 16px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.read .rh b{font-size:14px}
+.read .rh span{font-size:12px;color:var(--muted)}
+.read ul{list-style:none;margin:0;padding:6px 16px 12px}
+.read li{padding:7px 0;border-top:1px solid var(--line);font-size:13.5px;display:flex;
+  justify-content:space-between;gap:12px;flex-wrap:wrap}
+.read li:first-child{border-top:0}
+.read a{color:var(--peacock);text-decoration:none}
+.read a:hover{text-decoration:underline}
+.read .wh2{font-size:12px;color:var(--faint);white-space:nowrap}
+
+.refcard{border:1px solid var(--line);border-radius:8px;background:var(--surface-3);
+  padding:12px 15px;margin:0 0 14px}
+.refcard .rl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+  font-weight:600;margin:0 0 9px;display:block}
+.refrow{display:flex;gap:14px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}
+.refrow:first-of-type{border-top:0}
+.refrow .k{font-size:13px;color:var(--muted);width:168px;flex-shrink:0}
+.refrow code{font-family:var(--mono);font-size:12.5px;white-space:pre;overflow-x:auto;min-width:0}
+.skip{color:var(--faint);font-size:12px;margin-left:8px}
+.parts{border:1px solid var(--line);border-radius:8px;padding:13px 16px;margin:0 0 12px;
+  background:var(--surface-3)}
+.parts .rl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+  font-weight:600;margin:0 0 9px;display:block}
+.prow{display:flex;gap:11px;align-items:baseline;padding:6px 0;border-top:1px solid var(--line)}
+.prow:first-of-type{border-top:0}
+.prow .pn{width:18px;height:18px;border-radius:50%;border:1px solid var(--line-mid);
+  color:var(--muted);font-size:10.5px;font-weight:700;display:grid;place-items:center;flex-shrink:0}
+.prow.now .pn{background:var(--peacock);border-color:var(--peacock);color:var(--on-peacock)}
+.prow .pt{flex:1;min-width:0;font-size:13.5px}
+.prow.now .pt{font-weight:600}
+.prow .pk{font-size:12px;color:var(--faint);text-align:right}
+@media (max-width:560px){.prow{flex-wrap:wrap}.prow .pk{text-align:left;width:100%}}
+.logrow{display:flex;gap:12px;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
+.logrow:first-child{border-top:0}
+.logrow .lk{width:112px;flex-shrink:0;color:var(--muted);font-size:12px}
+.afternote{margin:12px 0 0;padding-top:11px;border-top:1px solid var(--cinnabar-line);font-weight:600}
+.refhead{appearance:none;border:0;background:none;width:100%;display:flex;justify-content:space-between;
+  align-items:center;gap:12px;padding:0;cursor:pointer;font:inherit;text-align:left;flex-wrap:wrap}
+.refhead .rl{margin:0}
+.refsum{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.refhead:hover .refsum{color:var(--peacock)}
+.inline{display:flex;gap:9px;align-items:flex-start;border:1px solid;border-radius:8px;
+  padding:11px 14px;margin:0 0 14px;font-size:13.5px;line-height:1.55}
+.inline.good{background:var(--pine-soft);border-color:var(--pine-line);color:var(--ink)}
+.inline.good .ic{color:var(--pine);margin-top:3px}
+.inline.miss{background:var(--amber-soft);border-color:var(--amber-line);color:var(--ink)}
+.inline.miss .ic{color:var(--amber);margin-top:3px}
+.demoskip{font-size:12.5px;color:var(--faint);margin:14px 0 0;padding-top:12px;
+  border-top:1px dashed var(--line)}
+.linkish{appearance:none;border:0;background:none;padding:0;font:inherit;font-size:12.5px;
+  color:var(--peacock);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.linkish:hover{color:var(--peacock-deep)}
+.refnote{font-size:12.5px;color:var(--faint);margin:10px 0 0;line-height:1.55}
+.nest{margin-top:12px;padding-top:11px;border-top:1px solid var(--line)}
+.csk{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:0 0 12px}
+.csk .cs{font-size:12.5px;border:1px solid var(--line);border-radius:20px;padding:3px 11px;
+  background:var(--surface-2);color:var(--muted)}
+.csk .cs b{color:var(--ink);font-weight:600;margin-right:6px}
+.csk .cs.on{border-color:var(--cinnabar-line);color:var(--ink)}
+.term{margin-top:4px}
+.tl{display:flex;gap:16px;align-items:baseline;padding:6px 0;border-top:1px solid var(--line)}
+.tl code{font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;flex:0 0 46%;min-width:0}
+.tl code em{font-style:normal;background:var(--surface-2);padding:0 3px;border-radius:3px}
+.tl .pr{color:var(--faint)}
+.tl .tg{font-size:12.5px;color:var(--faint);min-width:0}
+.rec{border:1px solid var(--line);border-radius:8px;background:var(--surface-3);
+  padding:12px 16px;margin:14px 0 0}
+.rec .rl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+  display:block;margin-bottom:4px}
+.recrow{display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
+.recrow strong{font-weight:600;font-size:12.5px}
+@media (max-width:820px){.tl{flex-direction:column;gap:2px}.tl code{flex:none}}
+@media (max-width:820px){.refrow{flex-direction:column;gap:3px}.refrow .k{width:auto}}
+
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 15px}
+.chip{font-size:12px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);
+  color:var(--muted);background:var(--surface-3);text-decoration:none}
+.chip.hot{border-color:var(--cinnabar-line);background:var(--cinnabar-soft);color:var(--cinnabar)}
+.chip.src{border-color:var(--peacock-line);background:var(--peacock-soft);color:var(--peacock);
+  font-size:12px;font-weight:500}
+
+/* the three-task ladder */
+.lad{display:flex;flex-direction:column;gap:0;margin:0 0 15px}
+.rung{display:flex;gap:13px;align-items:baseline;padding:10px 0;border-top:1px solid var(--line)}
+.rung .ds{min-height:3.2em}
+.lad .rung .pass{min-height:1.5em}
+.rung:first-child{border-top:0;padding-top:2px}
+.rung .num{width:22px;height:22px;border-radius:50%;border:1px solid var(--line-mid);color:var(--muted);
+  font-size:11px;font-weight:700;display:grid;place-items:center;flex-shrink:0;align-self:center}
+.rung.hi .num{background:var(--peacock);border-color:var(--peacock);color:var(--on-peacock)}
+.rung .nm{font-weight:600;font-size:14px;width:134px;flex-shrink:0}
+.rung .ds{font-size:13.5px;color:var(--muted);flex:1;min-width:0;line-height:1.5}
+.rung .ds code{font-family:var(--mono);font-size:12.5px}
+.rung .pass{display:block;margin-top:3px;font-size:12.5px;color:var(--faint)}
+.rung .pass b{color:var(--muted);font-weight:600}
+.tap{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  border-radius:14px;font:inherit;font-size:12px;padding:2px 11px;cursor:pointer;margin-left:6px}
+.tap:hover{border-color:var(--peacock);color:var(--peacock)}
+.rung .pass strong.agree{color:var(--pine);font-weight:600}
+.rung .pass strong.disagree{color:var(--amber);font-weight:600}
+
+button.go{appearance:none;border:0;border-radius:6px;background:var(--peacock);color:var(--on-peacock);
+  font:inherit;font-size:14px;font-weight:600;padding:9px 18px;cursor:pointer}
+button.go:hover{background:var(--peacock-deep)}
+button.go:disabled{background:var(--disabled);color:var(--surface-3);cursor:not-allowed}
+button.gh{appearance:none;border:1px solid var(--line);border-radius:6px;background:var(--surface);
+  color:var(--ink);font:inherit;font-size:14px;padding:8px 15px;cursor:pointer}
+button.gh:hover{border-color:var(--muted)}
+button.bk{appearance:none;border:1px solid var(--line);border-radius:6px;background:var(--surface);
+  color:var(--muted);font:inherit;font-size:13px;padding:7px 13px;cursor:pointer}
+button.bk:hover{border-color:var(--muted);color:var(--ink)}
+button.bk{display:inline-flex;align-items:center;gap:6px}
+.wm{display:inline-block;margin-left:8px;font-size:11px;padding:1px 8px;border-radius:12px;
+  background:var(--cinnabar-soft);color:var(--cinnabar);border:1px solid var(--cinnabar-line);
+  font-weight:600;vertical-align:1px}
+.wm2{display:inline-block;margin-left:8px;font-size:12px;color:var(--faint)}
+.hererow{appearance:none;border:0;background:none;font:inherit;color:inherit;padding:0;
+  text-align:left;cursor:pointer}
+.hererow:hover .here{background:var(--peacock);color:var(--on-peacock)}
+.here{display:inline-block;margin-left:9px;font-size:11.5px;font-weight:600;color:var(--peacock);
+  background:var(--peacock-soft);border:1px solid var(--peacock-line);border-radius:12px;padding:1px 8px}
+.read a,.chip.src{display:inline-flex;align-items:center;gap:5px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hint{font-size:13px;color:var(--muted);max-width:44ch}
+:focus-visible{outline:2px solid var(--peacock);outline-offset:2px}
+
+.pips{display:flex;gap:10px;margin:0 0 10px;list-style:none;padding:0}
+.pips li{flex:1;min-width:0}
+.pip{display:block;width:100%;text-align:left;font:inherit;font-size:12px;font-weight:600;
+  color:var(--faint);background:none;border:0;padding:7px 0 0;border-top:2px solid var(--line);
+  cursor:default;letter-spacing:.01em}
+.pip.on{color:var(--peacock);border-top-color:var(--peacock)}
+.pip.past{color:var(--muted);border-top-color:var(--peacock-pale);border-top-width:4px;cursor:pointer}
+.pip.past .tk{color:var(--pine);margin-right:5px;vertical-align:-2px}
+.pip.past:hover{color:var(--ink);border-top-color:var(--peacock)}
+@media (max-width:560px){.pips{gap:6px}.pip{font-size:10.5px;letter-spacing:0;padding-top:5px}
+  .pip .lbl2{display:none}}
+.navline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 18px;
+  min-height:28px;flex-wrap:wrap}
+.locked{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.locked i{width:5px;height:5px;border-radius:50%;background:var(--pine);display:inline-block}
+
+h2.stp{font-size:21px;margin:0 0 14px}
+.ask{font-family:var(--serif);font-size:21px;font-weight:600;margin:4px 0 15px;max-width:46ch;
+  line-height:1.4;text-wrap:balance;letter-spacing:-.1px}
+.opts{display:flex;flex-direction:column;gap:8px;margin:0 0 15px}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:7px;
+  padding:11px 14px;cursor:pointer;background:var(--surface);font-size:14px}
+.opt:hover{border-color:var(--line-mid)}
+.opt input{margin:3px 0 0;accent-color:var(--peacock);flex-shrink:0}
+.opt.sel{border-color:var(--peacock);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--peacock)}
+.opt.ro{cursor:default;opacity:.75}
+.opt.ro:hover{border-color:var(--line)}
+textarea{width:100%;border:1px solid var(--line);border-radius:7px;padding:11px 13px;font:inherit;
+  font-size:14px;background:var(--surface);color:var(--ink);resize:vertical;min-height:62px;margin:0 0 14px}
+textarea#paste{font-family:var(--mono);font-size:13px}
+textarea::placeholder{color:var(--faint)}
+textarea[readonly]{background:var(--surface-2);color:var(--muted)}
+
+pre{font-family:var(--mono);font-size:12.5px;background:var(--surface-4);border:1px solid var(--line);
+  border-radius:7px;padding:12px 14px;overflow-x:auto;margin:0;line-height:1.65}
+pre b{color:var(--cinnabar);font-weight:600}
+.code2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+.code2>div{min-width:0}
+.cwrap .lbl{margin-bottom:5px}
+
+.yours{border:1px solid var(--line);border-radius:8px;padding:11px 14px;margin:0 0 15px;
+  font-size:14px;color:var(--muted);background:var(--surface-3)}
+.yours b{display:block;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:4px;font-weight:600}
+.yours span{color:var(--ink)}
+.note{border-left:2px solid var(--cinnabar);background:var(--cinnabar-soft);border-radius:0 7px 7px 0;
+  padding:13px 16px;margin:0 0 15px;font-size:14px;max-width:62ch}
+.note b.nh{display:block;font-family:var(--serif);color:var(--cinnabar);margin-bottom:4px;font-size:13px}
+.verdict{display:flex;gap:12px;align-items:center;border:1px solid;border-radius:8px;padding:12px 16px;
+  margin:0 0 10px;font-size:14px;flex-wrap:wrap}
+.verdict.good{background:var(--pine-soft);border-color:var(--pine-line)}
+.verdict.miss{background:var(--amber-soft);border-color:var(--amber-line)}
+.verdict.flat{background:var(--surface-2);border-color:var(--line);color:var(--muted)}
+.verdict .big{font-family:var(--serif);font-size:15px;font-weight:600;flex-shrink:0}
+.verdict.good .big{color:var(--pine)} .verdict.miss .big{color:var(--amber)}
+.verdict.flat .big{color:var(--ink)}
+.verdict span{min-width:0}
+@keyframes settle{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.verdict{animation:settle .42s cubic-bezier(.16,1,.3,1) both}
+.verdict+.verdict{animation-delay:.09s}
+
+.tscroll{overflow-x:auto}
+.mini{width:100%;border-collapse:collapse;font-size:12.5px;margin:9px 0}
+.mini th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+  padding:0 10px 6px 0;font-weight:600}
+.mini td{padding:6px 10px 6px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.mini td:first-child{font-family:var(--mono);font-size:12px}
+.mini .d{color:var(--cinnabar);font-weight:600}
+
+.board{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:10px;margin:0 0 14px}
+.blk{border:1px solid var(--line);border-radius:8px;padding:13px 15px;background:var(--surface);min-width:0}
+.blk .n{font-weight:600;font-size:14px;margin-bottom:1px}
+.bid{font-size:12px;color:var(--faint);font-weight:700;letter-spacing:.05em}
+.blk .q{font-size:12.5px;color:var(--muted);margin-bottom:11px;line-height:1.45}
+.bars{display:flex;flex-direction:column;gap:6px}
+.bar2{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;font-size:13px}
+.bar2 .bl{display:flex;flex-direction:column;min-width:0}
+.bar2 .bh{font-weight:600;color:var(--ink);font-size:13px}
+.bar2 .bx{color:var(--muted);font-size:12.5px;line-height:1.4}
+.pill{font-size:11px;padding:2px 9px;border-radius:20px;border:1px solid var(--line);color:var(--faint);
+  background:var(--surface-3);font-weight:500;white-space:nowrap}
+.pill.help{border-color:var(--cinnabar-line);background:var(--cinnabar-soft);color:var(--cinnabar)}
+.pill.solo{border-color:var(--cinnabar);background:var(--cinnabar-soft);color:var(--cinnabar);font-weight:600}
+.key{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);align-items:center}
+.key i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.key i.k0{background:var(--slate)} .key i.k1{background:var(--cinnabar-line)}
+.key i.k2{background:var(--cinnabar)}
+
+/* curriculum */
+.cblk{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:11px}
+.cblk.now{border-color:var(--peacock);box-shadow:inset 0 0 0 1px var(--peacock)}
+.chd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding:12px 16px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.cblk.now .chd{background:var(--peacock-tint)}
+.chd .cl{font-weight:600;font-size:15px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;min-width:0}
+.chd .cl em{font-style:normal;font-weight:400;color:var(--muted);font-size:13.5px}
+.chd .cr{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.cbd{padding:12px 16px}
+table.wk{width:100%;border-collapse:collapse;font-size:13.5px;margin:0}
+table.wk td{padding:6px 0;border-top:1px solid var(--line);vertical-align:top}
+table.wk tr:first-child td{border-top:0}
+table.wk .wn{width:30px;color:var(--faint);font-size:12.5px;
+  font-variant-numeric:tabular-nums;padding-right:10px}
+table.wk .wt{line-height:1.5;min-width:0}
+table.wk tr.at .wn,table.wk tr.at .wt{color:var(--peacock);font-weight:600}
+.cbd .chips{margin:11px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+
+.off{border:1px dashed var(--line);border-radius:8px;background:var(--surface-3);padding:10px 15px;
+  display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.off .oi{font-weight:700;font-size:12px;color:var(--muted);min-width:24px;letter-spacing:.04em}
+.off .on{font-size:13.5px;font-weight:600;color:var(--muted);min-width:0}
+.off .oq{font-size:13.5px;color:var(--muted);flex:1;min-width:0;line-height:1.5}
+.off.c1{border-color:var(--cinnabar-line);background:var(--cinnabar-soft)}
+.off.c1 .oi,.off.c1 .oq{color:var(--cinnabar)}
+
+.totals{display:flex;gap:24px;flex-wrap:wrap;border:1px solid var(--line);border-radius:8px;
+  padding:14px 17px;margin:0 0 16px;background:var(--surface-3)}
+.tot .tv{font-family:var(--serif);font-size:21px;font-weight:600;line-height:1.1}
+.tot .tk{font-size:12px;color:var(--muted);margin-top:2px}
+.after{font-size:13px;color:var(--muted);margin:14px 0 0;max-width:62ch}
+.keyline{font-size:13px;color:var(--muted);margin:0 0 16px;max-width:66ch;line-height:1.6}
+.keyline strong{color:var(--ink);font-weight:600}
+.conf2{font-size:12.5px;color:var(--muted);margin:11px 0 0;padding-top:10px;border-top:1px solid var(--line);line-height:1.55}
+
+.resume{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+  border:1px solid var(--peacock);background:var(--peacock-soft);border-radius:8px;padding:13px 16px;
+  margin:0 0 14px}
+.resume .rl{display:flex;flex-direction:column;gap:2px;min-width:0}
+.resume .rk{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--peacock);font-weight:600}
+.resume .rt{font-size:14px;font-weight:600}
+.next-up{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+  border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-top:18px;
+  background:var(--surface-3)}
+.next-up .l{display:flex;flex-direction:column;gap:2px;min-width:0}
+.next-up .rk{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+  font-weight:600}
+.next-up .rt{font-size:14px;font-weight:600}
+
+.why{border:1px solid var(--peacock-line);background:var(--peacock-soft);border-radius:8px;
+  padding:13px 16px;margin:0 0 16px;font-size:14px;max-width:62ch;line-height:1.6}
+.why .wl{display:block;font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--peacock);font-weight:600;margin-bottom:5px}
+.mo{font-family:var(--mono);font-size:12.5px}
+.mini-btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);
+  border-radius:12px;font:inherit;font-size:10.5px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;padding:2px 8px;cursor:pointer;margin-left:7px}
+.mini-btn:hover{border-color:var(--peacock);color:var(--peacock)}
+.undercode{font-size:12.5px;color:var(--muted);margin:7px 0 0;line-height:1.5}
+.howto{border:1px solid var(--peacock-line);background:var(--peacock-soft);border-radius:8px;
+  padding:13px 16px;margin:0 0 15px;max-width:62ch}
+.howto .rl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--peacock);
+  font-weight:600;margin:0 0 8px;display:block}
+.howto ol{margin:0;padding-left:20px;font-size:13.5px;line-height:1.75}
+.howto .undercode{margin-top:9px}
+.ic{flex-shrink:0;vertical-align:-2px}
+.ic.flip{transform:rotate(180deg)}
+
+/* ask bubble */
+.askfab{position:absolute;right:calc(18px + env(safe-area-inset-right,0px));
+  bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:5;display:flex;flex-direction:column;
+  align-items:flex-end;gap:9px;max-width:min(330px,calc(100% - 36px))}
+.fab{appearance:none;border:1px solid var(--peacock);background:var(--peacock);color:var(--on-peacock);
+  border-radius:22px;padding:9px 16px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;
+  box-shadow:0 2px 10px -2px rgba(18,111,103,.45);display:flex;align-items:center;gap:7px}
+.fab:hover{background:var(--peacock-deep)}
+.fab.off2{background:var(--surface-4);border-color:var(--line);color:var(--faint);cursor:not-allowed;
+  box-shadow:none}
+.fab .gl{font-family:var(--serif);font-size:15px;line-height:1}
+.askwhy{font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--line);
+  border-radius:7px;padding:7px 11px;line-height:1.5;text-align:right}
+.askpanel{background:var(--surface);border:1px solid var(--line);border-radius:8px;width:100%;
+  box-shadow:0 8px 28px -10px rgba(31,43,47,.3);overflow:hidden}
+.askpanel .ah{padding:10px 14px;background:var(--surface-2);border-bottom:1px solid var(--line);
+  font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.askpanel .ah b{color:var(--ink);font-weight:600;font-size:12.5px}
+.ax{appearance:none;border:0;background:none;color:var(--muted);cursor:pointer;font-size:15px;
+  line-height:1;padding:0 2px}
+.askbd{padding:13px 14px;max-height:250px;overflow-y:auto}
+.qa{font-size:13px;margin-bottom:12px}
+.qa:last-child{margin-bottom:0}
+.qa .q{font-weight:600;margin-bottom:4px}
+.qa .a{color:var(--muted);line-height:1.6}
+.askq{display:flex;flex-direction:column;gap:7px;border-top:1px solid var(--line);padding:11px 14px}
+.askrow{display:flex;gap:7px}
+.askrow input{flex:1;min-width:0;border:1px solid var(--line);border-radius:6px;padding:7px 10px;
+  font:inherit;font-size:13px;background:var(--surface);color:var(--ink)}
+.askrow input::placeholder{color:var(--faint)}
+.askrow .go{padding:7px 14px;font-size:13px}
+.askq .sg{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.sgb{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:16px;
+  padding:5px 11px;font:inherit;font-size:12.5px;color:var(--ink);cursor:pointer;text-align:left}
+.sgb:hover{border-color:var(--peacock);color:var(--peacock)}
+
+@media (max-width:820px){
+  .page{padding-block:14px 32px}
+  pre,.refrow code{font-size:11.5px}
+  .code2{gap:8px}
+  .app{flex-direction:column;min-height:0}
+  .rail{width:100%;border-right:0;border-bottom:1px solid var(--line);flex-direction:row;
+    flex-wrap:wrap;align-items:center;gap:0;padding:10px 8px}
+  .brand{padding:0 10px 0 8px}
+  .nav{width:auto;border-left:0;border-bottom:2px solid transparent;padding:6px 10px;font-size:13.5px}
+  .nav[aria-current="true"]{border-left-color:transparent;border-bottom-color:var(--peacock);background:none}
+  .railfoot{margin:6px 0 0;flex-basis:100%;padding:0 10px}
+  .body{padding:20px 16px 24px}
+  .code2{grid-template-columns:1fr}
+  .rung{flex-wrap:wrap}
+  .rung .nm{width:auto}
+  .askfab{position:static;max-width:none;align-items:stretch;margin-top:18px}
+  .fab{justify-content:center}
+  .askwhy{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.demo-note{margin:0;padding:10px 16px;background:#fdf6e3;border-bottom:1px solid #e6d9a8;color:#3d3a2a;
+  font-size:13.5px;line-height:1.5;text-align:center}
+.demo-note a{color:inherit;font-weight:600}
+</style>
+
+<p class="demo-note"><b>This page is a demo.</b> The course app currently runs only on your own computer,
+so what you see here is a static preview of week 1, session 1. To study the real sessions, install it from
+the <a href="https://github.com/jingyibuilds/forthree#readme">README</a>.</p>
+
+<div class="page">
+<div class="win">
+  <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <span class="url">localhost:3000</span></div>
+  <div class="app">
+    <nav class="rail">
+      <div class="brand"><span class="sealmk">f3</span> CS Core</div>
+      <button class="nav" data-screen="today" aria-current="true">Today</button>
+      <button class="nav" data-screen="curric">Curriculum</button>
+      <button class="nav" data-screen="path">The board</button>
+      <div class="railfoot" id="railfoot"><strong>A1</strong> Code &amp; debugging<br>session 1 of 21</div>
+    </nav>
+    <main class="body" id="body"></main>
+    <div class="askfab" id="askfab"></div>
+  </div>
+</div>
+</div>
+
+<script>
+"use strict";
+/* ---------- A1, all nine sessions ----------
+   One record per session. The runner is generic: it reads these fields and
+   nothing else, so adding A2-A4 is data, not code. Fields marked * are what
+   DESIGN.md 14.2 calls `reading`, `reference_card`, `predict`, `tasks`,
+   `acceptance_checks` and `concepts`. */
+
+/* The demo ships ONE session. The runner below reads these fields and nothing
+   else, so the remaining twenty are data, not code - see DESIGN.md section 14,
+   which specifies this record and every field in it. */
+var A1=[
+{n:1,t:"Get code to run at all",
+ sub:"Write a file and run it. Break it, read what Python says, fix it. Then find out which Python has been running all along.",
+ why:"Until a file you wrote runs on your machine, nothing else here works. A1 asks whether you can read code, run it and fix it, so you do all three in the first hour, on three lines you wrote yourself. Nobody warns you about the last part. <span class=\"mo\">python3</span> is a name, not a file, and your shell has to look it up. On a Mac it can find more than one.",
+ read:[["Missing Semester, Lecture 1: The Shell","https://missing.csail.mit.edu/2020/course-shell/","moving around, running things, and what $PATH is",30],
+       ["Python docs \u2014 the venv tutorial, \u201cVirtual Environments and Packages\u201d","https://docs.python.org/3/tutorial/venv.html","a Python that belongs to one folder",15]],
+ ref:[["go to a folder, see what is in it",'cd ~/cs-core\npwd\nls'],
+      ["make and edit a file",'nano hello.py    # ctrl-O then return saves, ctrl-X quits'],
+      ["keep a value, change it, show it",'colour = "red"\nprint(colour)\ncolour = "blue"'],
+      ["run a file you wrote",'python3 hello.py'],
+      ["which python3 would run, and all of them",'which python3\nwhich -a python3'],
+      ["make a Python for this folder, and use it",'python3 -m venv .venv\nsource .venv/bin/activate'],
+      ["ask the machine, then ask a Python","uname -m\npython3 -c 'import platform; print(platform.machine())'"]],
+ tasks:[["Write three lines, run them","Make <span class=\"mo\">hello.py</span>. Set a name to one value, print it, change it, print it again. Run it.","two different values come back, in the order you wrote them.",0],
+        ["Break it on purpose","Delete one character \u2014 a quote, a bracket, a letter of <span class=\"mo\">print</span>. Run it. Read what Python says, out loud. Then put it back.","you can name the file and the line number from the error, without looking at your code."],
+        ["Find out which Python","Four answers: (1) which <span class=\"mo\">python3</span> would run, (2) how many there are, (3) which one runs once you make an environment for this folder and switch to it, and (4) what architecture that Python is \u2014 and what your machine says it is.","you have all four, and the last two do not agree.",1]],
+ ask:"You have more than one Python installed. When you type <span class=\"mo\">python3</span>, one of them runs. If you use that one to build a virtual environment, which Python is in the environment?",
+ opts:["The newest one on the machine. A fresh environment should give you a fresh Python.",
+       "The one you built it with.",
+       "The system one, because that is the real Python and the others are copies."],
+ ok:1,
+ whyAsk:"One line: why?",
+ mine:"$ uname -m\n<b>arm64</b>\n\n$ source .venv/bin/activate\n$ python3 -c \'import platform; print(platform.machine())\'\n<b>x86_64</b>",
+ mineL:"Your machine, and the environment you built",
+ theirs:"$ which -a python3\n/usr/local/bin/python3\n/usr/bin/python3\n\n$ /usr/bin/python3 --version\nPython <b>3.9.6</b>",
+ theirsL:"Why: the two Pythons you already had",
+ note:"<strong>A virtual environment pins the Python you built it with. It does not go and find a better one.</strong> The <span class=\"mo\">python3</span> that answered first is 3.12, but it is an Intel build running under emulation on an Apple-silicon machine. That is the one your environment pinned, and it stays pinned until you build the environment again. The other Python is native, and it is <strong>3.9</strong>, too old for what you will be doing here. Neither one is right, and nothing has gone wrong. There is no warning and no failure, only a default that is wrong. Most environment problems look like this, which is why it is session 1 and not an appendix. <span class=\"mo\">which python3</span> gives you one answer, and always did. To see all of them you need <span class=\"mo\">which -a</span>. That is the trick.",
+ after:"So you are not done. Before session 2 you need a Python that is both current and native. Run <span class=\"mo\">scripts/setup-python.sh</span>, which prints each step as it takes it. Then build the environment again from that Python, and ask the two architecture questions a second time.",
+ chk:{k:"paired",why:"Paste both architecture answers, commands and all \u2014 what <span class=\"mo\">uname -m</span> said, and what <span class=\"mo\">platform.machine()</span> said from inside your environment."},
+ ph:"$ uname -m\n...\n$ python3 -c \'import platform; print(platform.machine())\'\n...",
+ lbl:["I had it right, and for the right reason.",
+      "I assumed a new environment gets you a fresh, current Python.",
+      "I assumed there was only one python3 to begin with.",
+      "I assumed the version number told me which one it was.",
+      "I had it right, but was not sure why."]}
+];
+
+var TEARDOWN={2:["Spliit","Records and money","simple","exposure, not scored"],
+              4:["Pagefind","Search and recommendation","simple",""],
+              6:["Loop Habit Tracker","Software on your device","simple",""],
+              8:["AnythingLLM","AI apps and agents","simple",""]};
+
+/* ---------- state ----------
+   One run record per session, so moving between sessions keeps your place. */
+function blank(){return{step:0,maxStep:0,choice:null,why:"",label:null,paste:"",
+  pred:[null,null,null],res:[null,null,null],earned:false}}
+var S={screen:"today",cur:0,done:0,runs:{},askOpen:false,askSeen:[],askLog:[],
+       srcOpen:false,refOpen:false,frOpen:false,copied:false};
+function R(){var n=A1[S.cur].n;if(!S.runs[n])S.runs[n]=blank();return S.runs[n]}
+function sess(){return A1[S.cur]}
+
+var CSV="name,dept\nAna,sales\nBo,eng\nCy,\nDi,sales\n";
+var STEPLABEL=["","1 Guess","2 Write it","3 Compare","4 Log the miss"];
+var STEPNAME=["","the question","the three tasks","the answer","the log"];
+
+/* ---------- the graders ----------
+   Every check type here is one of DESIGN.md section 18's. No model is involved,
+   and each returns the same {ok, why} shape so the runner stays generic. */
+function gradeGroupShape(txt){
+  var seg=String(txt).replace(/[{}]/g," ").split(/[,\n\r]+/),
+      seen={},total=0,blank=false,found=0,k,m,i;
+  for(i=0;i<seg.length;i++){
+    m=seg[i].match(/^\s*(.*?)\s*[:|]\s*(\d+)\s*$/);
+    if(!m)continue;
+    k=m[1].replace(/^['"]|['"]$/g,"").trim();
+    found++;seen[k]=+m[2];total+=+m[2];
+    if(k==="")blank=true}
+  var n=Object.keys(seen).length;
+  if(!found)return{ok:false,why:"Nothing here looks like a group and a count. Paste what the script printed, not a description of it."};
+  if(n<3)return{ok:false,why:"Only "+n+" group"+(n===1?"":"s")+". There are three once the blank one is counted."};
+  if(!blank)return{ok:false,why:"Three groups, but none of them blank — the fourth row was dropped instead of counted."};
+  if(total!==4)return{ok:false,why:"The counts total "+total+", not 4. Every row belongs to exactly one group."};
+  return{ok:true,why:"Three groups including the blank, totalling 4."}}
+
+/* Pairs each answer with the command above it. The session's whole point is that
+   the machine says one thing and the environment says another, so accepting them
+   swapped marks the exact confusion this session exists to cure as correct. */
+function gradePaired(t){
+  var lines=String(t).split(/\r?\n/),seen={},cur=null,i,l;
+  for(i=0;i<lines.length;i++){
+    l=lines[i].trim();
+    if(!l)continue;
+    if(/uname\s+-m/.test(l)){cur="machine";continue}
+    if(/platform\.machine/.test(l)){cur="env";continue}
+    var m=l.match(/\b(arm64e?|x86_64|i386)\b/);
+    if(m&&cur){seen[cur]=m[1];cur=null}}
+  if(!seen.machine&&!seen.env)
+    return{ok:false,why:"I cannot find either answer under its command. Paste the terminal itself \u2014 each command, and the line that came back under it."};
+  if(!seen.machine)return{ok:false,why:"I can see what a Python said, but not what the machine said. Run <span class=\"mo\">uname -m</span> too, and paste both."};
+  if(!seen.env)return{ok:false,why:"I can see what the machine said, but not what a Python said from inside your environment. Run that one too, and paste both."};
+  if(seen.machine!=="arm64"&&seen.machine!=="arm64e")
+    return{ok:false,why:"Those are the right two answers, under the wrong two commands. <strong>Look again at which one you asked the machine and which you asked the Python</strong> \u2014 that is the whole of this session."};
+  return{ok:true,why:"The machine says "+seen.machine+" and the Python in your environment says "+seen.env+
+    (seen.env===seen.machine?". They agree \u2014 so you already fixed it, or you made the environment from a native Python."
+                            :". They do not agree, and that is the finding.")}}
+
+function grade(txt){
+  var c=sess().chk,t=String(txt||"").trim(),i;
+  if(!t)return{ok:false,why:"Nothing pasted yet."};
+  if(c.k==="paired")return gradePaired(t);
+  if(c.k==="group_shape")return gradeGroupShape(t);
+  if(c.k==="equal"){
+    return t.replace(/\s/g,"")===c.need
+      ?{ok:true,why:"That is the number."}
+      :{ok:false,why:"That is not what this one prints. Run it again and paste exactly what came back."}}
+  if(c.k==="contains_all"){
+    for(i=0;i<c.need.length;i++){
+      if(t.toLowerCase().indexOf(String(c.need[i]).toLowerCase())<0)
+        return{ok:false,why:"That is not the shape this asks for. Paste the terminal itself \u2014 "+
+          "the commands you typed and what came back under each one \u2014 not just the answers."}}
+    return{ok:true,why:"That is the output this one produces."}}
+  if(c.k==="contains_any"){
+    for(i=0;i<c.need.length;i++){
+      if(t.toLowerCase().indexOf(String(c.need[i]).toLowerCase())>=0)
+        return{ok:true,why:"Accepted."}}
+    return{ok:false,why:"I cannot see the shape this asks for. It should mention one of: "+c.need.join(", ")+"."}}
+  return{ok:false,why:"No check defined."}}
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+/* ---------- drawn icons, one stroke weight ---------- */
+var ICON={check:'<path d="M3.5 8.5l3 3 6-6.5"/>',chev:'<path d="M4 6l4 4 4-4"/>',
+  out:'<path d="M6 10l4-4M6.5 5.8H10v3.4"/>',close:'<path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/>',
+  back:'<path d="M9.5 3.5L5 8l4.5 4.5"/>',lock:'<path d="M4.5 7V5.2a3.5 3.5 0 017 0V7M3.5 7h9v6h-9z"/>'};
+function ic(n,cls){
+  return '<svg class="ic'+(cls?" "+cls:"")+'" viewBox="0 0 16 16" width="14" height="14" '+
+    'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" '+
+    'stroke-linejoin="round" aria-hidden="true">'+ICON[n]+'</svg>'}
+
+/* ---------- the board ---------- */
+var BLOCKS=[
+ {id:"A1",t:"Code & debugging",q:"Can I read, run and fix code an AI wrote?",
+  skills:[["Judge","Tell whether code is right"],["Build","Write it and fix what it hands you"]],rg:"sessions 1–9",
+  c:[["CS 61A","https://cs61a.org/"],["CS50x","https://cs50.harvard.edu/x/"],
+     ["MIT 6.100L","https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/"],
+     ["Missing Semester","https://missing.csail.mit.edu/"]]},
+ {id:"A2",t:"Logic & precise reasoning",q:"Can I state exactly what must be true, and spot exceptions?",
+  skills:[["Judge","Say exactly what must be true"],["Specify","Write it down so a test can check it"]],rg:"sessions 10–12",
+  w:[[10,"Say what must be true"],[11,"Invariants, and one counterexample (double)"],
+     [12,"Catch tests that only look thorough (double)"]],
+  c:[["MIT 6.102","https://web.mit.edu/6.102/www/sp25/"],["CMU 17-313","https://cmu-313.github.io/"],
+     ["CS 70","https://www.eecs70.org/"]]},
+ {id:"A3",t:"Algorithms & data structures",q:"How will this work slow down as the data grows?",
+  skills:[["Judge","Tell how it slows down as the data grows"],["Measure","Time it at several sizes, and show the growth"]],rg:"sessions 13–15",
+  w:[[13,"Get the measuring stick first"],[14,"Choose a structure, and recognise that an index is one"],
+     [15,"Find the hidden repeated work"]],
+  c:[["MIT 6.006","https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/"],
+     ["CS 61B","https://sp24.datastructur.es/"],["Stanford CS 145","https://cs145-fa23.github.io/"]]},
+ {id:"A4",t:"Computer systems",q:"What actually happens on the machine when code runs?",
+  skills:[["Judge","Tell what the machine is doing"],["Build","Make it faster, and prove it"]],rg:"sessions 16–20",
+  w:[[16,"Know what each level costs"],[17,"Know why big jobs get killed"],
+     [18,"Processes and threads"],[19,"Concurrency, through a real outage (double)"],
+     [20,"Measure before optimising"]],
+  c:[["CMU 15-213","https://www.cs.cmu.edu/~213/"],["CS 162","https://cs162.org/"],
+     ["CS 61C","https://cs61c.org/"]]}];
+
+var NOTTAUGHT=[
+ ["B1","APIs & data stores","How do programs talk to each other and keep data safely?"],
+ ["B2","Software design & testing","How is code structured and checked so change stays safe?"],
+ ["B3","Shipping & ownership","How does code reach users and stay safe and running?"],
+ ["B4","System design","What shape should this product and its data flow take?"],
+ ["C1","How models work","Why do language models behave, fail and cost as they do?"],
+ ["C2","Directing & checking AI","How do I direct AI work and know it's right?"]];
+
+/* 0 not started, 1 with help, 2 on your own. Index 0 is the judging skill,
+   index 1 the making one. A1 only, in the demo. */
+function skillState(block,i){
+  if(block!=="A1")return 0;
+  var g=S.runs,solo=g[9]&&g[9].earned;
+  if(solo)return 2;
+  if(i===1&&g[7]&&g[7].earned)return 1;
+  if(i===0&&g[7]&&g[7].earned)return 1;
+  return 0}
+
+function board(){
+  var h='<div class="board">',i,j,v,b;
+  for(i=0;i<BLOCKS.length;i++){b=BLOCKS[i];
+    h+='<div class="blk"><div class="n"><span class="bid">'+b.id+'</span> '+b.t+
+       '</div><div class="q">'+b.q+'</div><div class="bars">';
+    for(j=0;j<2;j++){v=skillState(b.id,j);
+      h+='<div class="bar2"><span class="bl"><span class="bh">'+b.skills[j][0]+'</span>'+
+         '<span class="bx">'+b.skills[j][1]+'</span></span><span class="pill '+
+         (v===2?"solo":v===1?"help":"")+'">'+
+         (v===2?"on your own":v===1?"with help":"not started")+'</span></div>'}
+    h+='</div></div>'}
+  return h+'</div><div class="key"><span><i class="k0"></i>not started</span>'+
+   '<span><i class="k1"></i>with help — notes open</span>'+
+   '<span><i class="k2"></i>on your own — no notes, a question you had not seen</span></div>'}
+
+/* ---------- pieces ---------- */
+function readBlock(){
+  var s=sess(),t=0,i;
+  for(i=0;i<s.read.length;i++)t+=s.read[i][3];
+  var h='<div class="read"><div class="rh"><b>Read this first</b>'+
+        '<span>'+t+' min · the material itself, not my summary of it</span></div><ul>';
+  for(i=0;i<s.read.length;i++){
+    h+='<li><a target="_blank" rel="noopener" href="'+s.read[i][1]+'">'+s.read[i][0]+
+       ic("out")+'</a><span class="wh2">'+s.read[i][2]+' · '+s.read[i][3]+' min</span></li>'}
+  return h+'</ul></div>'}
+
+function firstrun(){
+  var h='<div class="refcard"><button class="refhead" data-act="first" aria-expanded="'+
+    (S.frOpen?"true":"false")+'"><span class="rl">Never opened a terminal</span>'+
+    '<span class="refsum">3 lines '+ic("chev",S.frOpen?"flip":"")+'</span></button>',i,
+    rows=[["\u2318 space, type <em>Terminal</em>, return","a window opens with one line waiting \u2014 that line is the prompt"],
+          ["mkdir ~/cs-core","makes a folder"],
+          ["cd ~/cs-core","goes into it; nothing appears, which is right"],
+          ["python3 hello.py","runs a file you wrote in that folder"]];
+  if(!S.frOpen)return h+'</div>';
+  h+='<div class="term">';
+  for(i=0;i<rows.length;i++){
+    h+='<div class="tl"><code>'+(i?'<span class="pr">$</span> ':'')+rows[i][0]+'</code>'+
+       '<span class="tg">'+rows[i][1]+'</span></div>'}
+  return h+'</div></div>'}
+
+function refcard(){
+  var s=sess(),h='<div class="refcard"><button class="refhead" data-act="ref" aria-expanded="'+
+    (S.refOpen?"true":"false")+'"><span class="rl">Reference card</span>'+
+    '<span class="refsum">'+s.ref.length+' lines of syntax you will need '+
+    ic("chev",S.refOpen?"flip":"")+'</span></button>',i;
+  if(!S.refOpen)return h+'</div>';
+  for(i=0;i<s.ref.length;i++){
+    h+='<div class="refrow"><span class="k">'+s.ref[i][0]+'</span><code>'+esc(s.ref[i][1])+'</code></div>'}
+  return h+'<p class="refnote">Syntax only \u2014 never this task\u2019s own data.</p></div>'}
+
+function srcbox(){
+  var s=sess(),h='<div class="srcbox"><span class="sl">Where this comes from</span><div class="srclist">',i;
+  for(i=0;i<s.read.length;i++){
+    h+='<a class="chip src" target="_blank" rel="noopener" href="'+s.read[i][1]+'">'+
+       s.read[i][0].split(",")[0]+ic("out")+'</a>'}
+  return h+'</div>A1 must cover six things; this session covers the first. The task was written '+
+    'for your own machine, not copied from a course’s problem set.</div>'}
+
+function ladder(live){
+  var s=sess(),r=R(),h='<div class="lad">',i,p,res;
+  for(i=0;i<3;i++){
+    p=r.pred[i];res=r.res[i];
+    h+='<div class="rung'+(live&&s.tasks[i][3]===1&&p===null?" hi":"")+'"><span class="num">'+(i+1)+'</span>'+
+       '<span class="nm">'+s.tasks[i][0]+'</span><span class="ds">'+s.tasks[i][1];
+    if(live){
+      /* The guess is asked only where a task can genuinely fail. On a task that is
+         transcription, a pass/fail guess is a judgement about herself, not retrieval. */
+      if(s.tasks[i][3]===1&&p===null){
+        h+='<span class="pass"><b>Before you look</b> \u2014 will yours pass? '+
+           '<button class="tap" data-pred="'+i+'|1">yes</button>'+
+           '<button class="tap" data-pred="'+i+'|0">no</button></span>'}
+      else{
+        h+='<span class="pass"><b>Passes when</b> '+s.tasks[i][2]+'</span>'}}
+    h+='</span></div>'}
+  return h+'</div>'}
+
+function pips(){
+  var r=R(),h='<ol class="pips">',i;
+  for(i=1;i<=4;i++){
+    h+='<li>'+((i!==r.step&&i<=r.maxStep)
+      ?'<button class="pip past" data-jump="'+i+'">'+ic("check","tk")+STEPLABEL[i]+'</button>'
+      :'<span class="pip '+(i===r.step?"on":"")+'"'+(i===r.step?' aria-current="step"':'')+'>'+
+       STEPLABEL[i]+'</span>')+'</li>'}
+  return h+'</ol>'}
+
+function navline(){
+  var r=R(),h='<div class="navline">';
+  h+='<button class="bk" data-act="back">'+ic("back")+(r.step>1?'Step '+(r.step-1):'Today')+'</button>';
+  h+='<span style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">';
+  if(r.step>=2)h+='<span class="locked"><i></i>Answer locked</span>';
+  return h+'</span></div>'}
+
+/* ---------- the four steps ---------- */
+function stepPredict(){
+  var s=sess(),r=R(),ro=r.maxStep>=2,h='',i;
+  h+='<p class="ask">'+s.ask+'</p><div class="opts">';
+  for(i=0;i<s.opts.length;i++){
+    h+='<label class="opt'+(r.choice===i?" sel":"")+(ro?" ro":"")+'"'+(ro?"":' data-pick="'+i+'"')+'>'+
+       '<input type="radio" name="pick" id="pick'+i+'" '+(r.choice===i?"checked":"")+
+       (ro?" disabled":"")+'><span>'+s.opts[i]+'</span></label>'}
+  h+='</div><textarea id="why" '+(ro?'readonly disabled':'')+' placeholder="'+esc(s.whyAsk)+'">'+
+     esc(r.why)+'</textarea>';
+  h+= ro ? '<div class="row"><button class="go" data-act="fwd">Step 2</button>'+
+           '<span class="hint">Locked. Rereading is free.</span></div>'
+         : '<div class="row"><button class="go" data-act="lock"'+(r.choice===null?" disabled":"")+
+           '>Lock in my answer</button><span class="hint">Then the tasks appear.</span></div>';
+  return h}
+
+function syncRes(){var r=R();if(r.paste.trim()&&grade(r.paste).ok&&r.res[2]===null)r.res[2]=1}
+
+function after2(){
+  var s=sess(),r=R(),typed=r.paste.trim(),ev=typed?grade(r.paste):null,pass=!!(ev&&ev.ok),h='',i;
+  if(typed){
+    h+='<div class="inline '+(pass?"good":"miss")+'">'+ic(pass?"check":"close")+
+       '<span><strong>'+(pass?"That is it.":"Not yet.")+'</strong> '+ev.why+'</span></div>'}
+  if(pass){
+    h+='<div class="rec"><span class="rl">The first two had nothing to paste. Did they work?</span>';
+    for(i=0;i<2;i++){
+      h+='<div class="recrow"><span class="recnm">'+(i+1)+'. '+s.tasks[i][0]+'</span>'+
+        (r.res[i]===null
+          ?'<span><button class="tap" data-res="'+i+'|1">yes</button>'+
+           '<button class="tap" data-res="'+i+'|0">not yet</button></span>'
+          :'<strong class="'+(r.res[i]?"agree":"disagree")+'">'+
+           (r.res[i]?"yes":"not yet")+'</strong>')+'</div>'}
+    h+='</div>'}
+  h+='<div class="row"><button class="go" data-act="fwd"'+(pass?"":" disabled")+'>'+
+     (pass?"See what happened":"Check it")+'</button>'+
+     (pass?'':'<span class="hint">'+(typed?"Fix it and paste again."
+       :"Paste what came back. You will know straight away whether it is right.")+'</span>')+
+     '</div>'+
+     '<p class="demoskip">Reading this rather than running it? '+
+     '<button class="linkish" data-act="fill">Fill in a correct result and show me the rest</button>'+
+     ' \u2014 demo only.</p>';
+  return h}
+
+function stepDo(){
+  var s=sess(),r=R();syncRes();
+  var h='<h2 class="stp">Three things, in order</h2>'+
+   '<p class="sub">In your terminal, not on this page. Stopping after the first still counts.</p>'+
+   '<div class="chips"><span class="chip hot">AI may explain, never write or debug</span>'+
+   '<span class="chip">nothing to install but Python itself</span>'+
+   '<span class="chip">stuck 15 min is normal</span></div>'+
+   firstrun()+
+   ladder(true)+refcard()+
+   '<p class="lbl">'+s.chk.why+'</p>'+
+   '<textarea id="paste" placeholder="'+esc(s.ph)+'">'+esc(r.paste)+'</textarea>'+
+   '<div id="after2">'+after2()+'</div>';
+  return h}
+
+function stepCompare(){
+  var s=sess(),r=R(),right=(r.choice===s.ok),ev=grade(r.paste),h='',i,j;
+  if(!ev.ok){
+    return '<h2 class="stp">Not yet</h2>'+
+      '<div class="verdict miss"><span class="big">Output rejected</span><span>'+ev.why+'</span></div>'+
+      '<p class="lbl">What you pasted</p><pre>'+(esc(r.paste)||"(nothing)")+'</pre>'+
+      '<p class="hint" style="max-width:56ch;margin:14px 0 0">The answer stays shut until it '+
+      'runs.</p>'+
+      '<div class="row" style="margin-top:14px"><button class="go" data-act="back">Back to the tasks</button>'+
+      '<span class="hint">The bubble is live: ask it what the error means.</span></div>'}
+  h+='<h2 class="stp">What actually happened</h2>'+
+     '<div class="verdict good"><span class="big">Output accepted</span><span>'+ev.why+'</span></div>'+
+     '<div class="verdict flat"><span class="big">'+(right?"Your guess was right":"Your guess was wrong")+
+     '</span><span>'+(right?"":"This is the one worth keeping.")+'</span></div>';
+  if(r.why.trim())h+='<div class="yours"><b>Your reason</b><span>'+esc(r.why)+'</span></div>';
+  h+='<div class="code2"><div class="cwrap"><p class="lbl">'+s.mineL+'</p><pre>'+s.mine+'</pre></div>'+
+     '<div class="cwrap"><p class="lbl">'+s.theirsL+'</p><pre>'+s.theirs+'</pre></div></div>'+
+     '<div class="note"><b class="nh">In the margin</b>'+s.note;
+  if(s.tbl){
+    h+='<div class="tscroll"><table class="mini"><thead><tr>';
+    for(j=0;j<s.tbl[0].length;j++)h+='<th>'+s.tbl[0][j]+'</th>';
+    h+='</tr></thead><tbody>';
+    for(i=1;i<s.tbl.length;i++){h+='<tr>';
+      for(j=0;j<s.tbl[i].length;j++)h+='<td>'+s.tbl[i][j]+'</td>';
+      h+='</tr>'}
+    h+='</tbody></table></div>'}
+  if(s.after)h+='<p class="afternote">'+s.after+'</p>';
+  h+='</div><div class="row"><button class="go" data-act="fwd">Next</button></div>';
+  return h}
+
+function stepRecord(){
+  var s=sess(),r=R(),h='<h2 class="stp">Which was it?</h2>'+
+   '<p class="sub">One tap. If an idea misfired, the log needs that idea — not a paragraph.</p>'+
+   '<div class="opts">',j;
+  for(j=0;j<s.lbl.length;j++){
+    h+='<label class="opt'+(r.label===j?" sel":"")+'" data-lbl="'+j+'">'+
+       '<input type="radio" name="lb" id="lb'+j+'" '+(r.label===j?"checked":"")+'><span>'+
+       esc(s.lbl[j])+'</span></label>'}
+  return h+'</div><div class="row"><button class="go" data-act="fwd"'+
+   (r.label===null?" disabled":"")+'>Finish the session</button></div>'}
+
+/* ---------- Today ---------- */
+function todayCard(){
+  var s=sess(),r=R(),resuming=(r.maxStep>=1&&r.maxStep<=4&&r.step===0),fin=(r.maxStep>=5),h='';
+  h+='<h1>'+s.t+'</h1><p class="sub">'+s.sub+'</p>'+
+     '<div class="why"><span class="wl">Why this one is here</span>'+s.why+'</div>'+
+     '<p class="done"><span class="tick">'+ic("check")+'</span>'+
+     (s.n===1?'Nothing is set up yet — that is this session’s subject.'
+             :'Python 3.12 (arm64), virtual environment, git signed in.')+'</p>'+
+     readBlock();
+  if(resuming){
+    h+='<div class="resume"><div class="rl"><span class="rk">Where you stopped</span>'+
+       '<span class="rt">Step '+r.maxStep+' of 4 — '+STEPNAME[r.maxStep]+'</span></div>'+
+       '<button class="go" data-act="resume">Pick it up</button></div>'}
+  h+='<div class="parts"><span class="rl">This session has three parts</span>'+
+     '<div class="prow now"><span class="pn">1</span><span class="pt">Write, break, fix \u2014 and '+
+     'find out which Python</span><span class="pk">the lab \u00b7 below</span></div>'+
+     '<div class="prow"><span class="pn">2</span><span class="pt">Talk through someone else\u2019s '+
+     'code</span><span class="pk">interview \u00b7 30 min</span></div>'+
+     '<div class="prow"><span class="pn">3</span><span class="pt">No-help check</span>'+
+     '<span class="pk">30 min \u00b7 at the end, this session only<br><em>in the full course, not in this demo</em></span></div>'+
+     '<p class="undercode">Normally this check comes first and gates the session. Session 1 is the '+
+     'exception: nothing has been studied yet.</p></div>'+
+     '<div class="panel"><div class="hd"><span class="l">The lab \u00b7 three things, stop anywhere</span>'+
+     '<button class="srcbtn" data-act="src" aria-expanded="'+(S.srcOpen?"true":"false")+'">'+
+     'Where this comes from '+ic("chev",S.srcOpen?"flip":"")+'</button></div><div class="bd">'+
+     (S.srcOpen?srcbox():"")+
+     '<div class="chips"><span class="chip hot">AI may explain, never write or debug</span>'+
+     '<span class="chip">nothing to install but Python itself</span><span class="chip">your own terminal</span></div>'+
+     ladder(false);
+  if(fin){
+    h+='<div class="row"><button class="gh" data-act="resume">See how it ended</button>'+
+       '<button class="bk" data-act="restart">Run it again from the start</button></div>'}
+  else if(!resuming){
+    h+='<div class="row"><button class="go" data-act="begin">Begin</button>'+
+       '<span class="hint">It opens with a question.</span></div>'}
+  h+='</div></div>';
+  if(fin&&r.label!==null){
+    h+='<div class="panel" style="margin-top:12px"><div class="hd"><span class="l">Filed from this '+
+       'session</span><span class="chip">comes back in a few sessions</span></div><div class="bd">'+
+       '<div style="font-size:14px">'+esc(s.lbl[r.label])+'</div></div></div>'}
+  h+='<p class="after">No clock on this card. The session is done when you can do the thing, whether '+
+     'that took forty minutes or three sittings.</p>';
+  return h}
+
+/* ---------- Curriculum ---------- */
+var A1LIST=[[1,"Get code to run at all"],[2,"Order and state"],[3,"Naming and boundaries"],
+ [4,"Pick the right container"],[5,"Data in and out"],
+ [6,"Recover a specification from code"],[7,"Debug by method"],[8,"Read history"],
+ [9,"Build it and explain it"]];
+
+function skillstrip(b){
+  var h='<div class="csk">',j;
+  for(j=0;j<2;j++){
+    h+='<span class="cs'+(skillState(b.id,j)?" on":"")+'"><b>'+b.skills[j][0]+'</b>'+
+       b.skills[j][1]+'</span>'}
+  return h+'</div>'}
+
+function curric(){
+  var h='<h1>Ten blocks. This semester teaches four.</h1>'+
+   '<p class="sub">In teaching order. The six at the bottom are real blocks from the same map, left '+
+   'out of this semester.</p>'+
+   '<div class="totals">'+
+   '<div class="tot"><div class="tv">21</div><div class="tk">sessions</div></div>'+
+   '<div class="tot"><div class="tv">8</div><div class="tk">skills — the two listed under each '+
+   'block below</div></div>'+
+   '<div class="tot"><div class="tv">13</div><div class="tk">university courses, all linked below</div></div>'+
+   '</div>',
+   i,j,b,r;
+  // A1, expanded
+  h+='<div class="cblk now"><div class="chd"><span class="cl"><span class="bid">A1</span> '+
+     BLOCKS[0].t+' <em>'+BLOCKS[0].q+'</em></span>'+
+     '<span class="cr">'+BLOCKS[0].rg+'</span></div><div class="cbd">'+skillstrip(BLOCKS[0])+
+     '<table class="wk"><tbody>';
+  for(i=0;i<A1LIST.length;i++){
+    r=A1LIST[i];
+    h+='<tr'+(r[0]===sess().n?' class="at"':'')+'><td class="wn">'+r[0]+'</td><td class="wt">'+
+       (r[0]===sess().n?'<button class="hererow" data-screen="today">'+r[1]+
+         '<span class="here">you are here \u2014 open it</span></button>':r[1])+
+       (TEARDOWN[r[0]]?'<span class="wm2">+ take apart: '+TEARDOWN[r[0]][0]+'</span>':'')+
+       (r[0]===7?'<span class="wm">2nd skill → with help</span>':'')+
+       (r[0]===9?'<span class="wm">both skills → on your own</span>':'')+
+       '</td></tr>'}
+  h+='</tbody></table><div class="chips">';
+  for(j=0;j<BLOCKS[0].c.length;j++){
+    h+='<a class="chip src" target="_blank" rel="noopener" href="'+BLOCKS[0].c[j][1]+'">'+
+       BLOCKS[0].c[j][0]+ic("out")+'</a>'}
+  h+='</div></div></div>';
+  // A2-A4
+  for(i=1;i<BLOCKS.length;i++){b=BLOCKS[i];
+    h+='<div class="cblk"><div class="chd"><span class="cl"><span class="bid">'+b.id+'</span> '+b.t+
+       ' <em>'+b.q+'</em></span><span class="cr">'+b.rg+'</span></div>'+
+       '<div class="cbd">'+skillstrip(b)+'<table class="wk"><tbody>';
+    for(j=0;j<b.w.length;j++){
+      h+='<tr><td class="wn">'+b.w[j][0]+'</td><td class="wt">'+b.w[j][1]+'</td></tr>'}
+    h+='</tbody></table><div class="chips">';
+    for(j=0;j<b.c.length;j++){
+      h+='<a class="chip src" target="_blank" rel="noopener" href="'+b.c[j][1]+'">'+
+         b.c[j][0]+ic("out")+'</a>'}
+    h+='</div></div></div>'}
+  h+='<div class="cblk"><div class="chd"><span class="cl"><span class="bid">21</span> '+
+     '<em>Capstone, and an exam in three sizes</em></span>'+
+     '<span class="cr">scored against the source</span></div><div class="cbd">'+
+     '<table class="wk"><tbody>'+
+     '<tr><td class="wn">S</td><td class="wt">Simple — build it, cold</td></tr>'+
+     '<tr><td class="wn">M</td><td class="wt">Medium — put a product’s own published steps in '+
+     'order</td></tr>'+
+     '<tr><td class="wn">L</td><td class="wt">Difficult — name the tricky parts before reading '+
+     'them</td></tr></tbody></table>'+
+     '<p class="conf2">Counted against the engineering write-ups for a product you have never taken '+
+     'apart. No person grades it, and no model does either.</p></div></div>';
+  h+='<h2 style="margin:22px 0 10px">Not in this semester</h2>';
+  for(i=0;i<NOTTAUGHT.length;i++){
+    h+='<div class="off'+(NOTTAUGHT[i][0]==="C1"?" c1":"")+'"><span class="oi">'+NOTTAUGHT[i][0]+
+       '</span><span class="on">'+NOTTAUGHT[i][1]+'</span><span class="oq">'+NOTTAUGHT[i][2]+
+       '</span></div>'}
+  h+='<p class="after">If hours free up, C1 goes first — its question is closer to why you '+
+     'started than any block this semester teaches.</p>';
+  return h}
+
+/* ---------- the ask bubble ---------- */
+var QA=[
+ {q:"What is a virtual environment?",
+  a:"A Python that belongs to this one folder. Note: <b>it is locked to the Python you built it with; it never goes looking for a better one</b>. Build it with the wrong interpreter and the folder stays wrong. Counting the Pythons on your machine is what <b>which -a</b> is for."},
+ {q:"Why does the version number not tell me which Python?",
+  a:"Because <b>python3</b> is a name your shell resolves, not a file. Several can be installed, the path decides which answers, and the one that answers may not be the one you meant."},
+ {q:"I have been stuck for 20 minutes. Is that normal?",
+  a:"Yes. Fifteen minutes stuck is expected; at forty, write down what you tried and move on. That note is worth more than a finished script."}];
+
+var GLOSS=[
+ [/venv|virtual env/i,"A <b>virtual environment</b> is a Python that belongs to one folder. <b>python3 -m venv .venv</b> makes it and <b>source .venv/bin/activate</b> switches to it. It pins whichever <b>python3</b> you made it with — it does not go and find a better one."],
+ [/path/i,"Your <b>PATH</b> is an ordered list of folders the shell searches for a command. The first match wins, which is why <b>which -a python3</b> can print several lines and only the top one runs."],
+ [/arm64|x86|rosetta|intel/i,"<b>arm64</b> is your machine’s own instruction set; <b>x86_64</b> is Intel’s, which macOS can run under emulation. It works, it is slower, and some packages have no Intel build — so a wrong default here surfaces weeks later as a package that will not install."],
+ [/traceback|error/i,"A <b>traceback</b> is what Python prints when it stops. Read it bottom-up: the last line names what went wrong, the lines above say where."],
+ [/curl|download/i,"<b>curl -O &lt;url&gt;</b> fetches a file into the current folder, keeping its name. It is a shell command, not Python."],
+ [/stuck/i,"Fifteen minutes stuck is expected. At forty, write down what you tried and move on."]
+];
+function answerFor(q){
+  for(var i=0;i<GLOSS.length;i++){if(GLOSS[i][0].test(q))return GLOSS[i][1]}
+  return "This demo answers from a short authored list, so it has nothing for that one. The real app "+
+    "sends it to the model through <span class=\"mo\">/api/llm</span>, which answers in the language "+
+    "you asked and still refuses to write or debug your code."}
+
+function askRender(){
+  var el=document.getElementById("askfab");
+  if(!el)return;
+  /* Off from the moment the session card is on screen until the answer is locked:
+     the card already shows the tasks and the reading, so a live bubble there can
+     simply be asked the question. Live on the map and the board, which hold no
+     prediction open. */
+  var r=R(),locked=(r.maxStep<2&&S.screen==="today"),h="",i,j,left=0;
+  if(S.askOpen&&!locked){
+    h+='<div class="askpanel"><div class="ah"><b>Ask anything</b>'+
+       '<span>Answers follow your language</span>'+
+       '<button class="ax" data-act="askclose" aria-label="Close">'+ic("close")+'</button></div>'+
+       '<div class="askbd">';
+    if(!S.askSeen.length&&!S.askLog.length){
+      h+='<div class="qa"><div class="a">Ask it to explain a term, a syntax error or a traceback, at '+
+         'any point while you work. It will not write your code or debug it for you, and it cannot '+
+         'tell you whether your answer is right — that comes from running it.</div></div>'}
+    for(i=0;i<S.askSeen.length;i++){j=S.askSeen[i];
+      h+='<div class="qa"><div class="q">'+QA[j].q+'</div><div class="a">'+QA[j].a+'</div></div>'}
+    for(i=0;i<S.askLog.length;i++){
+      h+='<div class="qa"><div class="q">'+esc(S.askLog[i].q)+'</div><div class="a">'+
+         S.askLog[i].a+'</div></div>'}
+    h+='</div><div class="askq"><div class="askrow">'+
+       '<input id="askbox" type="text" placeholder="Type a question — any language">'+
+       '<button class="go" data-act="asksend">Ask</button></div>';
+    for(j=0;j<QA.length;j++){if(S.askSeen.indexOf(j)<0)left++}
+    if(left){h+='<span class="sg">Or try one</span>';
+      for(j=0;j<QA.length;j++){
+        if(S.askSeen.indexOf(j)<0)h+='<button class="sgb" data-ask="'+j+'">'+QA[j].q+'</button>'}}
+    h+='</div></div>'}
+  if(locked){
+    h+='<div class="askwhy">Off until your answer is locked. It would hand you the thing you are '+
+       'about to guess.</div><button class="fab off2" disabled><span class="gl">?</span> Ask</button>'}
+  else{h+='<button class="fab" data-act="asktoggle"><span class="gl">?</span> Ask</button>'}
+  el.innerHTML=h}
+
+/* ---------- render ---------- */
+function render(){
+  var r=R(),s=sess(),h="";
+  if(S.screen==="curric"){h=curric()}
+  else if(S.screen==="path"){
+    h='<h1>With help, or on your own</h1>'+
+      '<p class="sub">Four blocks, two skills each. No percentages, no streaks, no dates — these '+
+      'eight lines are the whole record.</p>'+board()+
+      '<p class="after">Session 1 moves none of them. A1\u2019s <em>Build</em> reaches '+
+      '<em>with help</em> at session 7 and <em>on your own</em> at session 9.</p>'}
+  else if(r.step===0){h=todayCard()}
+  else if(r.step>=1&&r.step<=4){
+    h=pips()+navline()+
+      (r.step===1?stepPredict():r.step===2?stepDo():r.step===3?stepCompare():stepRecord())}
+  else{
+    var ok=grade(r.paste).ok;
+    if(ok)r.earned=true;
+    h='<h1>Session '+s.n+' done</h1>'+
+      '<p class="sub">'+(s.gate
+        ? 'That was a gate: '+s.gate+'.'
+        : 'Nothing on the board moved, and nothing was meant to. A1\u2019s <em>Build</em> reaches '+
+          '<em>with help</em> at session 7, the first session holding every piece it needs.')+
+        '</p>'+board()+
+      (r.label!==null?'<div class="panel" style="margin-top:16px"><div class="hd">'+
+        '<span class="l">Filed from this session</span>'+
+        '<span class="chip">comes back in a few sessions</span></div><div class="bd">'+
+        '<div class="logrow"><span class="lk">You guessed</span><span>'+
+        esc(s.opts[r.choice].replace(/<[^>]+>/g,""))+'</span></div>'+
+        (r.why.trim()?'<div class="logrow"><span class="lk">Your reason</span><span>'+
+          esc(r.why)+'</span></div>':'')+
+        '<div class="logrow"><span class="lk">What happened</span><span>'+
+        (r.choice===s.ok?"You had it right.":"Not that \u2014 "+
+          esc(s.opts[s.ok].replace(/<[^>]+>/g,"")))+'</span></div>'+
+        '<div class="logrow"><span class="lk">You filed</span><span>'+esc(s.lbl[r.label])+
+        '</span></div></div></div>':'')+
+      '<div class="next-up"><div class="l"><span class="rk">Next</span>'+
+      '<span class="rt">Session 2 &middot; Order and state</span>'+
+      '<span class="undercode">Loops, branching, and a variable that changes. The rows are handed '+
+      'to you; you write what happens to them, one at a time.</span></div>'+
+      '<span class="chip">in the full course, not in this demo</span></div>'+
+      '<div class="row" style="margin-top:14px">'+
+      '<button class="bk" data-act="back">'+ic("back")+'Back to step 4</button>'+
+      '<button class="bk" data-act="restart">Run it again from the start</button></div>'}
+  document.getElementById("body").innerHTML=h;
+  var i,navs=document.querySelectorAll(".nav");
+  for(i=0;i<navs.length;i++){
+    navs[i].setAttribute("aria-current",navs[i].dataset.screen===S.screen?"true":"false")}
+  var foot=document.getElementById("railfoot");
+  if(foot)foot.innerHTML='<strong>A1</strong> Code &amp; debugging<br>session '+s.n+' of 21';
+  askRender()}
+
+function goStep(n){var r=R();r.step=n;if(n>r.maxStep)r.maxStep=n;render()}
+function readWhy(){var t=document.getElementById("why");if(t&&!t.readOnly)R().why=t.value}
+function readPaste(){var t=document.getElementById("paste");if(t)R().paste=t.value}
+
+/* One delegated handler. Every attribute read below must also appear in this
+   selector, or the control silently does nothing. That has happened twice. */
+document.addEventListener("click",function(e){
+  var el=e.target.closest("[data-act],[data-screen],[data-pick],[data-lbl],[data-jump],[data-ask],[data-pred],[data-res]");
+  if(!el)return;
+  var r=R(),a,b;
+  if(el.dataset.screen){S.screen=el.dataset.screen;
+    if(S.screen==="today"&&r.step>=1&&r.step<=4)r.step=0;
+    render();return}
+  if(el.dataset.pick!==undefined){readWhy();r.choice=+el.dataset.pick;render();return}
+  if(el.dataset.lbl!==undefined){r.label=+el.dataset.lbl;render();return}
+  if(el.dataset.jump!==undefined){goStep(+el.dataset.jump);return}
+  if(el.dataset.ask!==undefined){S.askSeen.push(+el.dataset.ask);askRender();return}
+  if(el.dataset.pred!==undefined){a=el.dataset.pred.split("|");readPaste();
+    r.pred[+a[0]]=+a[1];render();return}
+  if(el.dataset.res!==undefined){b=el.dataset.res.split("|");readPaste();
+    r.res[+b[0]]=+b[1];render();return}
+  switch(el.dataset.act){
+    case "begin": S.screen="today";goStep(1);break;
+    case "resume": S.screen="today";goStep(r.maxStep);break;
+    case "lock": readWhy();goStep(2);break;
+    case "fwd": if(r.step===2)readPaste();goStep(r.step+1);break;
+    case "back": if(r.step<=1){r.step=0;render()}else{goStep(r.step-1)} break;
+    case "restart": S.runs[sess().n]=blank();render();break;
+    case "src": S.srcOpen=!S.srcOpen;render();break;
+    case "ref": S.refOpen=!S.refOpen;render();break;
+    case "first": S.frOpen=!S.frOpen;render();break;
+    case "fill": r.paste="$ uname -m\narm64\n$ python3 -c 'import platform; print(platform.machine())'\nx86_64";
+      for(var q=0;q<3;q++){if(r.pred[q]===null&&sess().tasks[q][3]===1)r.pred[q]=1;
+        if(r.res[q]===null)r.res[q]=1}
+      render();break;
+    case "asktoggle": S.askOpen=!S.askOpen;askRender();break;
+    case "askclose": S.askOpen=false;askRender();break;
+    case "asksend": {var box=document.getElementById("askbox"),q=box?box.value.trim():"";
+      if(!q)break;S.askLog.push({q:q,a:answerFor(q)});if(box)box.value="";askRender();
+      var bd=document.querySelector(".askbd");if(bd)bd.scrollTop=bd.scrollHeight;break}
+  }});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Enter"&&e.target&&e.target.id==="askbox"){e.preventDefault();
+    var q=e.target.value.trim();if(!q)return;
+    S.askLog.push({q:q,a:answerFor(q)});e.target.value="";askRender();
+    var b=document.getElementById("askbox");if(b)b.focus()}});
+/* Rebuild only the block below the textarea: a full render replaces the textarea
+   and throws her caret to the end mid-sentence. */
+function refreshVerdict(){
+  syncRes();
+  var box=document.getElementById("after2");
+  if(box)box.innerHTML=after2()}
+
+document.addEventListener("input",function(e){
+  if(!e.target)return;
+  if(e.target.id==="why"&&!e.target.readOnly)R().why=e.target.value;
+  if(e.target.id==="paste"){R().paste=e.target.value;refreshVerdict()}});
+
+render();
+</script>

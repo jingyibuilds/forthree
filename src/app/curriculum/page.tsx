@@ -8,6 +8,8 @@ import { readBoardSafe } from "@/lib/study/board";
 import { loadBlocks } from "@/lib/study/content";
 import { BARS, BLOCK_NAMES, PLANNED, TAUGHT, TEARDOWN, loadTrunk } from "@/lib/study/map";
 import { getStudyOverview } from "@/lib/study/service";
+import { withEmptyRecord } from "@/lib/study/web";
+import { WEB } from "@/lib/mode";
 import { BarKey, StudyError } from "@/lib/study/types";
 import { assistantState } from "@/lib/study/service";
 
@@ -20,23 +22,31 @@ export const dynamic = "force-dynamic";
 export default async function Curriculum() {
   let loaded;
   try {
-    loaded = await Promise.all([loadTrunk(), loadBlocks(), readBoardSafe(), getStudyOverview().catch(() => null)]);
+    // On the web trial there is no record on the server, so the render runs in
+    // an empty one and this screen shows the course rather than the visitor's
+    // place in it — said plainly below, not implied (PUBLISH.md §6).
+    loaded = await withEmptyRecord(() =>
+      Promise.all([loadTrunk(), loadBlocks(), readBoardSafe(), getStudyOverview().catch(() => null)]));
   } catch (error) {
     return <RecordError active="/curriculum" message={error instanceof StudyError ? error.message : "Your study record could not be read."} />;
   }
   // The map is the way into every session, so a damaged board.json costs it
   // the two skill chips' state and nothing else.
   const [trunk, blocks, {board, damaged}, overview] = loaded;
-  const ask = await assistantState().catch(() => ({reason: "", session: undefined}));
+  // Outside the wrapper above, so on the web trial there is no record for it
+  // to read: it threw on every render and the catch hid it.
+  const ask = WEB ? {reason: "", session: undefined} : await assistantState().catch(() => ({reason: "", session: undefined}));
   const quiet = ask.reason === "check_open";
   // Past the last authored session `overview.session` is null, and falling
   // back to 1 pinned "you are here" to a finished session and marked nothing
   // done — the map contradicting Today off the same record.
-  const here = overview?.session?.session ?? overview?.plan?.current_session ?? 1;
+  // On the web trial nothing on this page is marked: a "you are here" read off
+  // an empty record would point at session 1 for a visitor who had finished it.
+  const here = WEB ? 0 : overview?.session?.session ?? overview?.plan?.current_session ?? 1;
   // Every written session's card opens from here (DECISIONS 2026-11-10):
   // "done" is read off her record, not inferred from where Today is, because
   // she may have done a later session before an earlier one.
-  const done = new Set((overview?.sessions ?? []).filter(entry => entry.done).map(entry => entry.session));
+  const done = WEB ? new Set<number>() : new Set((overview?.sessions ?? []).filter(entry => entry.done).map(entry => entry.session));
   const authored = new Map(blocks.flatMap(block => block.sessions.map(session => [session.session, {session, block}] as const)));
   const taught = trunk.filter(block => TAUGHT[block.id]);
   const untaught = trunk.filter(block => !TAUGHT[block.id]);
@@ -56,6 +66,12 @@ export default async function Curriculum() {
       <p className="sub">
         In teaching order. The six at the bottom are real blocks from the same map, left out of this semester.
       </p>
+      {WEB && (
+        <p className="sub">
+          This page shows the course, not your place in it. The trial keeps what you have done in this
+          browser — <Link href="/board">the board</Link> reads it.
+        </p>
+      )}
 
       <div className="totals">
         <div className="tot">

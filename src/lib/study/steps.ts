@@ -2,15 +2,16 @@ import { Part, Step } from "./types";
 
 // §17: one state machine, four kinds, and only the `attempt` step differs. The
 // step *list* differs too, because three kinds skip a step the lab runs:
-// `interview` has no prediction and no comparison, `teardown` and `interview`
-// skip `record`, and an exposure teardown is a read with nothing to predict
-// against (DECISIONS.md 2026-11-09, fork 1).
+// `interview` has no prediction and no comparison, and an exposure teardown is
+// a read with nothing to predict against (DECISIONS.md 2026-11-09, fork 1).
+// No kind has a `record` step since the rebuild (REBUILD.md, R2): naming the
+// belief behind a miss asked her for a reason she often did not have, after
+// the teaching was over. A record written with one keeps it as history.
 export function stepsFor(part: Part, hasResurface = false): Step[] {
   const steps: Step[] = [];
   if (part.kind === "lab" || (part.kind === "teardown" && part.scored)) steps.push("predict");
   steps.push("attempt");
   if (part.kind !== "interview" && !(part.kind === "teardown" && !part.scored)) steps.push("compare");
-  if (part.kind === "lab" || part.kind === "withdraw") steps.push("record");
   // `resurface` closes a part in which she answered something. An interview is
   // a transcript and an exposure teardown is a guided read with nothing of hers
   // in it, so neither carries one.
@@ -31,7 +32,7 @@ const LABELS: Record<string, string> = {
   "interview:attempt": "Talk it through",
   compare: "Compare",
   "withdraw:compare": "Compare",
-  record: "Log the miss",
+  record: "Name the idea",
   resurface: "From before",
 };
 
@@ -44,7 +45,7 @@ const NAMES: Record<string, string> = {
   "withdraw:attempt": "the questions",
   "interview:attempt": "the three questions",
   compare: "the answer",
-  record: "the log",
+  record: "naming the idea",
   resurface: "what came back",
 };
 

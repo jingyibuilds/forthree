@@ -10,8 +10,20 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-PINS = {"pytest": "8.3.5", "hypothesis": "6.131.9", "psutil": "7.0.0",
-        "numpy": "2.2.5", "ruff": "0.11.8", "pyright": "1.1.400"}
+# One list of pins, shared with the installers (requirements-course.txt).
+REQUIREMENTS = ROOT / "requirements-course.txt"
+PINS = dict(line.strip().split("==", 1) for line in REQUIREMENTS.read_text().splitlines()
+            if line.strip() and not line.lstrip().startswith("#"))
+# Her lab environment may be any native Python from 3.12 on; the course's own
+# environment is 3.12 (DECISIONS 2026-11-11).
+LAB_MINIMUM = (3, 12)
+
+
+def at_least(version, minimum=LAB_MINIMUM):
+    try:
+        return tuple(int(part) for part in version.split(".")[:2]) >= minimum
+    except (AttributeError, ValueError):
+        return False
 PROBE = '''import importlib,importlib.metadata,json,platform,sys
 packages={}
 for name in %r:
@@ -20,7 +32,7 @@ for name in %r:
         packages[name]={"version":importlib.metadata.version(name),"error":None}
     except Exception as exc:
         packages[name]={"version":None,"error":type(exc).__name__}
-print(json.dumps({"executable":sys.executable,"machine":platform.machine(),"version":platform.python_version(),"prefix":sys.prefix,"packages":packages}))
+print(json.dumps({"executable":sys.executable,"machine":platform.machine(),"version":platform.python_version(),"prefix":sys.prefix,"base_prefix":sys.base_prefix,"packages":packages}))
 ''' % list(PINS)
 
 
@@ -58,7 +70,6 @@ def hardware():
 
 def report():
     setup = "bash " + shlex.quote(str(ROOT / "scripts/setup-python.sh"))
-    activate = "source " + shlex.quote(str(ROOT / ".venv/bin/activate"))
     path_python = shutil.which("python3")
     path_fact = probe(path_python) if path_python else {"error": "No python3 is on PATH."}
     venv_python = ROOT / ".venv/bin/python3"
@@ -72,24 +83,42 @@ def report():
 
     row("machine", "Your machine", machine in ("arm64", "arm64e"), machine,
         "sysctl -n hw.optional.arm64", "Prints 1 on an Apple-silicon Mac, whichever Python is asking.")
-    path_ok = path_fact.get("machine") == "arm64" and path_fact.get("version", "").startswith("3.12.")
+    path_ok = path_fact.get("machine") == "arm64" and at_least(path_fact.get("version", ""))
     venv_ok = venv.get("machine") == "arm64" and venv.get("version", "").startswith("3.12.")
-    # Once the project environment exists, the cure for a wrong python3 in this
-    # terminal is to switch to it, not to install it again.
+    make_lab = shlex.quote(str(ROOT / ".venv/bin/python3")) + " -m venv .venv"
+    packages = "python3 -m pip install -r " + shlex.quote(str(REQUIREMENTS))
+    # Once the course's Python exists, the cure for a wrong python3 in this
+    # terminal is a lab environment made from it, not another install.
     row("path", "The first python3 on PATH", path_ok,
         "%s — %s, %s" % (path_python or "not found", path_fact.get("version", "unavailable"), path_fact.get("machine", "unknown")),
-        activate if venv_ok else setup,
-        "Makes python3 in this terminal use the project's .venv." if venv_ok else "Installs native Python 3.12 and the project's required packages in .venv.")
+        make_lab if venv_ok else setup,
+        "Run in ~/cs-core, after moving any old .venv aside: makes a lab environment there from the course's native Python 3.12. Then switch to it with: source .venv/bin/activate"
+        if venv_ok else "Installs native Python 3.12 and the project's required packages in .venv.")
     row("venv", "Project environment", venv_ok,
         venv.get("error") or "%s — Python %s, %s" % (venv_python, venv["version"], venv["machine"]))
-    active = path_fact.get("prefix") == str(ROOT / ".venv")
-    row("active", "This terminal uses the project environment", active,
-        "Yes" if active else "No — activate it in the terminal where you run the lab.",
-        activate if venv_ok else setup,
-        "Makes python3 in this terminal use the project's .venv." if venv_ok else "Creates the native project environment before you activate it.")
+    # What a lab needs from this terminal: an environment switched on, whose
+    # python3 has the course's packages. Which environment, is hers to choose.
+    # pip is offered only inside one: run against the Mac's own python3 it
+    # installs for every program on the machine (review, 2026-11-11).
+    in_env = bool(path_fact.get("prefix")) and path_fact.get("prefix") != path_fact.get("base_prefix")
+    missing = [name for name, expected in PINS.items()
+               if path_fact.get("packages", {}).get(name, {}).get("version") != expected]
+    # Missing packages are not a fault until a lab needs them; that lab's card
+    # carries the command (REBUILD.md R8). The row is about the environment.
+    ready = path_ok and in_env
+    if not in_env:
+        detail, command, explanation = (
+            "No — no environment is switched on in this terminal.", "cd ~/cs-core && source .venv/bin/activate",
+            "Goes to your lab folder and switches this terminal to its environment. If there is no .venv there yet, the row above makes one.")
+    else:
+        detail = ("Yes" if not missing else "Not yet: " + ", ".join(missing) + ". The lab that first needs them shows the command.") if ready else "See the row above."
+        command = packages if path_ok else (make_lab if venv_ok else setup)
+        explanation = ("Installs the course's packages, at the versions the course uses, into the environment switched on in this terminal."
+                       if path_ok else "Make a lab environment first: see the row above.")
+    row("active", "This terminal's environment has the course's packages", ready, detail, command, explanation)
     for name, expected in PINS.items():
         found = venv.get("packages", {}).get(name, {})
-        row("package-" + name, name, found.get("version") == expected,
+        row("package-" + name, name + " (the course's own environment)", found.get("version") == expected,
             "%s (expected %s)" % (found.get("version") or "missing or unavailable", expected))
     row("node", "Node for the type checker", bool(shutil.which("node")), shutil.which("node") or "Node is not on PATH.",
         "npm --version", "Checks whether the Node toolchain used by this app is available in your terminal.")

@@ -9,6 +9,8 @@ import { KIND_LABEL, stepNames, stepsFor } from "./steps";
 import { appendJsonl, readJson, readJsonl, transaction, writeJson } from "./store";
 import { evaluateWires } from "./wires";
 import { AttemptRecord, BarKey, CameBack, Part, Plan, RecallFile, Step, StudyError } from "./types";
+// The teacher is reached through the engine, like everything the routes use.
+export { annotate, followup } from "./teacher";
 
 const defaultPlan = (): Plan => ({version: 1, current_session: 1, current_attempt: {}, next_checkpoint: 9, pull_checkpoint_forward: false});
 const recordPath = (id: string, n: number) => `sessions/${id}-${n}.json`;
@@ -188,7 +190,13 @@ async function usedItemIds(plan: Plan, slots: CheckSlot[]) {
  * (LESSONS L-ORDER-03).
  */
 async function explainOf(item: BankItem, plan: Plan): Promise<{explain: string; explain_after?: number}> {
-  const home = await findSession(item.earliest_session);
+  // Held back until the lab of the session that TEACHES the item has its
+  // guess locked. `earliest_session` is the first check that may ask it,
+  // a session later once checks open their sessions (REBUILD.md R7), and
+  // keying on it held explanations back a session too long.
+  const taught = Math.max(0, ...(item.taught_by ?? []).map(ref => Number(/^s(\d{2})-/.exec(ref)?.[1] ?? 0)));
+  const teachingSession = taught || item.earliest_session;
+  const home = await findSession(teachingSession);
   const lab = home?.session.parts.find(part => part.kind === "lab" && part.predict);
   if (lab) {
     let sealed = false;
@@ -196,7 +204,7 @@ async function explainOf(item: BankItem, plan: Plan): Promise<{explain: string; 
     for (let n = 1; n <= attempts; n += 1) {
       if ((await readAttempt(lab.id, n))?.prediction?.sealed_at) sealed = true;
     }
-    if (!sealed) return {explain: "", explain_after: item.earliest_session};
+    if (!sealed) return {explain: "", explain_after: teachingSession};
   }
   return {explain: item.explain};
 }
@@ -345,6 +353,8 @@ export async function getStudyOverview(sessionNumber?: number) {
         title: partTitle(part),
         minutes: Object.values(part.minutes ?? {}).reduce((total, value) => total + value, 0),
         finished: !!record?.finished_at,
+        // The web trial's escape: finished, and the lab behind it was not run.
+        lab_skipped: !!record?.lab_skipped_at,
         // A record exists the moment she opens a part, so it is "in
         // progress" from then on. Keying this on a step having been left made
         // a no-help check with one of three answered read "Start", because
@@ -635,6 +645,10 @@ function keysOnly(body: Record<string, unknown>, allowed: string[]) {
 
 function requireEditable(record: AttemptRecord) {
   if (record.passed_at) throw new StudyError(409, "already_passed");
+  // The web trial's escape is terminal for the attempt it was used in: the
+  // UI closes the paste box, and so does the engine, or one call past it
+  // would set `passed_at` on a lab that was never run (PUBLISH.md §6).
+  if (record.lab_skipped_at) throw new StudyError(409, "already_skipped");
 }
 
 function text(value: unknown, limit: number) {
@@ -766,6 +780,22 @@ export async function mutateAttempt(id: string, n: number, action: string[], inp
         await appendJsonl("ledger.jsonl", {ts: timestamp, part: id, block: record.block, attempt: n, check_id: check.id, mental_model: null, note: check.message, times_seen: 0, cleared: false});
       }
 
+    } else if (target === "skip-lab") {
+      // The web trial's one escape (PUBLISH.md §6). The labs are run in a real
+      // terminal against the course's own Python, and a web page has neither,
+      // so a visitor can move past one — and the record keeps that it was not
+      // run, so nothing downstream can mistake it for a pass. Her own copy has
+      // no such door: there the lab is the session.
+      if (process.env.FORTHREE_MODE !== "web") throw new StudyError(404, "not_found");
+      keysOnly(body, []);
+      if (part.kind !== "lab") throw new StudyError(404, "not_found");
+      if (!isSealed(part, record)) throw new StudyError(409, "not_sealed");
+      if (record.max_step < list.indexOf("attempt")) throw new StudyError(409, "step_not_reached");
+      if (record.passed_at) throw new StudyError(409, "already_passed");
+      // Not `requireEditable`: this is the call that makes the attempt
+      // uneditable, so asking it a second time is a no-op, not a refusal.
+      record.lab_skipped_at ??= timestamp;
+
     } else if (action.length === 2 && action[0] === "task" && /^\d+$/.test(action[1])) {
       keysOnly(body, ["will_pass", "did_pass"]);
       if (!isSealed(part, record)) throw new StudyError(409, "not_sealed");
@@ -816,31 +846,6 @@ export async function mutateAttempt(id: string, n: number, action: string[], inp
       record.variant_result = {choice: body.choice as number, pass: body.choice === variant.correct, at: timestamp};
       extra = {pass: record.variant_result.pass};
 
-    } else if (target === "label") {
-      keysOnly(body, ["label"]);
-      if (!list.includes("record")) throw new StudyError(404, "not_found");
-      if (!isSealed(part, record)) throw new StudyError(409, "not_sealed");
-      if (record.max_step < list.indexOf("record")) throw new StudyError(409, "step_not_reached");
-      if (!Number.isInteger(body.label) || (body.label as number) < 0 || !part.labels?.[body.label as number]) throw new StudyError(422, "invalid_body");
-      if (record.mental_model) throw new StudyError(409, "already_recorded");
-      // "I had it right" is not a reason for something she got wrong: with a
-      // guess missed or a question missed, the log needs the idea that
-      // misfired, and the screen does not offer these labels either.
-      const missed = part.kind === "withdraw"
-        ? (record.items ?? []).some(entry => !entry.pass)
-        : record.predict_result?.correct === false;
-      if (missed && part.labels[body.label as number].startsWith("I had it right")) throw new StudyError(422, "invalid_body");
-      record.mental_model = part.labels[body.label as number];
-      const failed = record.checks?.filter(check => !check.pass) ?? [];
-      const targets = failed.length ? failed.map(check => check.id) : [`${id}-prediction`];
-      for (const checkId of targets) {
-        await appendJsonl("ledger.jsonl", {
-          ts: timestamp, part: id, block: record.block, attempt: n, check_id: checkId,
-          mental_model: record.mental_model, note: "", times_seen: 0,
-          cleared: failed.length === 0 && record.predict_result?.correct !== false,
-        });
-      }
-
     } else if (target === "step") {
       keysOnly(body, ["step"]);
       const next = list.indexOf(body.step as Step);
@@ -850,10 +855,11 @@ export async function mutateAttempt(id: string, n: number, action: string[], inp
       if (after("predict") && !record.prediction?.sealed_at) throw new StudyError(409, "not_sealed");
       if (after("attempt")) {
         if (!isSealed(part, record)) throw new StudyError(409, "not_sealed");
-        if (part.kind === "lab" && !record.passed_at) throw new StudyError(409, "receipt_not_accepted");
+        // A lab is finished by a receipt that graded. On the web trial it can
+        // also be moved past unrun, and the record says which it was.
+        if (part.kind === "lab" && !record.passed_at && !record.lab_skipped_at) throw new StudyError(409, "receipt_not_accepted");
         if (part.kind === "teardown" && part.scored && !record.answers) throw new StudyError(409, "answers_required");
       }
-      if (after("record") && !record.mental_model) throw new StudyError(409, "label_required");
       // An interview is about a program. While that program is withheld — it
       // shows what this session's lab asks her to guess — the interview
       // cannot be finished: question 3 cannot be answered without it, and
@@ -881,6 +887,21 @@ export async function mutateAttempt(id: string, n: number, action: string[], inp
       if (body.step === "resurface") fixCameBack(record, resurfaceItems);
       if (body.step === "done") {
         record.finished_at ??= timestamp;
+        // What she missed is filed when the part ends, where the record step
+        // used to file it: a no-help check's missed items, or a lab's guess,
+        // right or not. A miss comes back in a later session with its answer;
+        // nothing asks her why she missed (REBUILD.md, R2).
+        if (part.kind === "lab" || part.kind === "withdraw") {
+          const failed = record.checks?.filter(check => !check.pass) ?? [];
+          const targets = failed.length ? failed.map(check => check.id) : part.kind === "lab" ? [`${id}-prediction`] : [];
+          for (const checkId of targets) {
+            await appendJsonl("ledger.jsonl", {
+              ts: timestamp, part: id, block: record.block, attempt: n, check_id: checkId,
+              mental_model: null, note: "", times_seen: 0,
+              cleared: failed.length === 0 && record.predict_result?.correct !== false,
+            });
+          }
+        }
         // Record the finish first, so a plan never claims completion before
         // the evidence exists.
         await writeJson(recordPath(id, n), record);
@@ -987,6 +1008,20 @@ export async function postResurface(itemId: string, input: unknown) {
 }
 
 export function assertLocalRequest(request: Request, mutation = true) {
+  // The public web trial is served from a real host, so loopback is the wrong
+  // test there (PUBLISH.md §6). What still holds is that another site cannot
+  // drive it: a cross-site request is refused, and a mutation must carry this
+  // site's own Origin. There is no account and no cookie, so there is nothing
+  // for a forged request to reach that the visitor does not already have.
+  if (process.env.FORTHREE_MODE === "web") {
+    const site = request.headers.get("sec-fetch-site");
+    if (site && site !== "same-origin" && site !== "none") throw new StudyError(403, "origin_rejected");
+    const origin = request.headers.get("origin");
+    const host = request.headers.get("host");
+    if (mutation && (!origin || !host)) throw new StudyError(403, "origin_rejected");
+    if (origin && host && new URL(origin).host !== host) throw new StudyError(403, "origin_rejected");
+    return;
+  }
   const url = new URL(request.url);
   const local = new Set(["localhost", "127.0.0.1", "[::1]"]);
   if (!local.has(url.hostname)) throw new StudyError(403, "local_only");
@@ -1070,5 +1105,8 @@ export async function assertAssistantAllowed(input: unknown) {
     if (!state.open) {
       throw new StudyError(409, ["check_open", "not_sealed", "receipt_not_accepted"].includes(state.reason) ? state.reason : "ai_not_allowed");
     }
+    // The teacher builds its prompt from what the lock just read, never from
+    // what the client sent (HANDOVER §8, prompt minimization).
+    return {feature, located, record, question: typeof body.question === "string" ? body.question : ""};
   });
 }

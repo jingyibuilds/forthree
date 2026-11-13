@@ -18,6 +18,21 @@ cloud service. Your progress is files on your disk.
 Each session is a set of parts: you guess before you see, run a lab in your own
 terminal, take a no-help check, and talk through a short interview program.
 
+## Try it without installing anything
+
+A trimmed version of the course runs in a browser, deployed from this
+repository — the link is on the repository page. It has no account and no
+server-side storage: **your progress is kept in that browser only**, and it
+hands you a file to save if you want to come back to it.
+
+What it cannot do is the labs. Those are run in a terminal against the
+course's own Python, which a web page has neither of, so a lab there shows its
+commands and lets you past, marked *not run*. Everything else is the real
+thing: the guess before the explanation, the no-help checks graded against a
+sealed bank, the teardown, the interview, the board.
+
+To do the course properly, install it below.
+
 ## Background
 
 Why the course is shaped this way, and what it covers. The skill tree and the
@@ -112,6 +127,12 @@ inside the cloned folder:
 - Your progress is the `study/` folder in the repo (created on first use, never
   committed). It survives closing the browser. Delete the folder to start over;
   copy it to keep your place on another machine.
+
+## Reading the code
+
+Comments cite the author's design notes by filename and section. Those notes
+are not published: a citation marks where a decision was made and why the code
+is shaped that way, not a file you have. Nothing in the course needs them.
 
 ## What is not here yet
 

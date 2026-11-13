@@ -23,14 +23,17 @@ export const askReason = (state: {reason?: string; session?: number}) =>
     ? checkOpenReason(state.session)
     : SENTENCES[state.reason ?? ""] ?? SENTENCES.ai_not_allowed;
 
-// `/api/llm` is not connected to a model yet (HANDOVER §8, task 8). The panel
-// says so before she types, not after. Task 8 replaces both lines.
-// Three true sentences, because the second half differs by where she is: with
-// this part's words listed below it; inside a part that lists none; and on a
-// screen that is not a part at all.
-export const ASK_NOT_ON = "Ask is not switched on yet, so it cannot answer questions.";
+// What Ask is for, before she types (L-ASK-03), now that it answers (REBUILD.md
+// R4). The second half differs by where she is: with this part's words listed
+// below; inside a part that lists none; on a screen that is not a part.
+export const ASK_ON = "Ask about a word, a command or an error message. It explains; it will not write the answer for you.";
 export const askResting = (inPart: boolean, words: number) =>
-  words > 0 ? `${ASK_NOT_ON} The words this part uses are below.`
-    : inPart ? ASK_NOT_ON
-      : `${ASK_NOT_ON} Inside a part, the words it uses are listed here once your answer is locked.`;
+  words > 0 ? `${ASK_ON} The words this part uses are below.`
+    : inPart ? ASK_ON
+      : `${ASK_ON} Inside a part, it knows which part you are on.`;
+// When it cannot answer, the reason in her words, never a code (§4.1).
+export const ASK_DEGRADED: Record<string, string> = {
+  not_configured: "Ask needs the course’s AI key, and none is set on this machine. Everything else in the session works without it.",
+  over_cap: "Ask has used today’s budget, and answers again tomorrow. Everything else in the session works without it.",
+};
 export const ASK_FAILED = "Ask could not answer that one. Nothing else in the session is affected.";

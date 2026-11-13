@@ -19,27 +19,23 @@
     {
       "session": 1,
       "title": "Get code to run at all",
-      "subtitle": "Write a file and run it. Break it, read what Python says, fix it. Then find out which Python has been running all along.",
+      "subtitle": "Run a file you wrote, in an environment you made, and find out which Python ran it. A Mac often has several, and nothing on the screen says which one answered.",
       "covers": [
-        1,
-        2,
-        3,
-        6
+        3
       ],
       "parts": [
         {
           "id": "s01-lab-a",
           "kind": "lab",
-          "shows": "Write, break, fix — and find out which Python",
+          "shows": "Run a file, and find out which Python ran it",
           "minutes": {
             "learn": 45,
             "predict": 3,
             "attempt": 40,
-            "compare": 8,
-            "record": 4
+            "compare": 5
           },
           "ai_allowed": true,
-          "why": "Until a file you wrote runs on your machine, nothing else here works. A1 asks whether you can read code, run it and fix it, so you do all three in the first hour, on three lines you wrote yourself. Nobody warns you about the last part. <span class=\"mo\">python3</span> is a name, not a file, and your shell has to look it up. On a Mac it can find more than one.",
+          "why": "This session gets a Python file running in your own terminal. Before anything else in the course can run, you need to know which Python runs it: <span class=\"mo\">python3</span> is a name the terminal looks up, not one fixed program, and a Mac often has more than one.",
           "before_you_start": [
             "⌘ space, type Terminal, return — a window opens with one line waiting; that line is the prompt.",
             "mkdir ~/cs-core — makes a folder.",
@@ -48,44 +44,56 @@
           ],
           "reading": [
             {
-              "title": "Missing Semester, Lecture 1: The Shell",
+              "title": "Missing Semester, Lecture 1: The Shell — “Using the shell” and “Navigating in the shell”",
               "url": "https://missing.csail.mit.edu/2020/course-shell/",
-              "teaches": "moving around, running things, and what $PATH is",
+              "teaches": "the prompt, running a program, how $PATH and which find it, and cd and pwd",
               "minutes": 30
             },
             {
-              "title": "Python docs — the venv tutorial, “Virtual Environments and Packages”",
+              "title": "Python tutorial, “Virtual Environments and Packages” — sections 12.1 and 12.2",
               "url": "https://docs.python.org/3/tutorial/venv.html",
-              "teaches": "a Python that belongs to one folder",
+              "teaches": "what an environment is, how to make one and switch it on, and which Python it gets",
               "minutes": 15
             }
           ],
           "tasks": [
             {
-              "name": "Write three lines, run them",
-              "brief": "Make <span class=\"mo\">hello.py</span>. Set a name to one value, print it, change it, print it again. Run it.",
-              "passes_when": "two different values come back, in the order you wrote them.",
+              "name": "Run a file you wrote",
+              "brief": "In <span class=\"mo\">~/cs-core</span>, make <span class=\"mo\">hello.py</span> holding one line: <span class=\"mo\">print(\"hello\")</span>. <span class=\"mo\">print</span> shows whatever is in its brackets. Run it.",
+              "passes_when": "hello comes back under your command.",
               "minutes": 10,
-              "guess": false
+              "guess": false,
+              "taught_by": [
+                "reading:1",
+                "card"
+              ]
             },
             {
-              "name": "Break it on purpose",
-              "brief": "Delete one character — a quote, a bracket, a letter of <span class=\"mo\">print</span>. Run it. Read what Python says, out loud. Then put it back.",
-              "passes_when": "you can name the file and the line number from the error, without looking at your code.",
+              "name": "Find the python3 your shell runs",
+              "brief": "Run <span class=\"mo\">which python3</span>, then <span class=\"mo\">which -a python3</span>. The first names the one your shell (the program in Terminal that reads your commands) runs; the second lists every one it can find, in the order it looks.",
+              "passes_when": "both answers are under their commands.",
               "minutes": 10,
-              "guess": true
+              "guess": false,
+              "taught_by": [
+                "reading:1",
+                "card"
+              ]
             },
             {
-              "name": "Find out which Python",
-              "brief": "Four answers: (1) which <span class=\"mo\">python3</span> would run, (2) how many there are, (3) which one runs once you make an environment for this folder and switch to it, and (4) what architecture that Python is — and what your machine says it is.",
-              "passes_when": "you have all four answers under the commands that produced them, and can explain whether the machine and environment architectures agree.",
+              "name": "Make an environment, and look inside",
+              "brief": "Make an environment in this folder and switch it on. The tutorial writes <span class=\"mo\">python</span>; on a Mac, outside an environment, that name may be missing or may point to a different Python, so type <span class=\"mo\">python3</span>. Then run <span class=\"mo\">which python3</span> again, and <span class=\"mo\">cat .venv/pyvenv.cfg</span>, a small file inside the environment.",
+              "passes_when": "you can say which python3 your environment was made from.",
               "minutes": 20,
-              "guess": true
+              "guess": true,
+              "taught_by": [
+                "reading:2",
+                "card"
+              ]
             }
           ],
           "reference_card": [
             {
-              "label": "go to a folder, see what is in it",
+              "label": "go to your folder, and see where you are and what is in it",
               "code": "cd ~/cs-core\npwd\nls"
             },
             {
@@ -93,24 +101,20 @@
               "code": "nano hello.py    # ctrl-O then return saves, ctrl-X quits"
             },
             {
-              "label": "keep a value, change it, show it",
-              "code": "colour = \"red\"\nprint(colour)\ncolour = \"blue\""
-            },
-            {
               "label": "run a file you wrote",
               "code": "python3 hello.py"
             },
             {
-              "label": "which python3 would run, and all of them",
+              "label": "which python3 your shell runs, and every one it can find",
               "code": "which python3\nwhich -a python3"
             },
             {
-              "label": "make a Python for this folder, and use it",
+              "label": "make an environment in this folder, and switch it on",
               "code": "python3 -m venv .venv\nsource .venv/bin/activate"
             },
             {
-              "label": "ask the machine, then ask a Python",
-              "code": "uname -m\npython3 -c 'import platform; print(platform.machine())'"
+              "label": "print a file to the screen",
+              "code": "cat .venv/pyvenv.cfg"
             }
           ],
           "reference_card_bans": [
@@ -134,60 +138,40 @@
               "The system one, because that is the real Python and the others are copies."
             ],
             "correct": 1,
-            "why_prompt": "One line: why?"
+            "why_prompt": "One line: why?",
+            "because": [
+              "A fresh folder suggests a fresh Python, but section 12.2 of the tutorial says an environment gets “the Python version from which the command was run”. Your <span class=\"mo\">pyvenv.cfg</span> shows it: its <span class=\"mo\">version</span> line is the version of the Python that made it.",
+              "Right. Section 12.2 of the tutorial says an environment gets the Python the command was run with, and your <span class=\"mo\">pyvenv.cfg</span> shows it: its <span class=\"mo\">version</span> line is the version of the Python that made it.",
+              "The Python that comes with macOS can feel like the real one, but an environment does not go looking for a Python. Section 12.2 says it gets the one the command was run with, and the <span class=\"mo\">version</span> line of your <span class=\"mo\">pyvenv.cfg</span> shows which."
+            ]
           },
           "acceptance_checks": [
             {
-              "id": "architectures",
-              "type": "paired",
+              "id": "the-runs",
+              "type": "contains_all",
               "field": "stdout",
-              "pairs": [
-                {
-                  "name": "machine",
-                  "cue": "^\\s*(?:[^\\n]*?[$%]\\s*)?uname\\s+-m\\s*$",
-                  "value": "^(arm64e?|x86_64|i386)$"
-                },
-                {
-                  "name": "environment",
-                  "cue": "^\\s*(?:[^\\n]*?[$%]\\s*)?[^\\s]*python3\\s+-c\\s+.*platform\\.machine\\(\\).*$",
-                  "value": "^(arm64e?|x86_64|i386)$"
-                }
+              "need": [
+                "python3 hello.py",
+                "which -a python3",
+                ".venv/bin/python3",
+                "pyvenv.cfg",
+                "home ="
               ],
-              "expect": {
-                "machine": "^arm64e?$",
-                "environment": "^(arm64e?|x86_64|i386)$"
-              }
+              "case": false
             }
           ],
           "verdicts": {
-            "architectures": {
-              "pass": "Both answers are under their commands. A native Python is accepted too, if you have already repaired the environment.",
-              "fail": "Look again at which command asked the machine and which asked Python. The answers must stay under the commands that produced them.",
-              "partial": "Paste each command and the answer below it. Both the machine and the Python in your environment have to be there.",
-              "missing": {
-                "machine": "I can see what a Python said, but not what the machine said. Run <span class=\"mo\">uname -m</span> too, and paste both.",
-                "environment": "I can see what the machine said, but not what a Python said from inside your environment. Run that one too, and paste both."
-              }
+            "the-runs": {
+              "pass": "All of it is there: your file ran, and your runs show which python3 the terminal runs and which one made your environment.",
+              "fail": "Some of the runs are not there yet. Paste all of them: <span class=\"mo\">python3 hello.py</span>, <span class=\"mo\">which python3</span> and <span class=\"mo\">which -a python3</span>, then, with the environment switched on, <span class=\"mo\">which python3</span> again and <span class=\"mo\">cat .venv/pyvenv.cfg</span>."
             }
           },
           "receipt_fields": [],
-          "receipt_prompt": "Paste both architecture answers, commands and all — what <span class=\"mo\">uname -m</span> said, and what <span class=\"mo\">platform.machine()</span> said from inside your environment.",
-          "receipt_hint": "$ uname -m\n...\n$ python3 -c 'import platform; print(platform.machine())'\n...",
+          "receipt_prompt": "Paste each command with what came back under it: <span class=\"mo\">python3 hello.py</span>; <span class=\"mo\">which python3</span> and <span class=\"mo\">which -a python3</span>; then, with the environment switched on, <span class=\"mo\">which python3</span> again and <span class=\"mo\">cat .venv/pyvenv.cfg</span>.",
+          "receipt_hint": "$ python3 hello.py\n...\n$ which python3\n...\n$ which -a python3\n...\n$ source .venv/bin/activate\n$ which python3\n...\n$ cat .venv/pyvenv.cfg\n...",
           "compare": {
-            "mine_label": "Measured reference: machine and environment",
-            "mine": "$ uname -m\n<b>arm64</b>\n\n$ source .venv/bin/activate\n$ python3 -c 'import platform; print(platform.machine())'\n<b>x86_64</b>",
-            "theirs_label": "Measured reference: installed Pythons",
-            "theirs": "$ which -a python3\n/usr/local/bin/python3\n/usr/bin/python3\n\n$ /usr/bin/python3 --version\nPython <b>3.9.6</b>",
-            "note": "<strong>A virtual environment uses the Python you built it with. It does not search for a better one.</strong> The measured reference comes from the original setup: an Apple-silicon machine running Intel Python 3.12, with native Python 3.9 also installed. An environment made from that first Python inherited its Intel architecture. Your answers may differ. If both say arm64, that architecture mismatch is absent; check the Python version separately. <span class=\"mo\">which python3</span> shows the first match; <span class=\"mo\">which -a python3</span> shows them all.",
-            "after": "Use a native Python 3.12 from here on. The course has its own, and what follows sets this terminal up to use it. Then ask the two architecture questions again."
+            "note": "Before you make an environment, run <span class=\"mo\">which python3</span>: the Python it names is the one the environment will hold."
           },
-          "labels": [
-            "I had it right, and for the right reason.",
-            "I assumed a new environment gets you a fresh, current Python.",
-            "I assumed there was only one python3 to begin with.",
-            "I assumed the version number told me which one it was.",
-            "I had it right, but was not sure why."
-          ],
           "concepts": [
             {
               "term": "Virtual environment",
@@ -217,14 +201,15 @@
               }
             ],
             "measured": {
-              "machine": "Darwin 24.6.0 arm64; PATH Python 3.12.2 x86_64; system Python 3.9.6",
-              "date": "2026-11-09"
+              "machine": "Darwin arm64; Python 3.12.16 and 3.15.2, both native",
+              "date": "2026-11-11"
             }
           },
           "leak_guard": [
             "the one you built it with",
             "built it with"
-          ]
+          ],
+          "goal": "Run a Python file in your own terminal, in an environment you made, and say which Python ran it."
         },
         {
           "id": "s01-interview-a",
@@ -236,19 +221,21 @@
           "ai_allowed": true,
           "target": {
             "kind": "program",
-            "path": "content/interviews/s01-check-env.py"
+            "path": "content/interviews/s01-check-setup.py"
           },
-          "brief": "An agent wrote this script from one sentence: “a script that checks my setup”. It runs, and it ends by printing Success.",
+          "brief": "An AI coding agent wrote this from one sentence: “a script that checks my setup”. It runs, and its last line says Success.",
           "questions": [
-            "Before you read it: if someone says “my Python setup is fine”, what would have to be true? Name the things a check would have to look at.",
-            "Still before you open it: what would you expect a script like this to tell you, and what could it leave out?",
-            "Now walk through it. It prints the same Success line whether the report worked or not. Say what that costs you, and name the one line you would change first."
+            "Before you read it: someone asks for a script that checks their setup. What would it have to tell them for you to trust it?",
+            "Still before you read it: what could make a check like this say Success when the setup is not the one you need?",
+            "Now read it. Which line decides that it says Success, and which line would tell you whether your environment was switched on?"
           ],
           "looks_for": [
-            "Which interpreter answers, where it is, what version and architecture it is, and what is installed in it — several facts, not one.",
-            "A script like this reports on the Python that is running the script — which need not be the <span class=\"mo\">python3</span> your terminal finds — and it can easily say nothing about what is installed. Question 3 is where you see what this one does.",
-            "That the same Success line prints whether the report worked or raised, so the word carries no information; the line to change is the <span class=\"mo\">except Exception</span> that swallows the failure, which should let it through or say what failed."
-          ]
+            "Which Python ran, from where, and whether that is the one in your environment; and what “ready” means, so that the check can fail.",
+            "A check can say Success without checking anything: the message is a line its author wrote, not a result.",
+            "The last line, <span class=\"mo\">print(\"Success: your setup is ready.\")</span>, always runs: nothing before it checks anything that could stop it. The <span class=\"mo\">Running from</span> line is the useful one: it names the <span class=\"mo\">python3</span> that ran, and it changes when your environment is switched on."
+          ],
+          "goal": "Tell what a short program an agent wrote really checks, whatever it prints.",
+          "target_note": "<span class=\"mo\">import sys</span> gives the program Python’s facts about itself: <span class=\"mo\">sys.version</span> is its version, and <span class=\"mo\">sys.executable</span> is the path of the Python program running the script, not the script itself."
         },
         {
           "id": "s01-withdraw-a",
@@ -257,26 +244,22 @@
           "minutes": {
             "attempt": 7,
             "compare": 4,
-            "record": 2,
             "resurface": 4
           },
           "ai_allowed": false,
           "bar": "build",
           "item_kind": "recall",
-          "labels": [
-            "I had it right, and for the right reason.",
-            "I assumed there was only one of it, so there was nothing to tell apart.",
-            "I knew the command but not what it answers.",
-            "I had read it and could not produce it cold.",
-            "I had it right, but was not sure why."
-          ]
+          "goal": "Answer a few questions on what you have learned so far, from memory."
         }
+      ],
+      "constructs": [
+        "import"
       ]
     },
     {
       "session": 2,
-      "title": "Order and state",
-      "subtitle": "Six rows arrive in an order, and a count has to survive the loop. SQL never asked you where to put the counter.",
+      "title": "A loop, its order, and a running total",
+      "subtitle": "In this session you write your first loop: it goes through six rows of sales, one at a time, and keeps a running total. In SQL, SUM(amount) added the whole column at once; here you decide where in your code the total starts.",
       "covers": [
         1,
         2
@@ -291,12 +274,11 @@
             "predict": 4,
             "attempt": 90,
             "compare": 10,
-            "record": 5,
             "resurface": 5
           },
           "ai_allowed": true,
-          "why": "A1’s own check describes a script an agent wrote: it turns a two-million-row export into a weekly revenue table, prints <span class=\"mo\">Success</span> every run, and this week’s total jumped 12% with no business reason. The middle of that script is a loop that keeps a number while it walks the rows. Where that number is set decides what the total ends up being — and neither version fails, so nothing tells you which one you have. You write that loop here, on six rows you can check by eye.",
-          "setup": "Six rows are waiting in a file called <span class=\"mo\">rows.py</span>: each one a name, a team and an amount. You will fetch that file, write a loop over the rows at the bottom of it, count some of them, and keep one number that has to last the whole loop. The rows never change.",
+          "why": "You write a loop over six rows, few enough to check by eye, that keeps a running total. Watch where you set the total to zero: Python accepts more than one place without an error. A1, this block of sessions, ends with an agent’s script whose weekly total jumped 12% for no business reason, and a loop like this is at its centre.",
+          "setup": "Six rows are waiting in a file called <span class=\"mo\">rows.py</span>; each has a name, a team and an amount. You will fetch the file, write a loop over the rows at the bottom of it, count some of them, and keep a running total until it passes 50. The file stays as it is, so you can check every answer by hand.",
           "reading": [
             {
               "title": "MIT 6.100L, Lecture 2: Strings, Input/Output, Branching — the lecture-notes PDF, the branching half",
@@ -323,21 +305,33 @@
               "brief": "Fetch <span class=\"mo\">rows.py</span> into <span class=\"mo\">~/cs-core</span> with <span class=\"mo\">curl -O</span>, open it, and write a loop at the bottom that prints each person’s name.",
               "passes_when": "six names, one per line, in the order the file has them.",
               "minutes": 25,
-              "guess": false
+              "guess": false,
+              "taught_by": [
+                "card",
+                "reading:2"
+              ]
             },
             {
               "name": "Count the ones over twenty",
               "brief": "Below that, count the rows whose amount is more than 20, and add those amounts up. Print the count, then the sum.",
               "passes_when": "two numbers: how many rows are over 20, and what those rows add up to. No row counted twice.",
               "minutes": 30,
-              "guess": true
+              "guess": true,
+              "taught_by": [
+                "reading:1",
+                "reading:2"
+              ]
             },
             {
-              "name": "Keep a total that survives the loop",
+              "name": "Keep a running total across the rows",
               "brief": "Add the amounts up in the order the rows come. The moment the running total passes 50, print that row’s name and the total at that moment, and stop.",
               "passes_when": "the name of the row where the total first passes 50, and the total it had reached at that row.",
               "minutes": 35,
-              "guess": true
+              "guess": true,
+              "taught_by": [
+                "reading:2",
+                "card"
+              ]
             }
           ],
           "reference_card": [
@@ -380,14 +374,19 @@
           ],
           "predict": {
             "type": "choice",
-            "ask": "These six rows come in a fixed order, and the loop’s body runs once for each of them. The body is two lines: first <span class=\"mo\">total = 0</span>, then it adds that row’s amount to <span class=\"mo\">total</span>. After the last of the six, what does <span class=\"mo\">print(total)</span> show?",
+            "ask": "These six rows come in a fixed order, and the body of the loop runs once for each row. The body is two lines: first <span class=\"mo\">total = 0</span>, then it adds that row’s amount to <span class=\"mo\">total</span>. After the sixth row, what does <span class=\"mo\">print(total)</span> show?",
             "options": [
               "The six amounts added together.",
               "The last row’s amount.",
-              "Zero — it gets set to zero again every time round."
+              "Zero, because it is set to zero again every time through the loop."
             ],
             "correct": 1,
-            "why_prompt": "One line: why that one?"
+            "why_prompt": "One line: why that one?",
+            "because": [
+              "Adding up is what a total is for, so this is the natural expectation. But <span class=\"mo\">total = 0</span> is inside the loop, so it runs once per row, and each time it wipes what the rows before had added; only the last row’s amount is left. Task 3 is where this shows.",
+              "Right. <span class=\"mo\">total = 0</span> runs once per row, so each row starts again from nothing. On these six rows the loop ends at 19, the last amount; with <span class=\"mo\">total = 0</span> set once, before the loop, the same loop ends at 132.",
+              "Zero would be right if <span class=\"mo\">total = 0</span> ran after the add. It runs before, so each time through the loop the total is set to zero and then that row’s amount is added, and the loop ends holding the last row’s amount."
+            ]
           },
           "acceptance_checks": [
             {
@@ -421,55 +420,20 @@
               "fail": "Some of the rows never printed. A loop that stops early, or starts at the wrong place, loses rows without saying so."
             },
             "counted-and-crossed": {
-              "pass": "The sum over 20 and the crossing total are both there.",
-              "fail": "The sum of the amounts over 20, or the total when it first passed 50, is not here. If nothing ever passes 50, look at where your total is set before you look at anything else."
+              "pass": "The sum over 20 is there, and so is the total at the row where it first passed 50.",
+              "fail": "The sum of the amounts over 20, or the total when it first passed 50, is not here. If nothing ever passes 50, look at where your total is set before you look at anything else.",
+              "missing": {
+                "61": "The total at the row where it first passed 50 is not here. If nothing ever passes 50, look at where your total is set before you look at anything else.",
+                "83": "The sum of the amounts over 20 is not here yet: add up only the rows over 20, and print that sum."
+              }
             }
           },
           "receipt_fields": [],
           "receipt_prompt": "Paste your runs — the command, and what came back under it, each time.",
           "receipt_hint": "$ python3 rows.py\n...\n$ python3 rows.py\n...",
           "compare": {
-            "mine_label": "Measured reference: total set inside the loop",
-            "mine": "$ python3 inside.py\n18\n12\n31\n27\n25\n19\ntotal at the end: <b>19</b>",
-            "theirs_label": "Measured reference: total set before the loop",
-            "theirs": "$ python3 outside.py\n18\n30\n61\n88\n113\n132\ntotal at the end: <b>132</b>",
-            "note": "<strong>Where you put <span class=\"mo\">total = 0</span> is not a style choice. It is a different answer.</strong> SQL never asked you where to put it, because there is no “where”: <span class=\"mo\">SUM(amount)</span> is one statement over a set that has no order.",
-            "after": "The third task needs the total to survive the loop. If nothing ever passes 50, the largest single amount is 31 — so the total is being thrown away each time round.",
-            "table": [
-              [
-                "reading down the run",
-                "total = 0 inside the loop",
-                "total = 0 before the loop"
-              ],
-              [
-                "each line printed is",
-                "that row’s own amount",
-                "the total so far"
-              ],
-              [
-                "each line depends on",
-                "only its own row",
-                "every row above it"
-              ],
-              [
-                "after the last row",
-                "19",
-                "132"
-              ],
-              [
-                "did either one complain?",
-                "no",
-                "no"
-              ]
-            ]
+            "note": "Where you put <span class=\"mo\">total = 0</span> changes the answer. A plain <span class=\"mo\">SUM(amount)</span> works on the whole set at once, with no order; a loop makes you choose where the total starts."
           },
-          "labels": [
-            "I had it right, and for the right reason.",
-            "I read the loop the way I read SQL: the whole set at once, with no order.",
-            "I thought setting it to zero again was the same as leaving it alone.",
-            "I expected Python to object to setting the same name twice.",
-            "I had it right, but was not sure why."
-          ],
           "concepts": [
             {
               "term": "A variable that changes",
@@ -506,8 +470,11 @@
           "leak_guard": [
             "the last row",
             "total = 0 inside the loop",
-            "starts again on every row"
-          ]
+            "starts again on every row",
+            "different totals",
+            "give different"
+          ],
+          "goal": "Write a loop over rows that counts, adds up and stops, and say where its total has to start."
         },
         {
           "id": "s02-teardown-a",
@@ -521,7 +488,7 @@
           "scored": false,
           "anatomy_example": "Spliit (bill splitter)",
           "product": "Spliit",
-          "why": "Spliit is the smallest thing here that is still a real product: a web app, a database, a library between them, somewhere to run, and one rule that has to hold — the amounts must always add up. This one is a read, not a test: you are not naming its parts from memory yet. It is here because that rule is the one this session’s lab is about — a total that has to come out right — at the size a product has to live at.",
+          "why": "You read Spliit’s README and try the app; nothing is graded. Spliit splits shared bills between people, and after every expense what each person paid and owes has to balance. That is the lab’s question, whether a total comes out right, in a real app.",
           "provenance": {
             "level": "authored",
             "courses": [
@@ -546,7 +513,8 @@
               "teaches": "what the balance rule has to keep true while people add expenses",
               "minutes": 10
             }
-          ]
+          ],
+          "goal": "See what a small real product is built from, and the one total it must keep right."
         },
         {
           "id": "s02-withdraw-a",
@@ -555,18 +523,12 @@
           "minutes": {
             "attempt": 9,
             "compare": 5,
-            "record": 3,
             "resurface": 4
           },
           "ai_allowed": false,
           "bar": "build",
           "item_kind": "recall",
-          "labels": [
-            "I had it right, and for the right reason.",
-            "I knew the idea but could not produce it cold.",
-            "I mixed it up with something next to it.",
-            "I had it right, but was not sure why."
-          ]
+          "goal": "Answer a few questions on what you have learned so far, from memory."
         },
         {
           "id": "s02-interview-a",
@@ -580,24 +542,32 @@
             "kind": "program",
             "path": "content/interviews/s02-weekly-total.py"
           },
-          "brief": "An agent wrote this script from one sentence: “total the week’s amounts by team”. It runs without an error and prints one number for each team.",
+          "brief": "An agent wrote this from one sentence: “total the sales team’s amounts for the week”. It runs without an error and prints one number.",
           "questions": [
-            "Before you read it: someone asks for “the week’s amounts totalled by team”. What has to be true of the answer for it to be right?",
-            "Still before you open it: what could make a script like this wrong without making it stop?",
-            "Now walk through it. Say what the printed numbers actually are, and name the one line that makes them that."
+            "Before you read it: someone asks for the sales team’s total for the week. What has to be true of the answer for it to be right, and how would you check it?",
+            "Still before you read it: what could make a script like this print a wrong total without stopping?",
+            "Now walk through it. Say what the printed number actually is, and name the one line that makes it that."
           ],
           "looks_for": [
-            "A total per team that adds up every row of that team, and a way to check it — few enough rows to add up by hand.",
-            "It can print one number per team that looks like a total and is not. Nothing raises, so the only way to notice is to know what the answer should be.",
-            "The numbers are not totals. Say which rows each one came from, and name the single line that decides it — then say what you would have had to know to notice without being told."
-          ]
+            "The sum of every sales row, and a way to check it: few enough rows to add up by hand. 18, 31 and 25 make 74.",
+            "A total that is reset where it should not be, or a row left out. Nothing stops, so the only check is knowing what the answer should be.",
+            "It prints 25, the last sales row alone. <span class=\"mo\">total = 0</span> is inside the loop, so every row starts the total again from nothing: the same line this session’s lab turns on. Set it once, before the loop, and it prints 74."
+          ],
+          "goal": "Find the line that makes a script’s total wrong when nothing stops it."
         }
+      ],
+      "constructs": [
+        "for",
+        "in",
+        "if",
+        "else",
+        "break"
       ]
     },
     {
       "session": 3,
-      "title": "Naming and boundaries",
-      "subtitle": "A function has its own names. Ten programs to run; eight of them stop.",
+      "title": "Functions, and reading where code stops",
+      "subtitle": "In this session you run ten small programs and read what Python prints when one stops with an error: the file, the line, and why. A few finish without an error and print the wrong thing, which is harder to catch. Most use functions, so watch what goes into a function and what comes back out.",
       "covers": [
         1,
         6
@@ -606,25 +576,30 @@
         {
           "id": "s03-lab-a",
           "kind": "lab",
-          "shows": "Read ten broken programs — and the two that are worse than broken",
+          "shows": "Ten small programs: read where each one stops",
           "needs_environment": true,
           "minutes": {
-            "learn": 95,
+            "learn": 115,
             "predict": 4,
             "attempt": 100,
             "compare": 12,
-            "record": 5,
             "resurface": 5
           },
           "ai_allowed": true,
-          "why": "An agent hands you two hundred lines. The ones that stop tell you where they stopped, and A1 asks whether you can read that trail and explain every line. The ones that do not stop tell you nothing at all — and two of these ten are that kind: a total that is not the number you asked for, and a column of whole numbers that silently wrapped round to a negative. That is the shape of the script in A1’s own check, the one that prints Success on every run while the week’s total is 12% out.",
-          "setup": "Ten small programs are waiting. Most are about functions: what a function’s own names are, what it hands back, and what it can reach. Eight of them stop. Two of them finish and print something wrong. You will run all ten, and the sorting is yours to do.",
+          "why": "You run ten programs of the kind an agent hands you. When one stops with an error, Python names the file and the line; when one finishes with a wrong answer, nothing warns you. A1 ends with that second kind: a script that prints Success on every run while the week’s total is 12% off.",
+          "setup": "Ten small programs are in a zip file. Run all ten and sort them into those two kinds. Most use functions, so watch what goes into a function and what comes back out.",
           "reading": [
             {
               "title": "MIT 6.100L, Lecture 7: Decomposition, Abstraction, Functions — the lecture-notes PDF",
               "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/resources/mit6_100l_f22_lec07_pdf/",
-              "teaches": "a function’s own names, its arguments, and what return hands back",
+              "teaches": "what a function is, its arguments, and what return hands back",
               "minutes": 45
+            },
+            {
+              "title": "MIT 6.100L, Lecture 8: Functions as Objects — the lecture-notes PDF, the scope half",
+              "url": "https://ocw.mit.edu/courses/6-100l-introduction-to-cs-and-programming-using-python-fall-2022/resources/mit6_100l_f22_lec08_pdf/",
+              "teaches": "what a name inside a function can and cannot reach, and what a function hands back when it has no return",
+              "minutes": 20
             },
             {
               "title": "Python tutorial, “Errors and Exceptions” — sections 8.1 and 8.2",
@@ -651,21 +626,33 @@
               "brief": "Fetch <span class=\"mo\">ten-programs.zip</span>, unzip it, and run every one of the ten. Put each in one of two piles: it stopped, or it finished and printed something wrong.",
               "passes_when": "all ten have been run, and exactly two of them are in the second pile.",
               "minutes": 35,
-              "guess": false
+              "guess": true,
+              "taught_by": [
+                "reading:3",
+                "card"
+              ]
             },
             {
-              "name": "Name the line and the belief, for three of them",
-              "brief": "Pick three that stopped. For each one: the file, the line number Python named, and one sentence on what the code believed that was not true. Not how to fix it.",
-              "passes_when": "three entries, each with a file, a line number, and a belief rather than a repair.",
+              "name": "Name the line and the wrong assumption, for three of them",
+              "brief": "Pick three that stopped. For each one: the file, the line number Python named, and one sentence on what the code assumed that was not true. Not how to fix it.",
+              "passes_when": "three entries, each with a file, a line number, and an assumption rather than a repair.",
               "minutes": 30,
-              "guess": true
+              "guess": false,
+              "taught_by": [
+                "reading:3",
+                "reading:2"
+              ]
             },
             {
-              "name": "Give one of them a boundary",
+              "name": "Fix one of them with return",
               "brief": "Take <span class=\"mo\">03_reassign.py</span> and make it work by handing the new total back out of the function instead of assigning to the name outside it. Run it before and after.",
               "passes_when": "the before run still stops, the after run prints 10, and nothing outside the function is assigned to from inside it.",
               "minutes": 35,
-              "guess": true
+              "guess": true,
+              "taught_by": [
+                "reading:1",
+                "card"
+              ]
             }
           ],
           "reference_card": [
@@ -706,14 +693,19 @@
           ],
           "predict": {
             "type": "choice",
-            "ask": "Both of these are handed to the function as arguments, and the function returns nothing. <span class=\"mo\">items.append(\"new\")</span> adds an item to the list it is called on.<pre>def bump(number, items):\n    number = number + 1\n    items.append(\"new\")\n\ncount = 1\nnames = [\"Ana\"]\nbump(count, names)\nprint(count, names)</pre>What does the last line print?",
+            "ask": "Below, <span class=\"mo\">bump</span> is handed a number and a list as arguments, and returns nothing. <span class=\"mo\">items.append(\"new\")</span> adds an item to the list it is called on.<pre>def bump(number, items):\n    number = number + 1\n    items.append(\"new\")\n\ncount = 1\nnames = [\"Ana\"]\nbump(count, names)\nprint(count, names)</pre>What does the last line print?",
             "options": [
               "2 ['Ana', 'new'] — the function changed both of them.",
               "1 ['Ana'] — it changed neither; a function works on its own copies.",
               "1 ['Ana', 'new'] — the list changed and the number did not."
             ],
             "correct": 2,
-            "why_prompt": "One line: why that one?"
+            "why_prompt": "One line: why that one?",
+            "because": [
+              "Both were handed in, so it is natural to expect both to come back changed. But <span class=\"mo\">number = number + 1</span> only points the function’s own name at a new number, and <span class=\"mo\">count</span> outside never sees it. The list is different: <span class=\"mo\">append</span> changes the one list that <span class=\"mo\">names</span> and <span class=\"mo\">items</span> both point to.",
+              "Copies would protect both, and this pick expects copies. Python hands over the objects themselves: assigning to <span class=\"mo\">number</span> inside moves only the function’s own name, but <span class=\"mo\">append</span> changes the very list <span class=\"mo\">names</span> points to.",
+              "Right. Assigning to <span class=\"mo\">number</span> moves only the function’s own name, so <span class=\"mo\">count</span> stays 1, while <span class=\"mo\">append</span> changes the one list <span class=\"mo\">names</span> and <span class=\"mo\">items</span> both point to, so the list outside gains the new item."
+            ]
           },
           "acceptance_checks": [
             {
@@ -757,63 +749,25 @@
           "verdicts": {
             "eight-that-stop": {
               "pass": "All eight that stop are here, and they stop for eight different reasons.",
-              "fail": "Some of the eight are missing. The last line of each one starts with a different word — the word before the colon — and all eight of those last lines have to be in what you paste."
+              "fail": "Some of the eight are missing. The last line of each starts with a different word, the one before the colon, and all eight of those last lines have to be in what you paste."
             },
             "two-that-do-not": {
-              "pass": "Both of the quiet ones are here, each under the command that produced it.",
-              "fail": "Those two numbers are under each other’s commands. Which program printed which is the whole of this pair.",
+              "pass": "Both programs that finished without stopping are here, each under the command that produced it.",
+              "fail": "Those two numbers are under each other’s commands. The point of this pair is which program printed which, so paste each command with the line that came back under it.",
               "partial": "Run the two that did not stop, and paste each command with the line that came back under it.",
               "missing": {
                 "money": "The whole-number one is here; the money one is not. Run <span class=\"mo\">09_money.py</span> and paste it with its command.",
-                "whole numbers": "The money one is here; the whole-number one is not. Run <span class=\"mo\">10_overflow.py</span> from the environment that has numpy, and paste it with its command."
+                "whole numbers": "The money one is here; the whole-number one is not. <span class=\"mo\">10_overflow.py</span> needs numpy: install the course’s packages with the command on this page’s environment card, then run it and paste it with its command."
               }
             }
           },
           "receipt_fields": [],
-          "receipt_prompt": "Paste the ten runs: for each one, the command, and what came back under it — and for the two that did not stop, every line they printed.",
+          "receipt_prompt": "Paste the ten runs: for each one, the command and what came back under it, and for the two that did not stop, every line they printed. Then your fix to <span class=\"mo\">03_reassign.py</span>, run before and after. Last, your three entries for task 2: the file, the line, and what the code assumed.",
           "receipt_hint": "$ python3 01_scope.py\n...\n$ python3 02_arguments.py\n...\n",
           "compare": {
-            "mine_label": "Measured reference: the two that did not stop",
-            "mine": "$ python3 09_money.py\ncharged: <b>0.30000000000000004</b>\nis it 0.30? <b>False</b>\n\n$ python3 10_overflow.py\nbefore: 2147483647\nafter one more: <b>-2147483648</b>",
-            "theirs_label": "Measured reference: what the caller sees",
-            "theirs": "$ python3 bump.py\n1 ['Ana', 'new']",
-            "note": "<strong>A name inside a function belongs to the function.</strong> Assigning to it points the function’s own name somewhere new, and the caller never sees that. Changing that object in place, as <span class=\"mo\">append</span> does, changes the one object both names point at. What crosses out of a function is what you <span class=\"mo\">return</span>, plus anything you changed in place.",
-            "after": "And the two that did not stop are the expensive kind. 0.1 and 0.2 have no exact form in binary, so their sum is not 0.30 and the comparison is False — which is why money is held in whole cents, or in <span class=\"mo\">Decimal</span>, never in a float. The column of whole numbers was already at its type’s ceiling; one more wrapped it round to a negative, with no warning, and the program still ended as if nothing was wrong. The eight that stop tell you the file and the line. These two are the ones you will actually meet.",
-            "table": [
-              [
-                "line in bump()",
-                "what the function’s own name holds",
-                "what the caller still holds"
-              ],
-              [
-                "before the call",
-                "—",
-                "count 1, names ['Ana']"
-              ],
-              [
-                "number = number + 1",
-                "number 2",
-                "count 1 — it never saw this"
-              ],
-              [
-                "items.append(\"new\")",
-                "items ['Ana', 'new']",
-                "names ['Ana', 'new'] — the same list"
-              ],
-              [
-                "after the call",
-                "gone",
-                "1 ['Ana', 'new']"
-              ]
-            ]
+            "note": "Two things get out of a function: what you <span class=\"mo\">return</span>, and any object you changed in place.",
+            "after": "The two that finished without an error are the costly kind, because nothing warns you. 0.1 and 0.2 have no exact form in binary, so their sum is not 0.30 and the comparison is False; that is why money is kept in whole cents, or in <span class=\"mo\">Decimal</span>, not in a float. The column of whole numbers was already at the largest value numpy’s 32-bit whole number can hold (Python’s own whole numbers have no such limit), so adding one made it wrap around to -2147483648, with no warning."
           },
-          "labels": [
-            "I had it right, and for the right reason.",
-            "I thought a function could change the caller’s variables.",
-            "I thought arguments are always copies, so nothing could change.",
-            "I expected a wrong number to raise something.",
-            "I had it right, but was not sure why."
-          ],
           "concepts": [
             {
               "term": "A function’s own names",
@@ -857,8 +811,11 @@
             "the list changed and the number did not",
             "0.30000000000000004",
             "-2147483648",
-            "some of what you hand it can be changed"
-          ]
+            "some of what you hand it can be changed",
+            "change outside itself",
+            "can change outside"
+          ],
+          "goal": "Say what a function can change and what it hands back, and read where Python says code stopped."
         },
         {
           "id": "s03-withdraw-a",
@@ -867,19 +824,12 @@
           "minutes": {
             "attempt": 8,
             "compare": 5,
-            "record": 3,
             "resurface": 4
           },
           "ai_allowed": false,
           "bar": "build",
           "item_kind": "recall",
-          "labels": [
-            "I had it right, and for the right reason.",
-            "I had only ever typed it with the notes open.",
-            "I knew the idea but could not produce it cold.",
-            "I mixed it up with something next to it.",
-            "I had it right, but was not sure why."
-          ]
+          "goal": "Answer a few questions on what you have learned so far, from memory."
         },
         {
           "id": "s03-interview-a",
@@ -897,14 +847,20 @@
           "questions": [
             "Before you read it: someone asks for “apply the discounts to a price”. What has to be true of the answer, and what would you want to see to believe it?",
             "Still before you open it: what could make three calls with the same price give three different answers?",
-            "Now walk through it. Name the line that makes the second call different from the first, and say what you would change about how the price itself is held."
+            "Now walk through it. Name the line that makes the second call different from the first, and say what type you would store the price in instead of a float."
           ],
           "looks_for": [
             "A price with the discounts applied, and the same price in gives the same price out — calling it twice must not change anything.",
             "Something is being kept from one call to the next: a list or a total that lives outside any single call and is added to each time. Code like this can carry what earlier calls did into later ones.",
             "The default list is made once, when the function is defined, and <span class=\"mo\">discounts.append(0.1)</span> adds to that same list on every call that does not pass its own — that is the line. And the price is a float: these three happen to come out clean, but money belongs in whole cents or <span class=\"mo\">Decimal</span>, and other prices will not: 1.10 comes back as 0.9900000000000001."
-          ]
+          ],
+          "goal": "Find why the same call gives a different answer the second time.",
+          "target_note": "<span class=\"mo\">discounts=[]</span> in the first line is a default: the value the function uses when a call does not pass its own."
         }
+      ],
+      "constructs": [
+        "def",
+        "return"
       ]
     }
   ]

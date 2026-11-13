@@ -1,64 +1,9 @@
 {
   "about": "What the content says each program prints. Checked by scripts/measure-content.mjs: every quote must be in the named content field and in the program's output (or, for source_quotes, in its source). See docs/LESSONS.md L-AUTH-02.",
   "volatile": [
-    "content/interviews/s01-check-env.py"
+    "content/interviews/s01-check-setup.py"
   ],
   "claims": [
-    {
-      "part": "s02-lab-a",
-      "in": "compare.mine",
-      "lines": [
-        "18",
-        "12",
-        "31",
-        "27",
-        "25",
-        "19",
-        "total at the end: 19"
-      ],
-      "from": "curriculum/reference/s02-lab-a/inside.py",
-      "uses": [
-        "public/labs/s02-lab-a/rows.py"
-      ]
-    },
-    {
-      "part": "s02-lab-a",
-      "in": "compare.theirs",
-      "lines": [
-        "18",
-        "30",
-        "61",
-        "88",
-        "113",
-        "132",
-        "total at the end: 132"
-      ],
-      "from": "curriculum/reference/s02-lab-a/outside.py"
-    },
-    {
-      "part": "s02-lab-a",
-      "in": "compare.table",
-      "quotes": [
-        "19"
-      ],
-      "from": "curriculum/reference/s02-lab-a/inside.py",
-      "lines": [
-        "total at the end: 19"
-      ],
-      "content_lines": false
-    },
-    {
-      "part": "s02-lab-a",
-      "in": "compare.table",
-      "quotes": [
-        "132"
-      ],
-      "from": "curriculum/reference/s02-lab-a/outside.py",
-      "lines": [
-        "total at the end: 132"
-      ],
-      "content_lines": false
-    },
     {
       "part": "s02-lab-a",
       "in": "acceptance_checks.0.need",
@@ -87,36 +32,6 @@
       "content_lines": false
     },
     {
-      "part": "s02-lab-a",
-      "in": "compare.after",
-      "quotes": [
-        "31"
-      ],
-      "from": "curriculum/reference/s02-lab-a/tasks.py",
-      "lines": [
-        "largest 31"
-      ],
-      "content_lines": false
-    },
-    {
-      "part": "s03-lab-a",
-      "in": "compare.mine",
-      "lines": [
-        "charged: 0.30000000000000004",
-        "is it 0.30? False"
-      ],
-      "from": "public/labs/s03-lab-a/09_money.py"
-    },
-    {
-      "part": "s03-lab-a",
-      "in": "compare.mine",
-      "lines": [
-        "before: 2147483647",
-        "after one more: -2147483648"
-      ],
-      "from": "public/labs/s03-lab-a/10_overflow.py"
-    },
-    {
       "part": "s03-lab-a",
       "in": "acceptance_checks.1.pairs",
       "quotes": [
@@ -134,23 +49,7 @@
     },
     {
       "part": "s03-lab-a",
-      "in": "compare.theirs",
-      "lines": [
-        "1 ['Ana', 'new']"
-      ],
-      "from": "curriculum/reference/s03-lab-a/bump.py"
-    },
-    {
-      "part": "s03-lab-a",
       "in": "predict.options.2",
-      "quotes": [
-        "1 ['Ana', 'new']"
-      ],
-      "from": "curriculum/reference/s03-lab-a/bump.py"
-    },
-    {
-      "part": "s03-lab-a",
-      "in": "compare.table",
       "quotes": [
         "1 ['Ana', 'new']"
       ],
@@ -167,33 +66,6 @@
         "10"
       ],
       "content_lines": false
-    },
-    {
-      "part": "s01-interview-a",
-      "in": "brief",
-      "quotes": [
-        "Success"
-      ],
-      "source_quotes": [
-        "a script that checks my setup"
-      ],
-      "from": "content/interviews/s01-check-env.py"
-    },
-    {
-      "part": "s01-interview-a",
-      "in": "looks_for.2",
-      "source_quotes": [
-        "except Exception"
-      ],
-      "from": "content/interviews/s01-check-env.py"
-    },
-    {
-      "part": "s02-interview-a",
-      "in": "brief",
-      "source_quotes": [
-        "total the week's amounts by team"
-      ],
-      "from": "content/interviews/s02-weekly-total.py"
     },
     {
       "part": "s03-interview-a",
@@ -290,6 +162,131 @@
         "RecursionError"
       ],
       "from": "public/labs/s03-lab-a/08_no_base_case.py"
+    },
+    {
+      "part": "s01-interview-a",
+      "in": "brief",
+      "quotes": [
+        "Success"
+      ],
+      "source_quotes": [
+        "a script that checks my setup"
+      ],
+      "from": "content/interviews/s01-check-setup.py"
+    },
+    {
+      "part": "s01-interview-a",
+      "in": "looks_for.2",
+      "source_quotes": [
+        "print(\"Success: your setup is ready.\")"
+      ],
+      "quotes": [
+        "Running from"
+      ],
+      "from": "content/interviews/s01-check-setup.py"
+    },
+    {
+      "part": "s01-interview-a",
+      "in": "target_note",
+      "source_quotes": [
+        "import sys",
+        "sys.version",
+        "sys.executable"
+      ],
+      "from": "content/interviews/s01-check-setup.py"
+    },
+    {
+      "part": "s02-interview-a",
+      "in": "brief",
+      "source_quotes": [
+        "total the sales team's amounts for the week"
+      ],
+      "from": "content/interviews/s02-weekly-total.py"
+    },
+    {
+      "part": "s02-interview-a",
+      "in": "looks_for.2",
+      "lines": [
+        "Success: the sales total is 25"
+      ],
+      "content_lines": false,
+      "source_quotes": [
+        "total = 0"
+      ],
+      "from": "content/interviews/s02-weekly-total.py"
+    },
+    {
+      "part": "s02-interview-a",
+      "in": "looks_for.2",
+      "code": "# weekly_total.py\n# An agent wrote this from one sentence: \"total the sales team's amounts for the week\".\n\nrows = [\n    {\"name\": \"Ana\", \"team\": \"sales\", \"amount\": 18},\n    {\"name\": \"Bo\", \"team\": \"eng\", \"amount\": 12},\n    {\"name\": \"Cy\", \"team\": \"sales\", \"amount\": 31},\n    {\"name\": \"Di\", \"team\": \"eng\", \"amount\": 27},\n    {\"name\": \"Eve\", \"team\": \"sales\", \"amount\": 25},\n]\n\ntotal = 0\nfor row in rows:\n    if row[\"team\"] == \"sales\":\n        total = total + row[\"amount\"]\n\nprint(\"Success: the sales total is\", total)\n",
+      "lines": [
+        "Success: the sales total is 74"
+      ],
+      "content_lines": false
+    },
+    {
+      "part": "s02-lab-a",
+      "in": "predict.because.1",
+      "from": "curriculum/reference/s02-lab-a/inside.py",
+      "lines": [
+        "total at the end: 19"
+      ],
+      "content_lines": false,
+      "quotes": [
+        "19"
+      ],
+      "uses": [
+        "public/labs/s02-lab-a/rows.py"
+      ]
+    },
+    {
+      "part": "s02-lab-a",
+      "in": "predict.because.1",
+      "from": "curriculum/reference/s02-lab-a/outside.py",
+      "lines": [
+        "total at the end: 132"
+      ],
+      "content_lines": false,
+      "quotes": [
+        "132"
+      ]
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "predict.options.2",
+      "from": "curriculum/reference/s03-lab-a/bump.py",
+      "lines": [
+        "1 ['Ana', 'new']"
+      ],
+      "content_lines": false,
+      "quotes": [
+        "1 ['Ana', 'new']"
+      ]
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "compare.after",
+      "from": "public/labs/s03-lab-a/09_money.py",
+      "lines": [
+        "is it 0.30? False"
+      ],
+      "content_lines": false,
+      "quotes": [
+        "0.30",
+        "False"
+      ]
+    },
+    {
+      "part": "s03-lab-a",
+      "in": "compare.after",
+      "from": "public/labs/s03-lab-a/10_overflow.py",
+      "lines": [
+        "after one more: -2147483648"
+      ],
+      "content_lines": false,
+      "quotes": [
+        "-2147483648"
+      ]
     }
   ]
 }

@@ -20,14 +20,19 @@ const steps = [
   ["typegen", "Next generates the route types the type check needs", "npx", ["next", "typegen"]],
   ["types", "the code type-checks", "npx", ["tsc", "--noEmit"]],
   ["engine", "the study engine keeps its rules", node, ["scripts/test-study.mjs"]],
+  ["store", "the disk store and the web trial's in-memory store answer the same way", node, ["scripts/test-store.mjs"]],
+  ["web", "the public web trial answers over one stateless door and keeps nothing", node, ["scripts/test-web.mjs"]],
   ["build", "the app builds", "npx", ["next", "build", "--webpack"]],
   ["screens", "every screen draws and its controls work, in a real browser", node, ["scripts/smoke-ui.mjs"]],
+  ["trial", "the public web trial builds, and every screen on it renders", node, ["scripts/test-web-screens.mjs"]],
 ];
 
 const results = [];
 for (const [name, what, command, args] of steps) {
   const started = Date.now();
-  const result = spawnSync(command, args, {cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024});
+  // Builds go to .next-check, never the .next her dev server uses (next.config.ts).
+  const env = ["build", "screens"].includes(name) ? {...process.env, FORTHREE_DIST_DIR: ".next-check"} : process.env;
+  const result = spawnSync(command, args, {cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, env});
   const seconds = ((Date.now() - started) / 1000).toFixed(0);
   const output = `${result.stdout ?? ""}${result.stderr ?? ""}`.trim();
   if (result.status !== 0) {

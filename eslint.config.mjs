@@ -9,6 +9,11 @@ const eslintConfig = defineConfig([
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",
+    // Every other build this repo makes: the checks' own (next.config.ts) and
+    // the web trial's dev server (npm run dev:web). A build is output, and
+    // linting Next's own chunks reports hundreds of errors in code nobody
+    // here wrote.
+    ".next-*/**",
     "out/**",
     "build/**",
     "next-env.d.ts",

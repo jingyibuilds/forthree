@@ -19,6 +19,7 @@
 
 # next.js
 /.next/
+/.next-*/
 /out/
 
 # production
@@ -45,3 +46,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# the owner-specific half of the publish scrub list
+/.publish-denylist

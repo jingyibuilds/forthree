@@ -12,7 +12,7 @@ const compiled = path.join(temporary, "compiled");
 const result = spawnSync(process.execPath, ["node_modules/typescript/bin/tsc",
   "--target", "ES2020", "--module", "commonjs", "--moduleResolution", "node",
   "--esModuleInterop", "--strict", "--skipLibCheck", "--outDir", compiled,
-  "src/lib/study/service.ts"], {encoding: "utf8"});
+  "src/lib/study/service.ts", "src/lib/study/http.ts"], {encoding: "utf8"});
 assert.equal(result.status, 0, result.stdout + result.stderr);
 const require = createRequire(import.meta.url);
 const Module = require("node:module");
@@ -21,15 +21,19 @@ Module._load = function (id, ...args) {
   if (id === "server-only") return {};
   if (id === "@/lib/study/service") return require(path.join(compiled, "service.js"));
   if (id === "@/lib/study/types") return require(path.join(compiled, "types.js"));
+  // The routes are addresses; their rules are one table in @/lib/study/http.
+  if (id === "@/lib/study/http") return require(path.join(compiled, "http.js"));
   return originalLoad.call(this, id, ...args);
 };
 const service = require(path.join(compiled, "service.js"));
 const store = require(path.join(compiled, "store.js"));
 const content = require(path.join(compiled, "content.js"));
 const id = "s01-lab-a";
-const raw = "$ uname -m\narm64\n$ python3 -c 'import platform; print(platform.machine())'\nx86_64";
-const native = raw.replace("x86_64", "arm64");
-const swapped = "$ uname -m\nx86_64\n$ python3 -c 'import platform; print(platform.machine())'\narm64";
+// Session 1's receipts are real runs (curriculum/receipts/s01-lab-a.json).
+const s01Receipts = JSON.parse(await readFile("curriculum/receipts/s01-lab-a.json", "utf8")).receipts;
+const raw = s01Receipts.find(entry => entry.name.startsWith("stopped before")).raw;
+const swapped = s01Receipts.find(entry => entry.name.startsWith("environment switched on")).raw;
+const native = s01Receipts.find(entry => entry.name.includes("3.15")).raw;
 const root = path.join(temporary, "records");
 process.env.FORTHREE_STUDY_ROOT = root;
 const mutate = (action, body, n = 1) => service.mutateAttempt(id, n, action.split("/"), body);
@@ -58,8 +62,7 @@ async function seedDone(storeRoot, parts, plan = {}, unsealed = []) {
 async function missCheck(part, n = 1) {
   await service.getAttempt(part, n);
   for (const k of [0, 1, 2]) await service.mutateAttempt(part, n, ["item", String(k), "seal"], {text: "deliberately wrong"});
-  for (const step of ["compare", "record"]) await service.mutateAttempt(part, n, ["step"], {step});
-  await service.mutateAttempt(part, n, ["label"], {label: 2});
+  await service.mutateAttempt(part, n, ["step"], {step: "compare"});
   if ((await service.getAttempt(part, n)).part.steps.includes("resurface")) await service.mutateAttempt(part, n, ["step"], {step: "resurface"});
   await service.mutateAttempt(part, n, ["step"], {step: "done"});
 }
@@ -79,6 +82,7 @@ assert.equal(overview.parts.at(-1).kind, "withdraw");
 assert.deepEqual(overview.wires, []);
 const base = await service.getAttempt(id, 1);
 assert.equal(base.part.predict.correct, undefined);
+assert.equal(base.part.predict.because, undefined, "what each option means is part of the answer");
 for (const field of ["compare", "acceptance_checks", "concepts", "labels", "receipt_hint"]) assert.equal(base.part[field], undefined, field);
 assert.equal(base.part.setup_command, undefined);
 assert.equal(base.part.activate_command, undefined);
@@ -86,8 +90,8 @@ assert.equal(base.part.provenance.measured, undefined);
 assert(base.part.tasks.every(task => task.passes_when === undefined));
 assert.equal(base.part.minutes, undefined);
 assert(base.part.tasks.every(task => task.minutes === undefined));
-assert.deepEqual(base.part.steps, ["predict", "attempt", "compare", "record", "done"]);
-assert.deepEqual(base.part.step_labels, ["Guess", "Write it", "Compare", "Log the miss"]);
+assert.deepEqual(base.part.steps, ["predict", "attempt", "compare", "done"]);
+assert.deepEqual(base.part.step_labels, ["Guess", "Write it", "Compare"]);
 // §8's locks are derived from state the client cannot choose: the part is
 // required, and omitting it no longer falls back to a permissive default.
 // `/curriculum` and `/board` hold no prediction open, so a part-less plain
@@ -118,6 +122,12 @@ const commands = content.environmentCommands(unusualRoot);
 const shellProbe = spawnSync("bash", ["-c", "set -- " + commands.setup_command + '; printf "%s" "$2"'], {encoding: "utf8"});
 assert.equal(shellProbe.status, 0);
 assert.equal(shellProbe.stdout, path.join(unusualRoot, "scripts/setup-python.sh"));
+// Her lab environment is made from the course's Python and given its pinned
+// packages; both paths survive the same quoting.
+const venvProbe = spawnSync("bash", ["-c", "set -- " + commands.venv_command + '; printf "%s|%s|%s" "$1" "$2" "$3"'], {encoding: "utf8"});
+assert.equal(venvProbe.stdout, path.join(unusualRoot, ".venv/bin/python3") + "|-m|venv");
+const packagesProbe = spawnSync("bash", ["-c", "set -- " + commands.packages_command + '; printf "%s" "$6"'], {encoding: "utf8"});
+assert.equal(packagesProbe.stdout, path.join(unusualRoot, "requirements-course.txt"));
 assert.equal(gated.predict.correct, undefined);
 assert.equal(gated.tasks[2].passes_when, undefined);
 await mutate("step", {step: "attempt"});
@@ -138,29 +148,30 @@ assert.equal((await service.getAttempt(id, 1)).record.checks[0].pass, false);
 await mutate("receipt", {raw: native});
 assert.equal((await service.getAttempt(id, 1)).record.checks[0].pass, true);
 const explained = (await service.getBeyondPrediction(id, 1)).part;
-assert(explained.compare.after.length > 0, "and served once it is");
-
-assert(!explained.compare.after.includes("Run scripts/setup-python.sh"), "Do not prescribe a broken relative path from the learner folder");
+assert(explained.compare.note.length > 0, "and served once it is");
+// One explanation, no reference panes: nothing that is not hers sits beside her run (REBUILD.md, R2).
+assert.equal(explained.compare.mine, undefined);
+assert.equal(explained.reveal.answer, explained.predict.options[1]);
 const receiptBefore = await readFile(path.join(root, `receipts/${id}-1.json`), "utf8");
 await fails(() => mutate("receipt", {raw}), "already_passed");
 await fails(() => mutate("task/0", {did_pass: true}), "already_passed");
 assert.equal(await readFile(path.join(root, `receipts/${id}-1.json`), "utf8"), receiptBefore);
 await mutate("step", {step: "compare"});
-await mutate("step", {step: "record"});
-await fails(() => mutate("step", {step: "done"}), "label_required");
-await mutate("label", {label: 1});
-await fails(() => mutate("label", {label: 2}), "already_recorded");
+// No step asks her why she missed (REBUILD.md, R2): the label route is gone.
+await fails(() => mutate("label", {label: 1}), "not_found");
 // This run failed two receipts before it passed, so the ledger holds an open
 // miss — but a part never resurfaces its own misses two steps after the screen
 // that explained them, so session 1's lab stays four steps, as the demo stages
 // it. A later part of the same session is where that miss comes back.
 const afterRecord = await service.getAttempt(id, 1);
-assert.deepEqual(afterRecord.part.steps, ["predict", "attempt", "compare", "record", "done"]);
+assert.deepEqual(afterRecord.part.steps, ["predict", "attempt", "compare", "done"]);
 await mutate("step", {step: "done"});
+// Her guess is filed when the part ends, and comes back later if she missed it.
+assert((await store.readJsonl("ledger.jsonl")).some(row => row.check_id === `${id}-prediction` && row.cleared === false && row.mental_model === null));
 // Three parts, so finishing the lab alone must not advance the session.
 assert.equal((await service.getStudyOverview()).plan.current_session, 1);
 await mutate("step", {step: "predict"});
-await mutate("step", {step: "record"});
+await mutate("step", {step: "compare"});
 assert.equal((await service.getAttempt(id, 1)).record.prediction.choice, 0);
 assert.equal((await service.getStudyOverview()).plan.current_session, 1);
 assert(!(await readdir(root)).includes("board.json"), "Session 1 must not move a skill");
@@ -170,7 +181,8 @@ const interviewId = "s01-interview-a";
 const interview = await service.getAttempt(interviewId, 1);
 assert.deepEqual(interview.part.steps, ["attempt", "done"]);
 assert.equal(interview.part.questions.length, 3);
-assert(interview.part.target_text.includes("check_env.py"), "the program itself is served");
+assert(interview.part.target_text.includes("check_setup.py"), "the program itself is served");
+assert(interview.part.target_note.includes("import sys"), "with its note beside it");
 // What each question was getting at is feedback, not an answer key: it is
 // served only once her own answers are in.
 assert.equal(interview.part.looks_for, undefined, "withheld before she writes");
@@ -198,8 +210,8 @@ assert.equal(new Set(drawn.record.drawn).size, 3, "no item is drawn twice");
 assert.equal(drawn.part.predict, undefined, "a no-help check has no prediction of its own");
 // The lab left an open miss in another part, so this check carries the fifth
 // step: that is where a current-session miss legitimately comes back.
-assert.deepEqual(drawn.part.steps, ["attempt", "compare", "record", "resurface", "done"]);
-assert.deepEqual(drawn.part.step_labels, ["Answer them", "Compare", "Log the miss", "From before"]);
+assert.deepEqual(drawn.part.steps, ["attempt", "compare", "resurface", "done"]);
+assert.deepEqual(drawn.part.step_labels, ["Answer them", "Compare", "From before"]);
 assert.equal(drawn.part.ai_allowed, false);
 await fails(() => service.getBeyondPrediction(checkId, 1), "not_sealed");
 await fails(() => service.assertAssistantAllowed({part: checkId, feature: "followup"}), "check_open");
@@ -231,12 +243,6 @@ assert.equal(checkCompare.items.length, 3);
 assert(checkCompare.items.every(entry => entry.pass === false));
 assert(checkCompare.items.every(entry => entry.explain.length > 0), "a failed item still teaches its fact");
 await service.mutateAttempt(checkId, 1, ["step"], {step: "compare"});
-await service.mutateAttempt(checkId, 1, ["step"], {step: "record"});
-// "I had it right" is not a reason for a question she missed: it was being
-// filed in the mistake log against the item she had got wrong.
-await fails(() => service.mutateAttempt(checkId, 1, ["label"], {label: 0}), "invalid_body");
-await fails(() => service.mutateAttempt(checkId, 1, ["label"], {label: 4}), "invalid_body");
-await service.mutateAttempt(checkId, 1, ["label"], {label: 2});
 await service.mutateAttempt(checkId, 1, ["step"], {step: "resurface"});
 const checkResurface = await service.getAttempt(checkId, 1);
 assert(checkResurface.resurface.length >= 1, "the step is skipped, never shown empty");
@@ -272,7 +278,7 @@ assert.equal(answeredView.resurface[0].answered.pass, clearedRow.cleared);
 await fails(() => service.postResurface(poolA.id, {pool: "A", ...reply, ...from}), "already_recorded");
 // Leaving the step and coming back does not choose again: her answer has
 // changed the pools by now, and the list is still the one she was shown.
-await service.mutateAttempt(checkId, 1, ["step"], {step: "record"});
+await service.mutateAttempt(checkId, 1, ["step"], {step: "compare"});
 await service.mutateAttempt(checkId, 1, ["step"], {step: "resurface"});
 assert.deepEqual((await service.getAttempt(checkId, 1)).resurface.map(entry => entry.id), shownIds);
 await fails(() => service.postResurface(poolA.id, {cleared: true}), "invalid_body");
@@ -321,6 +327,8 @@ const twoGated = await service.getBeyondPrediction(labTwo, 1);
 assert(twoGated.variant, "every lab after session 1 declares a re-attempt variant");
 assert.equal(twoGated.variant.options.length >= 3, true);
 assert.equal(twoGated.variant.correct, undefined, "the variant's key stays on the server");
+assert.equal(twoGated.part.reveal, undefined, "her guess is explained with her run, not before it");
+assert.equal(twoGated.part.predict.because, undefined);
 await service.mutateAttempt(labTwo, 1, ["step"], {step: "attempt"});
 await service.mutateAttempt(labTwo, 1, ["task", "1", "will_pass"] && ["task", "1"], {will_pass: true});
 await service.mutateAttempt(labTwo, 1, ["task", "1"], {did_pass: true});
@@ -329,14 +337,22 @@ assert(twoRejected.record.checks.some(entry => entry.pass === false), "the place
 const twoReceipt = "$ python3 rows.py\nAna\nBo\nCy\nDi\nEve\nFei\ncount 3 83\nCy 61";
 const twoAccepted = await service.mutateAttempt(labTwo, 1, ["receipt"], {raw: twoReceipt});
 assert(twoAccepted.record.checks.every(entry => entry.pass), JSON.stringify(twoAccepted.record.checks));
+// Once her run is accepted, her own pick is set beside the answer, with what
+// that pick expects. It names her choice, not a verdict.
+const twoReveal = (await service.getBeyondPrediction(labTwo, 1)).part.reveal;
+assert.equal(twoReveal.right, true);
+assert.equal(twoReveal.picked, twoReveal.answer);
+assert(twoReveal.because.length > 20);
+// The pass wording shown is today's, not the wording saved when it was graded.
+const twoOpen = (await service.getBeyondPrediction(labTwo, 1)).part;
+assert(Object.values(twoOpen.pass_messages).every(text => typeof text === "string" && text.length > 0));
+assert.equal(twoGated.part.pass_messages, undefined, "and not before her run is accepted");
 await service.mutateAttempt(labTwo, 1, ["step"], {step: "compare"});
 await fails(() => service.mutateAttempt(labTwo, 1, ["variant"], {choice: 99}), "invalid_body");
 const variantResult = await service.mutateAttempt(labTwo, 1, ["variant"], {choice: 0});
 assert.equal(typeof variantResult.pass, "boolean");
 await fails(() => service.mutateAttempt(labTwo, 1, ["variant"], {choice: 1}), "already_sealed");
 await fails(() => service.getAttempt("s02-teardown-a", 1), "not_open_yet");
-await service.mutateAttempt(labTwo, 1, ["step"], {step: "record"});
-await service.mutateAttempt(labTwo, 1, ["label"], {label: 0});
 if ((await service.getAttempt(labTwo, 1)).part.steps.includes("resurface")) await service.mutateAttempt(labTwo, 1, ["step"], {step: "resurface"});
 await service.mutateAttempt(labTwo, 1, ["step"], {step: "done"});
 
@@ -370,6 +386,7 @@ const threeGated = await service.getBeyondPrediction(labThree, 1);
 assert.equal(threeGated.part.activate_command.endsWith(".venv/bin/activate'"), true, "a lab that needs numpy prints this checkout's own activate command");
 assert.equal(three.part.activate_command, undefined, "and not before the seal");
 await service.mutateAttempt(labThree, 1, ["step"], {step: "attempt"});
+await service.mutateAttempt(labThree, 1, ["task", "0"], {will_pass: true});
 await service.mutateAttempt(labThree, 1, ["task", "0"], {did_pass: true});
 const eight = ["NameError", "TypeError", "UnboundLocalError", "AttributeError", "KeyError", "IndexError", "ZeroDivisionError", "RecursionError"];
 const threeReceipt = eight.map((name, index) => `$ python3 0${index + 1}_x.py\n${name}: measured`).join("\n")
@@ -385,6 +402,7 @@ const swapRun = await service.getAttempt(labThree, 2);
 assert.equal(swapRun.record.prediction, undefined);
 await service.mutateAttempt(labThree, 2, ["seal"], {choice: 0});
 await service.mutateAttempt(labThree, 2, ["step"], {step: "attempt"});
+await service.mutateAttempt(labThree, 2, ["task", "0"], {will_pass: true});
 await service.mutateAttempt(labThree, 2, ["task", "0"], {did_pass: true});
 const swapResult = await service.mutateAttempt(labThree, 2, ["receipt"], {raw: swappedSilent});
 assert.equal(swapResult.record.checks.find(entry => entry.id === "two-that-do-not").pass, false);
@@ -392,7 +410,8 @@ const repeat = await service.getAttempt(id, 2);
 assert.equal(repeat.record.prediction, undefined);
 await fails(() => service.getBeyondPrediction(id, 2), "not_sealed");
 assert((await store.readJsonl("timing.jsonl")).length >= 5);
-assert((await store.readJsonl("ledger.jsonl")).some(row => typeof row.mental_model === "string"));
+// Rows carry no label since the rebuild; a missed guess is still a row.
+assert((await store.readJsonl("ledger.jsonl")).some(row => row.check_id.endsWith("-prediction")));
 const torn = '{"check_id":"unfinished';
 await writeFile(path.join(root, "torn.jsonl"), '{"check_id":"complete"}\n' + torn);
 assert.deepEqual(await store.readJsonl("torn.jsonl"), [{check_id: "complete"}]);
@@ -476,26 +495,63 @@ response = await route.GET(new Request(`http://localhost:3000/api/part/${id}/att
 assert.equal(response.status, 409);
 assert.equal((await response.json()).error, "not_sealed");
 // Over HTTP: the part is required, and naming it before the seal is refused.
-assert.equal((await llm.POST(request("", {feature: "followup"}))).status, 200);
-assert.equal((await llm.POST(request("", {part: id, feature: "followup"}))).status, 409);
+// The assistant answers at its own address; every route dispatches on the
+// path it was asked for, so the attempt's URL is not a door into it.
+const askRequest = body => new Request("http://localhost:3000/api/llm", {
+  method: "POST", headers: {"content-type": "application/json", host: "127.0.0.1:3000", origin: "http://127.0.0.1:3000"}, body: JSON.stringify(body),
+});
+assert.equal((await llm.POST(askRequest({feature: "followup", question: "what is a prompt?"}))).status, 200);
+assert.equal((await llm.POST(askRequest({part: id, feature: "followup", question: "what is a prompt?"}))).status, 409);
+// A path with no entry in the table is a 404, whichever address served it.
+assert.equal((await route.POST(new Request("http://localhost:3000/api/nothing", {
+  method: "POST", headers: {"content-type": "application/json", host: "127.0.0.1:3000", origin: "http://127.0.0.1:3000"}, body: "{}",
+}))).status, 404);
 await post("seal", {choice: 100}, 422);
 await post("seal", {choice: 1});
 await post("seal", {choice: 0}, 409);
 await post("not-a-route", {}, 404);
+// The web trial's lab escape is not a door in her own copy: here the lab is
+// the session, and it is finished by a receipt that graded (PUBLISH.md §6).
+await post("skip-lab", {}, 404);
 await post("step", {step: "attempt"});
-assert.equal((await llm.POST(request("", {part: id, feature: "followup"}))).status, 200);
+assert.equal((await llm.POST(askRequest({part: id, feature: "followup", question: "what is a prompt?"}))).status, 200);
 await post("task/0", {did_pass: true});
 const rejected = await post("receipt", {raw: swapped});
 assert.equal(rejected.record.checks[0].pass, false);
 assert.equal(rejected.record.step, "attempt");
 await post("step", {step: "compare"}, 409);
-const accepted = await post("receipt", {raw});
+// The teacher (REBUILD.md R3/R4), on a fake provider so the suite never spends:
+// refused before her run is accepted, then explains it once.
+const annotateRequest = () => llm.POST(askRequest({part: id, attempt: 1, feature: "annotate"}));
+const teacherOff = process.env.OPENROUTER_API_KEY;
+delete process.env.OPENROUTER_API_KEY;
+process.env.FORTHREE_LLM_FAKE = "1";
+assert.equal((await annotateRequest()).status, 409, "no explanation before her run is accepted");
+const accepted = await post("receipt", {raw: native});
 assert.equal(accepted.record.checks[0].pass, true);
+const explainedRun = await (await annotateRequest()).json();
+assert(explainedRun.text, "the teacher explains her run once it is accepted");
+const usageRows = async () => (await readFile(path.join(process.env.FORTHREE_STUDY_ROOT, "llm_usage.jsonl"), "utf8")).trim().split("\n").length;
+assert.equal(await usageRows(), 1, "one call, one cost row");
+assert.equal((await (await annotateRequest()).json()).text, explainedRun.text, "re-reading shows the same note");
+assert.equal(await usageRows(), 1, "and costs nothing again");
+// An attempt graded against checks the part no longer has gets no note: its
+// paste answers an earlier version of the tasks.
+const graded = path.join(process.env.FORTHREE_STUDY_ROOT, "sessions", `${id}-1.json`);
+const kept = await readFile(graded, "utf8");
+await writeFile(graded, JSON.stringify({...JSON.parse(kept), checks: [{id: "architectures", pass: true, message: "old"}]}));
+await rm(path.join(process.env.FORTHREE_STUDY_ROOT, "llm_notes"), {recursive: true, force: true});
+assert.equal((await (await annotateRequest()).json()).reason, "older_version");
+await writeFile(graded, kept);
+// Over the cap, and with no key, the page keeps its own answer and nothing breaks.
+await writeFile(path.join(process.env.FORTHREE_STUDY_ROOT, "llm_usage.jsonl"), JSON.stringify({ts: new Date().toISOString(), feature: "annotate", cost_usd: 999}) + "\n", {flag: "a"});
+assert.equal((await (await llm.POST(askRequest({part: id, attempt: 1, feature: "followup", question: "what is PATH?"}))).json()).reason, "over_cap");
+delete process.env.FORTHREE_LLM_FAKE;
+assert.equal((await (await llm.POST(askRequest({part: id, attempt: 1, feature: "followup", question: "what is PATH?"}))).json()).reason, "not_configured");
+if (teacherOff !== undefined) process.env.OPENROUTER_API_KEY = teacherOff;
 await post("step", {step: "compare"});
-await post("step", {step: "record"});
-await post("label", {label: 0});
 await post("step", {step: "done"});
-await post("receipt", {raw}, 409);
+await post("receipt", {raw: native}, 409);
 assert(!(await readdir(process.env.FORTHREE_STUDY_ROOT)).includes("board.json"));
 
 // §17.6's hard lock, from the other side: the only writer consults the gate and
@@ -623,7 +679,8 @@ await writeFile(path.join(orderRoot, "plan.json"), JSON.stringify({
 }));
 const before = await service.getStudyOverview(2);
 assert.equal(before.viewing.done, true);
-assert.deepEqual(before.sessions.map(entry => entry.done), [false, true, false]);
+// Only session 2 is done, however many sessions are written.
+assert.deepEqual(before.sessions.filter(entry => entry.done).map(entry => entry.session), [2]);
 await service.getAttempt("s01-interview-a", 1);
 await service.mutateAttempt("s01-interview-a", 1, ["answers"], {q1: "a".repeat(20), q2: "b".repeat(20), q3: "c".repeat(20)});
 await service.mutateAttempt("s01-interview-a", 1, ["step"], {step: "done"});
@@ -659,14 +716,13 @@ assert.equal(midCheck.parts.find(entry => entry.id === "s02-lab-a").started, fal
 const secondTry = (await service.getAttempt("s02-withdraw-a", 2)).record.drawn;
 const thirdTry = (await service.getAttempt("s02-withdraw-a", 3)).record.drawn;
 assert.equal(new Set([...firstDraw, ...secondDraw, ...secondTry, ...thirdTry]).size, 12, "no two tries of any check share a question");
-// A bank item's explanation states what its own session's lab asks her to
-// guess. Session 2's check comes before session 2's lab, so the explanation
-// of its own-session item waits for that guess; session 1's are open.
+// Session 2's check opens session 2, so everything it asks was taught in
+// session 1, whose lab's guess is locked: every explanation is open
+// (REBUILD.md R7). An explanation waits only for the lab of the session that
+// teaches it — the away case below holds one back.
 const early2 = await service.getBeyondPrediction("s02-withdraw-a", 1);
-assert(early2.items.some(entry => entry.explain === "" && entry.explain_after === 2), "withheld while its lab's guess is open");
-assert(early2.items.filter(entry => !entry.explain_after).every(entry => entry.explain.length > 0));
-for (const step of ["compare", "record"]) await service.mutateAttempt("s02-withdraw-a", 1, ["step"], {step});
-await service.mutateAttempt("s02-withdraw-a", 1, ["label"], {label: 2});
+assert(early2.items.every(entry => entry.explain.length > 0 && entry.explain_after === undefined), "nothing session 2's check asks waits on session 2's lab");
+await service.mutateAttempt("s02-withdraw-a", 1, ["step"], {step: "compare"});
 if ((await service.getAttempt("s02-withdraw-a", 1)).part.steps.includes("resurface")) await service.mutateAttempt("s02-withdraw-a", 1, ["step"], {step: "resurface"});
 await service.mutateAttempt("s02-withdraw-a", 1, ["step"], {step: "done"});
 await service.getAttempt("s02-lab-a", 1);
@@ -683,8 +739,10 @@ await seedDone(awayRoot, ["s01-lab-a", "s01-interview-a"], {}, ["s01-lab-a"]);
 // Session 1's check, all three missed and logged, so three misses are open.
 await service.getAttempt("s01-withdraw-a", 1);
 for (const k of [0, 1, 2]) await service.mutateAttempt("s01-withdraw-a", 1, ["item", String(k), "seal"], {text: "deliberately wrong"});
-for (const step of ["compare", "record"]) await service.mutateAttempt("s01-withdraw-a", 1, ["step"], {step});
-await service.mutateAttempt("s01-withdraw-a", 1, ["label"], {label: 2});
+// Session 1's lab here never had its guess locked, so what session 1 teaches
+// is not explained yet, on the check's own results page either (REBUILD.md R7).
+assert((await service.getBeyondPrediction("s01-withdraw-a", 1)).items.every(entry => entry.explain === "" && entry.explain_after === 1));
+await service.mutateAttempt("s01-withdraw-a", 1, ["step"], {step: "compare"});
 await service.mutateAttempt("s01-withdraw-a", 1, ["step"], {step: "done"});
 // Session 2's check is written as finished, with no `From before` of its
 // own, so that the lab's is the first to show these; and Today is put one
@@ -712,8 +770,6 @@ await service.mutateAttempt(labTwo, 1, ["task", "1"], {did_pass: true});
 await service.mutateAttempt(labTwo, 1, ["receipt"], {raw: twoReceipt});
 await service.mutateAttempt(labTwo, 1, ["step"], {step: "compare"});
 await service.mutateAttempt(labTwo, 1, ["variant"], {choice: 0});
-await service.mutateAttempt(labTwo, 1, ["step"], {step: "record"});
-await service.mutateAttempt(labTwo, 1, ["label"], {label: 0});
 await service.mutateAttempt(labTwo, 1, ["step"], {step: "resurface"});
 const awayBefore = await service.getAttempt(labTwo, 1);
 assert.equal(awayBefore.assistant.reason, "resurface");
@@ -977,5 +1033,84 @@ assert.deepEqual((await resurfaceLib.selectResurface(3)).map(entry => entry.caus
 await writeFile(path.join(causeRoot, "ledger.jsonl"), filedRow("counted-and-crossed") + "\n" + filedRow("s02-lab-a-prediction") + "\n");
 assert.deepEqual((await resurfaceLib.selectResurface(3)).map(entry => entry.cause), ["missed"], "and two rows for one lab are one question");
 
+// A check with one thing missing names that thing (walkthrough 2): session 2's
+// total reset inside the loop prints the sum over 20 but never the crossing row.
+{
+  const two = JSON.parse(await readFile("curriculum/a1.json", "utf8")).sessions[1].parts.find(part => part.id === "s02-lab-a");
+  const resetRun = grading.gradeAll(two, {stdout: "$ python3 rows.py\nAna\nBo\nCy\nDi\nEve\nFei\n3 83"}).find(entry => entry.id === "counted-and-crossed");
+  assert.equal(resetRun.message, two.verdicts["counted-and-crossed"].missing["61"], "it says the crossing total is missing, not the sum she printed");
+}
+// ---- every lab's receipts: what a real terminal shows, right and wrong ----
+// curriculum/receipts/<part>.json holds real runs of versions of her file:
+// right ones written several ways, and the wrong ones a learner holding each
+// wrong belief would paste. Each check must pass or refuse as the file says,
+// with the verdict it names (L-AUTH-07, L-AUTH-11). Session 4's check was
+// tested only on the author's own run, and three reviewers found it refusing
+// right work and saying false things about wrong work.
+const allParts = JSON.parse(await readFile("curriculum/a1.json", "utf8")).sessions.flatMap(session => session.parts);
+const verdictText = (part, check, key) => key.split(".").reduce((value, step) => value?.[step], part.verdicts[check]);
+for (const file of (await readdir("curriculum/receipts")).filter(name => name.endsWith(".json"))) {
+  const fixture = JSON.parse(await readFile(path.join("curriculum/receipts", file), "utf8"));
+  const lab = allParts.find(part => part.id === fixture.part);
+  assert(lab, `${file}: no part ${fixture.part}`);
+  for (const receipt of fixture.receipts) {
+    const graded = Object.fromEntries(grading.gradeAll(lab, {stdout: receipt.raw}).map(entry => [entry.id, entry]));
+    assert.deepEqual(Object.keys(receipt.expect).sort(), Object.keys(graded).sort(), `${file} "${receipt.name}" names every check`);
+    for (const [check, pass] of Object.entries(receipt.expect)) {
+      assert.equal(graded[check].pass, pass, `${file} "${receipt.name}": ${check} should ${pass ? "pass" : "refuse"}`);
+    }
+    for (const [check, key] of Object.entries(receipt.says ?? {})) {
+      assert.equal(graded[check].message, verdictText(lab, check, key), `${file} "${receipt.name}": ${check} says its ${key} line`);
+    }
+  }
+  // The placeholder is a shape, never a pass.
+  assert(grading.gradeAll(lab, {stdout: lab.receipt_hint ?? ""}).some(entry => !entry.pass), `${file}: the placeholder passes`);
+}
+
+// ---- her reading log: ticks and a note per session, changeable any day ----
+{
+  const http = require(path.join(compiled, "http.js"));
+  const logRoot = path.join(temporary, "log");
+  process.env.FORTHREE_STUDY_ROOT = logRoot;
+  const s2 = JSON.parse(await readFile("curriculum/a1.json", "utf8")).sessions[1];
+  const lab = s2.parts.find(part => part.kind === "lab").reading[0].url;
+  const teardown = s2.parts.find(part => part.kind === "teardown").reading[0].url;
+  const notes = (method, body) => http.dispatch(method, "/api/reading-log/2", body);
+  assert.deepEqual(await notes("GET"), {session: 2, read: {}, note: "", note_at: null}, "an empty log reads as empty");
+  assert((await notes("POST", {url: lab, read: true})).read[lab], "a tick is kept");
+  const first = (await notes("GET")).read[lab];
+  await notes("POST", {url: lab, read: true});
+  assert.equal((await notes("GET")).read[lab], first, "ticking again keeps the day she first read it");
+  await notes("POST", {note: "Read lecture 2."});
+  await notes("POST", {note: "Read lecture 2, then redid the loop."});
+  assert.equal((await notes("GET")).note, "Read lecture 2, then redid the loop.", "a note is replaced, not appended");
+  await notes("POST", {url: lab, read: false});
+  assert.deepEqual((await notes("GET")).read, {}, "a tick can be taken back");
+  await fails(() => notes("POST", {url: "https://example.com/", read: true}), "not_found");
+  await fails(() => http.dispatch("POST", "/api/reading-log/99", {note: "x"}), "not_found");
+  await fails(() => notes("POST", {note: "x", url: lab, read: true}), "invalid_body");
+  await fails(() => notes("POST", {note: "x".repeat(4001)}), "invalid_body");
+  // The log shows the lab's readings, and a teardown's only once she has
+  // opened the teardown or ticked one: never a reading before its part does.
+  let log = (await http.dispatch("GET", "/api/reading-log")).sessions;
+  assert.deepEqual(log.map(entry => entry.session), [1, 2], "Today's session and any she has written in");
+  assert(!log[1].readings.some(row => row.url === teardown), "a teardown's readings wait for the teardown");
+  await writeFile(path.join(logRoot, "plan.json"), JSON.stringify({version: 1, current_session: 2,
+    current_attempt: {[s2.parts.find(part => part.kind === "teardown").id]: 1}, next_checkpoint: 9, pull_checkpoint_forward: false}));
+  log = (await http.dispatch("GET", "/api/reading-log")).sessions;
+  assert(log[1].readings.some(row => row.url === teardown && !row.read_at), "an opened teardown's readings are on the log");
+  await writeFile(path.join(logRoot, "plan.json"), JSON.stringify({version: 1, current_session: 2, current_attempt: {}, next_checkpoint: 9, pull_checkpoint_forward: false}));
+  await notes("POST", {url: teardown, read: true});
+  log = (await http.dispatch("GET", "/api/reading-log")).sessions;
+  assert(log[1].readings.find(row => row.url === teardown)?.read_at, "a ticked teardown reading is on the log");
+  assert.equal(log[1].note, "Read lecture 2, then redid the loop.");
+  // Nothing in the course reads it: no attempt, ledger or board file appears.
+  assert.deepEqual((await readdir(logRoot)).filter(name => !name.startsWith(".")).sort(), ["plan.json", "reading_log.json"], "the log writes one file and nothing else");
+  // A damaged entry is named, not a crash.
+  await writeFile(path.join(logRoot, "reading_log.json"), JSON.stringify({version: 1, sessions: {"2": {note: "x"}}}));
+  await fails(() => notes("POST", {url: lab, read: true}), "invalid_record");
+  process.env.FORTHREE_STUDY_ROOT = root;
+}
+
 await rm(temporary, {recursive: true, force: true});
-console.log("Sessions 1-3, all four part kinds: HTTP routes, the per-kind predict gate, item draws and recall rows, receipt grading, variants, resurface pools, the board's hard lock, one trip-wire, reruns, immutable passes, navigation, looking ahead and working in order, the checks' draws, a tolerated board, corruption and cross-process locking passed.");
+console.log("Sessions 1-4, all four part kinds, her reading log: HTTP routes, the per-kind predict gate, item draws and recall rows, receipt grading, variants, every lab's receipts fixture, resurface pools, the board's hard lock, one trip-wire, reruns, immutable passes, navigation, looking ahead and working in order, the checks' draws, a tolerated board, corruption and cross-process locking passed.");

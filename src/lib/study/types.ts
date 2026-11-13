@@ -14,6 +14,8 @@ export interface Task {
   passes_when: string;
   minutes: number;
   guess?: boolean;
+  /** What teaches it: "reading:N" (this part's Nth reading), "card", "page", or "session:N" (REBUILD.md, R1). */
+  taught_by: string[];
 }
 
 export interface ReferenceRow { label: string; code: string }
@@ -26,6 +28,8 @@ export interface Predict {
   magnitude?: boolean;
   correct: number;
   why_prompt: string;
+  /** One per option: what that option expects, and what this lab's run shows. */
+  because?: string[];
 }
 
 export type Normalise = "trim" | "collapse" | "lower" | "sorted_lines" | "sequence";
@@ -55,7 +59,7 @@ export interface Concept { term: string; anchor: string; explain: string }
 // when it rejects her paste, and §17.3 requires a rejected receipt to say what
 // was wrong. Authored per part, keyed by check id; `missing` is keyed by the
 // one binding a `paired` check could not find. (DECISIONS.md 2026-11-09.)
-export type Verdicts = Record<string, {pass: string; fail: string; partial?: string; missing?: Record<string, string>}>;
+export type Verdicts = Record<string, {pass: string; fail: string; partial?: string; missing?: Record<string, string>; wrong?: Record<string, string>}>;
 
 export interface Provenance {
   level: "from" | "shaped" | "authored";
@@ -66,6 +70,8 @@ export interface Provenance {
 export interface Part {
   id: string;
   kind: Kind;
+  /** What she can do at the end of this part; derived, shown first (REBUILD.md, R1). */
+  goal: string;
   minutes: Partial<Record<"learn" | Step, number>>;
   ai_allowed: boolean;
   why?: string;
@@ -106,6 +112,8 @@ export interface Part {
    *  skill (§4.3). */
   looks_for?: string[];
   target?: {kind: "diff" | "program"; path: string};
+  /** Explains the program's code, shown with the program (REBUILD.md, R2). */
+  target_note?: string;
   // teardown
   anatomy_example?: string;
   product?: string;
@@ -121,6 +129,8 @@ export interface CurriculumSession {
   subtitle?: string;
   double?: boolean;
   covers: number[];
+  /** Python keywords taught by the end of this session (REBUILD.md, R1). */
+  constructs: string[];
   parts: Part[];
 }
 
@@ -147,10 +157,16 @@ export interface PublicPart {
   setup?: string;
   before_you_start?: string[];
   reading?: Reading[];
-  tasks?: {name: string; brief: string; guess: boolean; passes_when?: string}[];
+  goal?: string;
+  tasks?: {name: string; brief: string; guess: boolean; passes_when?: string; uses: string[]}[];
+  target_note?: string;
   reference_card?: ReferenceRow[];
   rules?: string[];
-  predict?: Omit<Predict, "correct">;
+  predict?: Omit<Predict, "correct" | "because">;
+  /** Her guess beside the answer, once her run is accepted. */
+  reveal?: {picked: string; answer: string; right: boolean; because: string};
+  /** Each check's pass wording as the content says it today. */
+  pass_messages?: Record<string, string>;
   acceptance_checks?: never;
   receipt_prompt?: string;
   receipt_hint?: string;
@@ -174,6 +190,8 @@ export interface PublicPart {
   environment_ready?: boolean;
   setup_command?: string;
   activate_command?: string;
+  venv_command?: string;
+  packages_command?: string;
 }
 
 export interface CheckResult { id: string; pass: boolean; message: string; value?: number | null }
@@ -200,6 +218,10 @@ export interface AttemptRecord {
   checks?: CheckResult[];
   variant_result?: {choice: number; pass: boolean; at: string};
   passed_at?: string;
+  /** The web trial only (PUBLISH.md §6): the lab was moved past without being
+   *  run, because a web page has no terminal and no course Python. Locally
+   *  this is never set, and a lab is finished only by a receipt that graded. */
+  lab_skipped_at?: string;
   mental_model?: string;
   /** The ids `From before` showed in this attempt. Written when the step is
    *  first served, never recomputed: a sibling part reads it to avoid asking

@@ -1,16 +1,16 @@
 {
-  "measured_with": "3.12.16 arm64 numpy 2.2.5",
+  "measured_with": "3.12.16 arm64 numpy 2.5.4",
   "programs": {
-    "content/interviews/s01-check-env.py": {
-      "sha256": "c105c8abd75329276f34674b85660ac3944403d8f0c0caec3dccd29007111ff2",
+    "content/interviews/s01-check-setup.py": {
+      "sha256": "75415ed713ae5070bd6a372009c7484ba9ca839f767596f89f8cf8cb0e3612ec",
       "exit": 0,
-      "stdout": "interpreter: <repo>/.venv/bin/python3\nversion: 3.12.16\nmachine: arm64\npython3 on the path: /usr/local/bin/python3\nSuccess: environment checked.\n",
+      "stdout": "Python: 3.12.16 (main, Oct 26 2026, 13:59:40) [Clang 23.1.3 ]\nRunning from: <repo>/.venv/bin/python3\nSuccess: your setup is ready.\n",
       "stderr_last": ""
     },
     "content/interviews/s02-weekly-total.py": {
-      "sha256": "9dbc3a866e7a902da5e558b0b92ddac119ab387154a3379c27e33e123290fc7c",
+      "sha256": "d20b3e15963a562caf03653b5ca74dadca0b1a823f104c1077c4c083c139ab75",
       "exit": 0,
-      "stdout": "{'sales': 25, 'eng': 27}\nSuccess: weekly totals written.\n",
+      "stdout": "Success: the sales total is 25\n",
       "stderr_last": ""
     },
     "content/interviews/s03-price.py": {
@@ -80,9 +80,15 @@
       "stderr_last": ""
     },
     "public/labs/s03-lab-a/10_overflow.py": {
-      "sha256": "0b178154de64fddc56e48455c2c50d3b7f90b6a5f08c3a5c52678e541f377475",
+      "sha256": "bfb148cc8797755e8d549a4ac136edbc7f82981472e502c22f4edff85458d26e",
       "exit": 0,
       "stdout": "before: 2147483647\nafter one more: -2147483648\n",
+      "stderr_last": ""
+    },
+    "public/labs/s04-lab-a/orders.py": {
+      "sha256": "fd0cb855c6d6d6aa505d2f7e56e871b1a8449535f1b966707096159b7b613d12",
+      "exit": 0,
+      "stdout": "",
       "stderr_last": ""
     },
     "curriculum/reference/s02-lab-a/inside.py": {
@@ -113,6 +119,36 @@
       "sha256": "ba96bfce40e69d23d4a85d8ace2d3f8d91e237e4ac0e6ccf80abc0e23448eb55",
       "exit": 0,
       "stdout": "1 ['Ana', 'new']\n",
+      "stderr_last": ""
+    },
+    "curriculum/reference/s04-interview-a/fixed.py": {
+      "sha256": "a0d86adc94efb3897e33182599dce569aca23754455b7002fe06a50da2d5bfdd",
+      "exit": 0,
+      "stdout": "three largest: [40, 31, 27]\nfirst order of the week: 18\nlast order of the week: 19\n",
+      "stderr_last": ""
+    },
+    "curriculum/reference/s04-lab-a/add.py": {
+      "sha256": "d09f80ed682747c4afbc3e794725ca52b9bfbc3e50905c3af6675c5ba5cea080",
+      "exit": 0,
+      "stdout": "Ana after order 101: 18\nAna after order 103: 49\nAna after order 106: 74\n{'Ana': 74, 'Bo': 52, 'Cy': 35, 'Di': 19}\nthe four add up to: 180\nthe eight orders add up to: 180\n",
+      "stderr_last": ""
+    },
+    "curriculum/reference/s04-lab-a/alias.py": {
+      "sha256": "81cb1650fa143b51cede02745f21bd7899b9079bc43a69e1e80a93e08df871ff",
+      "exit": 0,
+      "stdout": "after\n{'Ana': 74, 'Bo': 52, 'Cy': 35, 'Di': 49, 'Eve': 14}\nbefore\n{'Ana': 74, 'Bo': 52, 'Cy': 35, 'Di': 49, 'Eve': 14}\nsame dictionary? True\n",
+      "stderr_last": ""
+    },
+    "curriculum/reference/s04-lab-a/replace.py": {
+      "sha256": "399645a209a83b70b2dbb40be166e970ef678abd10ea564a5e0810f47736697d",
+      "exit": 0,
+      "stdout": "Ana after order 101: 18\nAna after order 103: 31\nAna after order 106: 25\n{'Ana': 25, 'Bo': 40, 'Cy': 8, 'Di': 19}\nthe four add up to: 92\nthe eight orders add up to: 180\n",
+      "stderr_last": ""
+    },
+    "curriculum/reference/s04-lab-a/tasks.py": {
+      "sha256": "22a0e4a91402e3ab8d2b683155ac5b599111d798e48b3e250dcd1761c8d5a224",
+      "exit": 0,
+      "stdout": "Ana\nBo\nCy\nDi\n{'Ana': 74, 'Bo': 52, 'Cy': 35, 'Di': 19}\nafter\n{'Ana': 74, 'Bo': 52, 'Cy': 35, 'Di': 49, 'Eve': 14}\nbefore\n{'Ana': 74, 'Bo': 52, 'Cy': 35, 'Di': 19}\n",
       "stderr_last": ""
     }
   }

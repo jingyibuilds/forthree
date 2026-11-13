@@ -9,6 +9,8 @@ import { AttemptRecord, Block, CurriculumSession, Part, PublicPart, Step, StudyE
 
 const AUTHORED_BLOCKS = ["a1.json"];
 const root = () => process.cwd();
+// Her copy, or the public web trial (PUBLISH.md §6).
+const web = () => process.env.FORTHREE_MODE === "web";
 
 export async function loadBlocks(): Promise<Block[]> {
   const blocks: Block[] = [];
@@ -93,6 +95,10 @@ async function targetText(part: Part) {
  *  needs the installed Python must not print an activate line for a folder
  *  that does not exist — that was the first command on session 3's screen. */
 export async function environmentReady(projectRoot = root()) {
+  // The public web trial is not her machine and has no course environment on
+  // it (PUBLISH.md §6). Answering from the server's own filesystem would be a
+  // claim about a computer the visitor has never seen.
+  if (web()) return false;
   try { await fs.access(path.join(projectRoot, ".venv/bin/activate")); return true; }
   catch { return false; }
 }
@@ -110,6 +116,10 @@ export interface EnvironmentRow {
  * a session, because session 1's subject *is* a broken environment.
  */
 export async function environmentReport(projectRoot = root()): Promise<{ok: boolean; rows: EnvironmentRow[]} | null> {
+  // On the web trial there is a python3 on the server and it would answer
+  // every row — about the server. "Your machine" has to mean the visitor's
+  // machine or nothing, so it means nothing here and the card says so.
+  if (web()) return null;
   try {
     const {execFile} = await import("node:child_process");
     const {promisify} = await import("node:util");
@@ -156,9 +166,24 @@ export async function environmentReport(projectRoot = root()): Promise<{ok: bool
 // Single quotes also protect spaces, $, backticks and quotes in checkout paths.
 export function environmentCommands(projectRoot = root()) {
   const quote = (value: string) => "'" + value.replace(/'/g, "'\"'\"'") + "'";
+  // Locally these are absolute, so they work from any folder she happens to
+  // be in. On the web trial the server's own path (/var/task/...) would mean
+  // nothing to a visitor, so they are written for someone standing in their
+  // clone.
+  if (web()) return {
+    setup_command: "bash scripts/setup-python.sh",
+    activate_command: "source .venv/bin/activate",
+    venv_command: ".venv/bin/python3 -m venv .venv",
+    packages_command: "python3 -m pip install -r requirements-course.txt",
+  };
   return {
     setup_command: "bash " + quote(path.join(projectRoot, "scripts/setup-python.sh")),
     activate_command: "source " + quote(path.join(projectRoot, ".venv/bin/activate")),
+    // Her lab environment lives in her own folder (owner, 2026-11-11): made
+    // from the course's Python, given the course's packages. Run from an
+    // empty .venv only — making one over an old one keeps the old python3.
+    venv_command: quote(path.join(projectRoot, ".venv/bin/python3")) + " -m venv .venv",
+    packages_command: "python3 -m pip install -r " + quote(path.join(projectRoot, "requirements-course.txt")),
   };
 }
 
@@ -166,6 +191,18 @@ function teardownFields(part: Part): ("parts" | "flow" | "tricky")[] {
   // All ten `simple` entries omit `flow` and `tricky` entirely (CURRICULUM §10
   // rule 1), so a three-field screen there would render two empty boxes.
   return part.size === "simple" ? ["parts"] : ["parts", "flow", "tricky"];
+}
+
+/** "reading:2" → that reading's title, in her words; the rest by name. */
+function usesOf(part: Part, refs: string[] = []): string[] {
+  return refs.map(ref => {
+    const [kind, value] = ref.split(":");
+    if (kind === "reading") return part.reading?.[Number(value) - 1]?.title ?? ref;
+    if (kind === "card") return "the reference card on this page";
+    if (kind === "page") return "this page";
+    if (kind === "session") return `session ${value}`;
+    return ref;
+  });
 }
 
 /** Everything the client may hold before this attempt's gate opens (§17.1). */
@@ -185,7 +222,8 @@ export async function publicPart(located: Located, record: AttemptRecord | null,
     setup: part.setup,
     before_you_start: part.before_you_start,
     reading: part.reading,
-    tasks: part.tasks?.map(task => ({name: task.name, brief: task.brief, guess: task.guess === true})),
+    goal: part.goal,
+    tasks: part.tasks?.map(task => ({name: task.name, brief: task.brief, guess: task.guess === true, uses: usesOf(part, task.taught_by)})),
     rules: part.rules,
     reference_card: [],
     receipt_prompt: part.receipt_prompt,
@@ -198,12 +236,14 @@ export async function publicPart(located: Located, record: AttemptRecord | null,
     needs_environment: part.needs_environment,
   };
   if (part.predict) {
-    const {correct, ...rest} = part.predict;
+    const {correct, because, ...rest} = part.predict;
     void correct;
+    void because;
     safe.predict = rest;
   }
   if (part.kind === "interview") {
     safe.brief = part.brief;
+    safe.target_note = part.target_note;
     safe.questions = part.questions;
     // Only once her own three answers are in — each long enough to be an
     // answer — and only once the program is open to her: these lines describe
@@ -232,6 +272,31 @@ export async function publicPart(located: Located, record: AttemptRecord | null,
   return safe;
 }
 
+function revealOf(part: Part, record: AttemptRecord): PublicPart["reveal"] {
+  const predict = part.predict;
+  const chose = record.prediction;
+  if (!predict || !chose?.sealed_at) return undefined;
+  if (predict.type === "choice") {
+    if (chose.choice === null || !predict.options?.[chose.choice]) return undefined;
+    return {
+      picked: predict.options[chose.choice], answer: predict.options[predict.correct],
+      right: chose.choice === predict.correct, because: predict.because?.[chose.choice] ?? "",
+    };
+  }
+  const unit = predict.unit ? " " + predict.unit : "";
+  // `value` is validated as a finite number when it is sealed, and never
+  // again when it is read: `readJson` checks the version and nothing else, in
+  // both drivers. On the web trial the record is a file the visitor loaded,
+  // and this string is rendered as markup, so the number is made a number
+  // here rather than trusted to still be one. No session authors a quantity
+  // predict yet; this is the line that would have been the sink.
+  const picked = Number(chose.value);
+  return {
+    picked: (Number.isFinite(picked) ? String(picked) : "—") + unit, answer: String(predict.correct) + unit,
+    right: record.predict_result?.correct === true, because: predict.because?.[0] ?? "",
+  };
+}
+
 /** The gated half: explanation, measured truth, checks, card, labels, gloss. */
 export async function gatedPart(located: Located, record: AttemptRecord, hasResurface = false): Promise<PublicPart> {
   const {part} = located;
@@ -251,8 +316,20 @@ export async function gatedPart(located: Located, record: AttemptRecord, hasResu
     // passing receipt — and §9 already forbids that in `receipt_hint`. The
     // runner only draws `compare` at the `compare` step, which a lab cannot
     // reach before `passed_at`, so this costs nothing and closes the leak.
-    compare: part.kind === "lab" && !record.passed_at ? undefined : part.compare,
-    labels: part.labels,
+    // The web trial's escape opens it too (PUBLISH.md §6): a visitor who has
+    // said they cannot run the lab is not going to pass its checks, and the
+    // explanation is most of what the trial exists to show. Their guess is
+    // sealed before the escape is offered, so nothing is given away early.
+    // What stays shut is everything that speaks about a result: `reveal` and
+    // the pass wordings below need a run that happened.
+    compare: part.kind === "lab" && !record.passed_at && !record.lab_skipped_at ? undefined : part.compare,
+    // Her guess is explained where her run is: the same gate as `compare`.
+    // It never says "wrong"; it says what her pick expects and what the run
+    // shows (DECISIONS 2026-11-11).
+    reveal: part.kind === "lab" && record.passed_at ? revealOf(part, record) : undefined,
+    pass_messages: part.kind === "lab" && record.passed_at
+      ? Object.fromEntries(Object.entries(part.verdicts ?? {}).map(([id, words]) => [id, words.pass]))
+      : undefined,
     // Every anchor states its own part's prediction answer, which is what
     // `sealed_at` protects — and `sealed_at` is this function's own gate. A
     // later gate was tried and withdrawn: it left the `attempt` step with no

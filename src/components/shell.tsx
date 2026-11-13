@@ -1,19 +1,23 @@
 import Link from "next/link";
 import { ReactNode } from "react";
+import { WEB } from "@/lib/mode";
 
-// §4.2's layout contract: window chrome, a 168px rail of three screens with
+// §4.2's layout contract: window chrome, a 168px rail of four screens (the fourth, her reading log, added 2026-11-13) with
 // the active one marked by a 2px left border, one content column. The rail's
 // foot shows the block and the session ordinal — never a date or a week.
 const RAIL = [
-  {href: "/", label: "Today"},
+  // On the public web trial "/" is the page that says what this is, not the
+  // session Today is on (PUBLISH.md §6).
+  {href: "/", label: WEB ? "What this is" : "Today"},
   {href: "/curriculum", label: "Curriculum"},
   {href: "/board", label: "The board"},
+  {href: "/reading-log", label: "Reading log"},
 ] as const;
 
 export default function Shell({
   active, block, blockName, session, total = 21, children, bubble, busy = false,
 }: {
-  active: "/" | "/curriculum" | "/board";
+  active: "/" | "/curriculum" | "/board" | "/reading-log";
   block?: string;
   blockName?: string;
   session?: number;
@@ -29,7 +33,9 @@ export default function Shell({
           <i />
           <i />
           <i />
-          <code>localhost:3000</code>
+          {/* Her copy really does run there. The trial does not, and the
+              chrome is where the one thing a visitor must know fits. */}
+          <code>{WEB ? "a trial — your progress is kept in this browser only" : "localhost:3000"}</code>
         </div>
         <div className="app">
           <nav className="rail" aria-label="Main navigation">

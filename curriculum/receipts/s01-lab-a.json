@@ -1,0 +1,40 @@
+{
+  "about": "Real runs of session 1’s three tasks, made 2026-11-11 under Python 3.12.16 and 3.15.2 in an empty folder; paths renamed to /Users/ana. Right ones from two Pythons and two prompts, and the incomplete ones a learner stopping early would paste. scripts/test-study.mjs grades every receipt (L-AUTH-11; REBUILD.md R3: the gate checks she did the work, whatever her Python).",
+  "part": "s01-lab-a",
+  "receipts": [
+    {
+      "name": "all three tasks, Python 3.12, plain prompt",
+      "raw": "% python3 hello.py\nhello\n% which python3\n/Users/ana/cs-core/bin/python3\n% which -a python3\n/Users/ana/cs-core/bin/python3\n/usr/bin/python3\n% source .venv/bin/activate\n(.venv) % which python3\n/Users/ana/cs-core/.venv/bin/python3\n(.venv) % cat .venv/pyvenv.cfg\nhome = /Users/ana/cs-core/bin\ninclude-system-site-packages = false\nversion = 3.12.16\nexecutable = /Users/ana/.local/share/uv/python/cpython-3.12.16-macos-aarch64-none/bin/python3.12\ncommand = /Users/ana/cs-core/bin/python3 -m venv /Users/ana/cs-core/.venv",
+      "expect": {
+        "the-runs": true
+      }
+    },
+    {
+      "name": "all three tasks, Python 3.15, zsh prompt with the environment name",
+      "raw": "ana@MacBook-Pro cs-core % python3 hello.py\nhello\nana@MacBook-Pro cs-core % which python3\n/Users/ana/cs-core/bin/python3\nana@MacBook-Pro cs-core % which -a python3\n/Users/ana/cs-core/bin/python3\n/usr/bin/python3\nana@MacBook-Pro cs-core % source .venv/bin/activate\n(.venv) ana@MacBook-Pro cs-core % which python3\n/Users/ana/cs-core/.venv/bin/python3\n(.venv) ana@MacBook-Pro cs-core % cat .venv/pyvenv.cfg\nhome = /Users/ana/cs-core/bin\ninclude-system-site-packages = false\nversion = 3.15.2\nexecutable = /Users/ana/.local/share/uv/python/cpython-3.15.2-macos-aarch64-none/bin/python3.15\ncommand = /Users/ana/cs-core/bin/python3 -m venv /Users/ana/cs-core/.venv",
+      "expect": {
+        "the-runs": true
+      }
+    },
+    {
+      "name": "stopped before making the environment",
+      "raw": "% python3 hello.py\nhello\n% which python3\n/Users/ana/cs-core/bin/python3\n% which -a python3\n/Users/ana/cs-core/bin/python3\n/usr/bin/python3",
+      "expect": {
+        "the-runs": false
+      },
+      "says": {
+        "the-runs": "fail"
+      }
+    },
+    {
+      "name": "environment switched on, but its file not printed",
+      "raw": "% python3 hello.py\nhello\n% which python3\n/Users/ana/cs-core/bin/python3\n% which -a python3\n/Users/ana/cs-core/bin/python3\n/usr/bin/python3\n% source .venv/bin/activate\n(.venv) % which python3\n/Users/ana/cs-core/.venv/bin/python3",
+      "expect": {
+        "the-runs": false
+      },
+      "says": {
+        "the-runs": "fail"
+      }
+    }
+  ]
+}

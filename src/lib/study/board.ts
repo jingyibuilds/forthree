@@ -1,5 +1,6 @@
 import "server-only";
 import { findSession, loadBlocks } from "./content";
+import { BARS, BLOCK_NAMES, TAUGHT, loadTrunk } from "./map";
 import { readJson, writeJson } from "./store";
 import { AttemptRecord, BarKey, BarState, BoardFile, Part, StudyError } from "./types";
 
@@ -63,7 +64,9 @@ export async function evaluateBoard(sessionNumber: number, attemptsOf: Loader) {
   const passedParts = async (predicate: (part: Part) => boolean) => {
     for (const part of found.session.parts.filter(predicate)) {
       const attempts = await attemptsOf(part.id);
-      if (attempts.some(attempt => attempt.passed_at)) return true;
+      // A lab moved past unrun on the web trial is not a pass, whatever else
+      // is written on its record (PUBLISH.md §6).
+      if (attempts.some(attempt => attempt.passed_at && !attempt.lab_skipped_at)) return true;
     }
     return false;
   };
@@ -88,4 +91,42 @@ export async function evaluateBoard(sessionNumber: number, attemptsOf: Loader) {
 
   if (moved.length) await writeJson("board.json", board);
   return {board, moved, block: block.block, bars: block.bars};
+}
+
+/** The board as a screen needs it: the taught blocks, their two skills, and
+ *  the state of each. One function, so her copy and the web trial draw the
+ *  same eight lines from the same rules. */
+export async function boardData(): Promise<{data: BoardDataShape; damaged: boolean}> {
+  const [trunk, blocks, read] = await Promise.all([loadTrunk(), loadBlocks(), readBoardSafe()]);
+  const rows = trunk.filter(block => TAUGHT[block.id]).map(block => {
+    const bars = blocks.find(candidate => candidate.block === block.id)?.bars ?? BARS[block.id];
+    const states = read.board[block.id] as Record<string, {state: string}> | undefined;
+    return {
+      id: block.id,
+      name: BLOCK_NAMES[block.id],
+      question: block.question,
+      bars: (["judge", "build"] as BarKey[]).map(bar => ({
+        bar,
+        label: bars[bar].label,
+        says: bars[bar].says,
+        state: states?.[bar]?.state ?? "none",
+      })),
+    };
+  });
+  return {
+    data: {
+      rows,
+      first_gate: Math.min(...Object.values(blocks[0]?.bars ?? {}).map(bar => bar.borrowed_gate)),
+      own_gate: blocks[0]?.bars.judge.own_gate ?? 0,
+      damaged: read.damaged,
+    },
+    damaged: read.damaged,
+  };
+}
+
+interface BoardDataShape {
+  rows: {id: string; name: string; question: string; bars: {bar: string; label: string; says: string; state: string}[]}[];
+  first_gate: number;
+  own_gate: number;
+  damaged: boolean;
 }
